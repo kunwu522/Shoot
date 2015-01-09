@@ -15,7 +15,7 @@
 @property (nonatomic, retain) UIImageView * userAvatar;
 @property (nonatomic, retain) UILabel * usernameLabel;
 @property (nonatomic, retain) UILabel * nameLabel;
-@property (nonatomic, retain) UILabel * timeLabel;
+@property (nonatomic, retain) UIButton * timeLabel;
 @property (nonatomic, retain) UIImageView *image;
 @property (nonatomic, retain) UIButton * ilikeButton;
 @property (nonatomic, retain) UIButton * ihaveButton;
@@ -42,57 +42,46 @@ static CGFloat PADDING = 10;
         CALayer * l = [self.userAvatar layer];
         [l setMasksToBounds:YES];
         [l setBorderColor:[UIColor whiteColor].CGColor];
-        [l setBorderWidth:1];
+        [l setBorderWidth:2];
         [l setCornerRadius:self.userAvatar.frame.size.width/2.0];
         self.userAvatar.image = [UIImage imageNamed:@"avatar.jpg"];
         [self addSubview:self.userAvatar];
 
-        self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width - PADDING - 50, 0, 50, self.blurView.frame.size.height)];
-        self.timeLabel.text = @"1d";
-        self.timeLabel.textColor = [UIColor darkGrayColor];
-        self.timeLabel.font = [UIFont boldSystemFontOfSize:9.0];
-        self.timeLabel.textAlignment = NSTextAlignmentRight;
+        self.timeLabel = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width - PADDING - 40, 0, 40, self.blurView.frame.size.height)];
+        [self.timeLabel setTitle:@" 1d" forState:UIControlStateNormal];
+        [self.timeLabel setImage:[ImageUtil renderImage:[UIImage imageNamed:@"time"] atSize:CGSizeMake(10, 10)] forState:UIControlStateNormal];
+        [self.timeLabel setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        self.timeLabel.titleLabel.font = [UIFont boldSystemFontOfSize:9.0];
+        self.timeLabel.titleLabel.textAlignment = NSTextAlignmentRight;
         [self addSubview:self.timeLabel];
         
         CGFloat usernameLabelX = PADDING + self.userAvatar.frame.size.width + self.userAvatar.frame.origin.x;
         self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(usernameLabelX, 0, self.frame.size.width - usernameLabelX - PADDING - self.timeLabel.frame.size.width, self.blurView.frame.size.height)];
         self.usernameLabel.text = @"USERNAME";
-        self.usernameLabel.font = [UIFont boldSystemFontOfSize:10];
-        self.usernameLabel.textColor = [UIColor darkGrayColor];
+        self.usernameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:10];
+        self.usernameLabel.textColor = [UIColor whiteColor];
         [self addSubview:self.usernameLabel];
         
-        UIButton * like = [[UIButton alloc] initWithFrame:CGRectMake(0, 220, self.frame.size.width/3.0, 40)];
-        [like setTitle:@"1.3M Likes" forState:UIControlStateNormal];
-        [like setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+        UIButton * like = [[UIButton alloc] initWithFrame:CGRectMake(0, 220, self.frame.size.width/3.0, 30)];
+        [like setImage:[ImageUtil renderImage:[UIImage imageNamed:@"like-icon"] atSize:CGSizeMake(15, 15)] forState:UIControlStateNormal];
+        [like setTitle:@" 13M" forState:UIControlStateNormal];
+        [like setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
         like.titleLabel.font = [UIFont boldSystemFontOfSize:10];
-//        [self addSubview:like];
+        [self addSubview:like];
         
-        UIButton * want = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width/3.0, 220, self.frame.size.width/3.0, 40)];
-        [want setTitle:@"Want It" forState:UIControlStateNormal];
-        [want setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+        UIButton * want = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width/3.0, 220, self.frame.size.width/3.0, 30)];
+        [want setImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(15, 15)] forState:UIControlStateNormal];
+        [want setTitle:@" 105K" forState:UIControlStateNormal];
+        [want setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
         want.titleLabel.font = [UIFont boldSystemFontOfSize:10];
-//        [self addSubview:want];
+        [self addSubview:want];
         
-        UIButton * have = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width * 2.0 / 3.0, 220, self.frame.size.width/3.0, 40)];
-        [have setTitle:@"Have It" forState:UIControlStateNormal];
-        [have setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+        UIButton * have = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width * 2.0 / 3.0, 220, self.frame.size.width/3.0, 30)];
+        [have setImage:[ImageUtil renderImage:[UIImage imageNamed:@"have-icon"] atSize:CGSizeMake(15, 15)] forState:UIControlStateNormal];
+        [have setTitle:@" 35K" forState:UIControlStateNormal];
+        [have setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
         have.titleLabel.font = [UIFont boldSystemFontOfSize:10];
-//        [self addSubview:have];
-        
-        UIImageView *likeImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 22, 22)];
-        likeImage.image = [UIImage imageNamed:@"like-icon"];
-        [self addSubview:likeImage];
-        [likeImage setCenter:like.center];
-        
-        UIImageView *wantImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 22, 22)];
-        wantImage.image = [UIImage imageNamed:@"want-icon"];
-        [self addSubview:wantImage];
-        [wantImage setCenter:want.center];
-        
-        UIImageView *haveImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 22, 22)];
-        haveImage.image = [UIImage imageNamed:@"have-icon"];
-        [self addSubview:haveImage];
-        [haveImage setCenter:have.center];
+        [self addSubview:have];
         
     }
     return self;
@@ -113,7 +102,7 @@ static CGFloat PADDING = 10;
 
 + (CGFloat) height
 {
-    return 260;
+    return 250;
 }
 
 @end

@@ -44,7 +44,7 @@
     CGImageRef imageRef = CGImageCreateWithImageInRect([img CGImage], CGRectMake(self.frame.origin.x * img.scale, self.frame.origin.y * img.scale, self.frame.size.width * img.scale, self.frame.size.height * img.scale));
     UIImage *cropImage = [UIImage imageWithCGImage:imageRef];
     CFRelease(imageRef);
-    [self.imageView setImage:[cropImage applyBlurWithRadius:10 tintColor:[UIColor colorWithWhite:1 alpha:0.5]
+    [self.imageView setImage:[cropImage applyBlurWithRadius:10 tintColor:[UIColor colorWithWhite:1 alpha:0.2]
                                                                             saturationDeltaFactor:1.8
                                                                                         maskImage:nil]];
 }

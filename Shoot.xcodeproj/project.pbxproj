@@ -12,6 +12,7 @@
 		0E1422D31A57B41100783F0F /* like-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E1422D21A57B41100783F0F /* like-icon.png */; };
 		0E1422D51A58B8F100783F0F /* want-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E1422D41A58B8F100783F0F /* want-icon.png */; };
 		0E1422D71A5DD29B00783F0F /* have-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E1422D61A5DD29B00783F0F /* have-icon.png */; };
+		0E1422D91A5F8F9600783F0F /* time.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E1422D81A5F8F9600783F0F /* time.png */; };
 		0E7CD7141A5721CF00A27A2F /* ImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7111A5721CF00A27A2F /* ImageUtil.m */; };
 		0E7CD7151A5721CF00A27A2F /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7131A5721CF00A27A2F /* UIImage+ImageEffects.m */; };
 		0EB82CB21A37F84D00BFBE17 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB82CB11A37F84D00BFBE17 /* main.m */; };
@@ -48,6 +49,7 @@
 		0E1422D21A57B41100783F0F /* like-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "like-icon.png"; path = "Images/like-icon.png"; sourceTree = "<group>"; };
 		0E1422D41A58B8F100783F0F /* want-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "want-icon.png"; path = "Images/want-icon.png"; sourceTree = "<group>"; };
 		0E1422D61A5DD29B00783F0F /* have-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "have-icon.png"; path = "Images/have-icon.png"; sourceTree = "<group>"; };
+		0E1422D81A5F8F9600783F0F /* time.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = time.png; path = Images/time.png; sourceTree = "<group>"; };
 		0E7CD7101A5721CF00A27A2F /* ImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageUtil.h; sourceTree = "<group>"; };
 		0E7CD7111A5721CF00A27A2F /* ImageUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUtil.m; sourceTree = "<group>"; };
 		0E7CD7121A5721CF00A27A2F /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 			isa = PBXGroup;
 			children = (
 				0EB82CEF1A39F0F000BFBE17 /* avatar.jpg */,
+				0E1422D81A5F8F9600783F0F /* time.png */,
 				0E1422D61A5DD29B00783F0F /* have-icon.png */,
 				0E1422D21A57B41100783F0F /* like-icon.png */,
 				0E1422D41A58B8F100783F0F /* want-icon.png */,
@@ -304,6 +307,7 @@
 				0EB82CC11A37F84D00BFBE17 /* Main.storyboard in Resources */,
 				0E1422D31A57B41100783F0F /* like-icon.png in Resources */,
 				0EB82CF01A39F0F000BFBE17 /* avatar.jpg in Resources */,
+				0E1422D91A5F8F9600783F0F /* time.png in Resources */,
 				0EB82CEB1A39EFE900BFBE17 /* image2.jpg in Resources */,
 				0E1422D71A5DD29B00783F0F /* have-icon.png in Resources */,
 				0EB82CEA1A39EFE900BFBE17 /* image1.jpg in Resources */,
