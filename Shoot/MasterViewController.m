@@ -9,6 +9,8 @@
 #import "MasterViewController.h"
 #import "DetailViewController.h"
 #import "ShootTableViewCell.h"
+#import "AppDelegate.h"
+#import "SWRevealViewController.h"
 
 @interface MasterViewController ()
 
@@ -28,8 +30,15 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    SWRevealViewController *revealViewController = self.revealViewController;
+    if ( revealViewController )
+    {
+        [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
+    }
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    self.managedObjectContext = appDelegate.managedObjectContext;
     self.title = @"Shoot";
-    self.navigationController.navigationBarHidden = true;
+//    self.navigationController.navigationBarHidden = true;
     [self.tableView setSeparatorColor:[UIColor clearColor]];
     [self.tableView registerClass:[ShootTableViewCell class] forCellReuseIdentifier:TABEL_CELL_REUSE_ID];
 }
@@ -64,6 +73,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     ShootTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:TABEL_CELL_REUSE_ID forIndexPath:indexPath];
+    cell.userInteractionEnabled = true;
     [self configureCell:cell atIndexPath:indexPath];
     return cell;
 }
@@ -75,7 +85,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
 
 - (void)configureCell:(ShootTableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     UIImage * image = [UIImage imageNamed:[NSString stringWithFormat:@"image%ld.jpg", indexPath.row + 1]];
-    [cell decorate:image];
+    [cell decorate:image parentController:self];
     [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 }
 

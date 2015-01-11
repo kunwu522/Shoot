@@ -10,6 +10,7 @@
 #import "BlurView.h"
 #import "ImageUtil.h"
 #import "ColorDefinition.h"
+#import "UserViewController.h"
 
 @interface ShootTableViewCell()
 @property (nonatomic, retain) UIImageView * userAvatar;
@@ -32,8 +33,8 @@ static CGFloat PADDING = 10;
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         self.image = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 220)];
-        self.contentMode = UIViewContentModeScaleAspectFit;
-        self.clipsToBounds = YES;
+        self.image.contentMode = UIViewContentModeScaleAspectFill;
+        self.image.clipsToBounds = YES;
         [self addSubview:self.image];
         
         self.blurView = [[BlurView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 30)];
@@ -46,6 +47,8 @@ static CGFloat PADDING = 10;
         [l setCornerRadius:self.userAvatar.frame.size.width/2.0];
         self.userAvatar.image = [UIImage imageNamed:@"avatar.jpg"];
         [self addSubview:self.userAvatar];
+        self.userAvatar.userInteractionEnabled = true;
+        [self.userAvatar addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleAvatarTapped)]];
 
         self.timeLabel = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width - PADDING - 40, 0, 40, self.blurView.frame.size.height)];
         [self.timeLabel setTitle:@" 1d" forState:UIControlStateNormal];
@@ -58,7 +61,7 @@ static CGFloat PADDING = 10;
         CGFloat usernameLabelX = PADDING + self.userAvatar.frame.size.width + self.userAvatar.frame.origin.x;
         self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(usernameLabelX, 0, self.frame.size.width - usernameLabelX - PADDING - self.timeLabel.frame.size.width, self.blurView.frame.size.height)];
         self.usernameLabel.text = @"USERNAME";
-        self.usernameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:10];
+        self.usernameLabel.font = [UIFont boldSystemFontOfSize:11];
         self.usernameLabel.textColor = [UIColor whiteColor];
         [self addSubview:self.usernameLabel];
         
@@ -87,8 +90,15 @@ static CGFloat PADDING = 10;
     return self;
 }
 
-- (void) decorate:(UIImage *) image
+- (void)handleAvatarTapped
 {
+    UserViewController* viewController = [[UserViewController alloc] initWithNibName:nil bundle:nil];
+    [self.parentController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void) decorate:(UIImage *) image parentController:(UIViewController *) parentController
+{
+    self.parentController = parentController;
     [self.blurView removeFromSuperview];
     self.image.image = image;
     [self insertSubview:self.blurView aboveSubview:self.image];

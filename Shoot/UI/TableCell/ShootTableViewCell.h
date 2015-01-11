@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface ShootTableViewCell : UITableViewCell
-- (void) decorate:(UIImage *) image;
+@property (nonatomic, weak) UIViewController * parentController;
+- (void) decorate:(UIImage *) image parentController:(UIViewController *)parentController;
 + (CGFloat) height;
 @end

@@ -13,6 +13,14 @@
 		0E1422D51A58B8F100783F0F /* want-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E1422D41A58B8F100783F0F /* want-icon.png */; };
 		0E1422D71A5DD29B00783F0F /* have-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E1422D61A5DD29B00783F0F /* have-icon.png */; };
 		0E1422D91A5F8F9600783F0F /* time.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E1422D81A5F8F9600783F0F /* time.png */; };
+		0E1422DC1A6067C000783F0F /* UserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E1422DB1A6067C000783F0F /* UserViewController.m */; };
+		0E5C92E81A60E62C008AE026 /* follow.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E5C92E71A60E62C008AE026 /* follow.png */; };
+		0E5C92EA1A60E801008AE026 /* message.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E5C92E91A60E801008AE026 /* message.png */; };
+		0E5C92EE1A621318008AE026 /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C92ED1A621318008AE026 /* SWRevealViewController.m */; };
+		0E5C92F31A621CE2008AE026 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C92F21A621CE2008AE026 /* MenuViewController.m */; };
+		0E5C92F81A622721008AE026 /* MenuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C92F71A622721008AE026 /* MenuTableViewCell.m */; };
+		0E5C92FA1A62284F008AE026 /* profile_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E5C92F91A62284F008AE026 /* profile_icon.png */; };
+		0E5C92FC1A62627B008AE026 /* list-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E5C92FB1A62627B008AE026 /* list-icon.png */; };
 		0E7CD7141A5721CF00A27A2F /* ImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7111A5721CF00A27A2F /* ImageUtil.m */; };
 		0E7CD7151A5721CF00A27A2F /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7131A5721CF00A27A2F /* UIImage+ImageEffects.m */; };
 		0EB82CB21A37F84D00BFBE17 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB82CB11A37F84D00BFBE17 /* main.m */; };
@@ -50,6 +58,18 @@
 		0E1422D41A58B8F100783F0F /* want-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "want-icon.png"; path = "Images/want-icon.png"; sourceTree = "<group>"; };
 		0E1422D61A5DD29B00783F0F /* have-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "have-icon.png"; path = "Images/have-icon.png"; sourceTree = "<group>"; };
 		0E1422D81A5F8F9600783F0F /* time.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = time.png; path = Images/time.png; sourceTree = "<group>"; };
+		0E1422DA1A6067C000783F0F /* UserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserViewController.h; sourceTree = "<group>"; };
+		0E1422DB1A6067C000783F0F /* UserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserViewController.m; sourceTree = "<group>"; };
+		0E5C92E71A60E62C008AE026 /* follow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = follow.png; path = Images/follow.png; sourceTree = "<group>"; };
+		0E5C92E91A60E801008AE026 /* message.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = message.png; path = Images/message.png; sourceTree = "<group>"; };
+		0E5C92EC1A621318008AE026 /* SWRevealViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWRevealViewController.h; sourceTree = "<group>"; };
+		0E5C92ED1A621318008AE026 /* SWRevealViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWRevealViewController.m; sourceTree = "<group>"; };
+		0E5C92F11A621CE2008AE026 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
+		0E5C92F21A621CE2008AE026 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
+		0E5C92F61A622721008AE026 /* MenuTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MenuTableViewCell.h; path = UI/TableCell/MenuTableViewCell.h; sourceTree = "<group>"; };
+		0E5C92F71A622721008AE026 /* MenuTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MenuTableViewCell.m; path = UI/TableCell/MenuTableViewCell.m; sourceTree = "<group>"; };
+		0E5C92F91A62284F008AE026 /* profile_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = profile_icon.png; path = Images/profile_icon.png; sourceTree = "<group>"; };
+		0E5C92FB1A62627B008AE026 /* list-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "list-icon.png"; path = "Images/list-icon.png"; sourceTree = "<group>"; };
 		0E7CD7101A5721CF00A27A2F /* ImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageUtil.h; sourceTree = "<group>"; };
 		0E7CD7111A5721CF00A27A2F /* ImageUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUtil.m; sourceTree = "<group>"; };
 		0E7CD7121A5721CF00A27A2F /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
@@ -100,6 +120,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0E5C92EB1A621318008AE026 /* SWRevealViewController */ = {
+			isa = PBXGroup;
+			children = (
+				0E5C92EC1A621318008AE026 /* SWRevealViewController.h */,
+				0E5C92ED1A621318008AE026 /* SWRevealViewController.m */,
+			);
+			name = SWRevealViewController;
+			path = UI/SWRevealViewController;
+			sourceTree = "<group>";
+		};
 		0E7CD70F1A5721CF00A27A2F /* ImageUtils */ = {
 			isa = PBXGroup;
 			children = (
@@ -147,6 +177,10 @@
 				0EB82CC41A37F84D00BFBE17 /* LaunchScreen.xib */,
 				0EB82CB61A37F84D00BFBE17 /* Shoot.xcdatamodeld */,
 				0EB82CAF1A37F84D00BFBE17 /* Supporting Files */,
+				0E1422DA1A6067C000783F0F /* UserViewController.h */,
+				0E1422DB1A6067C000783F0F /* UserViewController.m */,
+				0E5C92F11A621CE2008AE026 /* MenuViewController.h */,
+				0E5C92F21A621CE2008AE026 /* MenuViewController.m */,
 			);
 			path = Shoot;
 			sourceTree = "<group>";
@@ -180,6 +214,7 @@
 		0EB82CDB1A37FCB300BFBE17 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				0E5C92EB1A621318008AE026 /* SWRevealViewController */,
 				0EB82CF11A39FD9200BFBE17 /* BlurView.h */,
 				0EB82CF21A39FD9200BFBE17 /* BlurView.m */,
 				0EB82CDC1A37FCC100BFBE17 /* TableCell */,
@@ -192,6 +227,8 @@
 			children = (
 				0EB82CDD1A37FD5A00BFBE17 /* ShootTableViewCell.h */,
 				0EB82CDE1A37FD5A00BFBE17 /* ShootTableViewCell.m */,
+				0E5C92F61A622721008AE026 /* MenuTableViewCell.h */,
+				0E5C92F71A622721008AE026 /* MenuTableViewCell.m */,
 			);
 			name = TableCell;
 			sourceTree = "<group>";
@@ -201,9 +238,13 @@
 			children = (
 				0EB82CEF1A39F0F000BFBE17 /* avatar.jpg */,
 				0E1422D81A5F8F9600783F0F /* time.png */,
+				0E5C92E71A60E62C008AE026 /* follow.png */,
+				0E5C92FB1A62627B008AE026 /* list-icon.png */,
+				0E5C92E91A60E801008AE026 /* message.png */,
 				0E1422D61A5DD29B00783F0F /* have-icon.png */,
 				0E1422D21A57B41100783F0F /* like-icon.png */,
 				0E1422D41A58B8F100783F0F /* want-icon.png */,
+				0E5C92F91A62284F008AE026 /* profile_icon.png */,
 				0EB82CE71A39EFE900BFBE17 /* image1.jpg */,
 				0EB82CE81A39EFE900BFBE17 /* image2.jpg */,
 				0EB82CE91A39EFE900BFBE17 /* image3.jpg */,
@@ -306,6 +347,7 @@
 				0E1422D11A57AFED00783F0F /* image5.jpg in Resources */,
 				0EB82CC11A37F84D00BFBE17 /* Main.storyboard in Resources */,
 				0E1422D31A57B41100783F0F /* like-icon.png in Resources */,
+				0E5C92E81A60E62C008AE026 /* follow.png in Resources */,
 				0EB82CF01A39F0F000BFBE17 /* avatar.jpg in Resources */,
 				0E1422D91A5F8F9600783F0F /* time.png in Resources */,
 				0EB82CEB1A39EFE900BFBE17 /* image2.jpg in Resources */,
@@ -313,8 +355,11 @@
 				0EB82CEA1A39EFE900BFBE17 /* image1.jpg in Resources */,
 				0E1422D51A58B8F100783F0F /* want-icon.png in Resources */,
 				0EB82CEC1A39EFE900BFBE17 /* image3.jpg in Resources */,
+				0E5C92FC1A62627B008AE026 /* list-icon.png in Resources */,
+				0E5C92FA1A62284F008AE026 /* profile_icon.png in Resources */,
 				0EB82CC61A37F84D00BFBE17 /* LaunchScreen.xib in Resources */,
 				0EB82CC31A37F84D00BFBE17 /* Images.xcassets in Resources */,
+				0E5C92EA1A60E801008AE026 /* message.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,12 +381,16 @@
 				0EB82CBB1A37F84D00BFBE17 /* MasterViewController.m in Sources */,
 				0EB82CB51A37F84D00BFBE17 /* AppDelegate.m in Sources */,
 				0EB82CDF1A37FD5A00BFBE17 /* ShootTableViewCell.m in Sources */,
+				0E5C92F31A621CE2008AE026 /* MenuViewController.m in Sources */,
 				0EB82CE41A3802E300BFBE17 /* ColorDefinition.m in Sources */,
 				0EB82CF31A39FD9200BFBE17 /* BlurView.m in Sources */,
 				0E7CD7151A5721CF00A27A2F /* UIImage+ImageEffects.m in Sources */,
+				0E1422DC1A6067C000783F0F /* UserViewController.m in Sources */,
 				0EB82CB81A37F84D00BFBE17 /* Shoot.xcdatamodeld in Sources */,
+				0E5C92F81A622721008AE026 /* MenuTableViewCell.m in Sources */,
 				0E7CD7141A5721CF00A27A2F /* ImageUtil.m in Sources */,
 				0EB82CB21A37F84D00BFBE17 /* main.m in Sources */,
+				0E5C92EE1A621318008AE026 /* SWRevealViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

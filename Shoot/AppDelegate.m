@@ -11,6 +11,8 @@
 #import "MasterViewController.h"
 #import "ColorDefinition.h"
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 @interface AppDelegate () <UISplitViewControllerDelegate>
 
 @end
@@ -20,21 +22,19 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    [[UIApplication sharedApplication] setStatusBarStyle:[AppDelegate getUIStatusBarStyle]];
-    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
-    [[UINavigationBar appearance] setBackgroundColor:[ColorDefinition champagneColor]];
-    [[UINavigationBar appearance] setTranslucent:YES];
-    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-    [[UINavigationBar appearance] setBarTintColor:[ColorDefinition champagneColor]];
-    
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
-    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
-    splitViewController.delegate = self;
+//    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
+//    [[UINavigationBar appearance] setBackgroundColor:[ColorDefinition champagneColor]];
+//    [[UINavigationBar appearance] setTranslucent:YES];
+//    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+//    [[UINavigationBar appearance] setBarTintColor:[ColorDefinition champagneColor]];
 
-    UINavigationController *masterNavigationController = splitViewController.viewControllers[0];
-    MasterViewController *controller = (MasterViewController *)masterNavigationController.topViewController;
-    controller.managedObjectContext = self.managedObjectContext;
+    
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))
+    {
+//        UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0,320, 20)];
+//        view.backgroundColor=[UIColor grayColor];
+//        [self.window.rootViewController.view addSubview:view];
+    }
     return YES;
 }
 
