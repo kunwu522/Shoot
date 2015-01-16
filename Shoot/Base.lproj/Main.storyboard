@@ -4,6 +4,24 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
+        <!--User View Controller-->
+        <scene sceneID="lA1-9m-mhB">
+            <objects>
+                <viewController id="PKQ-3C-NIb" customClass="UserViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="aVj-6s-l96"/>
+                        <viewControllerLayoutGuide type="bottom" id="2CU-0m-5bw"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kd6-2a-rNu">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WKb-Bm-SPS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="766" y="-650"/>
+        </scene>
         <!--Detail-->
         <scene sceneID="yUG-lL-AsK">
             <objects>
@@ -96,10 +114,33 @@
                             <outlet property="delegate" destination="ZD5-aM-wub" id="z4O-O1-cOC"/>
                         </connections>
                     </tableView>
+                    <connections>
+                        <segue destination="7bK-jq-Zjz" kind="custom" identifier="showShoots" customClass="SWRevealViewControllerSeguePushController" id="fgb-u1-gpP"/>
+                        <segue destination="PKQ-3C-NIb" kind="custom" identifier="showUser" customClass="SWRevealViewControllerSeguePushController" id="Ues-dG-6w9"/>
+                        <segue destination="IFb-l6-TBn" kind="custom" identifier="showNotifications" customClass="SWRevealViewControllerSeguePushController" id="geF-ao-hmw"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lKg-nQ-bvt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-38" y="-1452"/>
+        </scene>
+        <!--Notification View Controller-->
+        <scene sceneID="4Ei-Xk-XSo">
+            <objects>
+                <viewController id="IFb-l6-TBn" customClass="NotificationViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="wik-Wj-A6O"/>
+                        <viewControllerLayoutGuide type="bottom" id="bDB-To-ifl"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ngK-BR-vsl">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jgd-oJ-RaW" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="776" y="-1452"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="r7l-gg-dq7">
@@ -117,4 +158,7 @@
             <point key="canvasLocation" x="-45" y="129"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="fgb-u1-gpP"/>
+    </inferredMetricsTieBreakers>
 </document>

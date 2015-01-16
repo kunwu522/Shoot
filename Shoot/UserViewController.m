@@ -9,6 +9,7 @@
 #import "UserViewController.h"
 #import "BlurView.h"
 #import "ImageUtil.h"
+#import "SWRevealViewController.h"
 
 @interface UserViewController ()
 
@@ -23,6 +24,12 @@ static CGFloat FOLLOWER_LABEL_HEIGHT = 18;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    SWRevealViewController *revealViewController = self.revealViewController;
+    if ( revealViewController )
+    {
+        [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
+    }
+    
     self.view.backgroundColor = [UIColor whiteColor];
     
     UIImageView * header = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, HEADER_HEIGHT)];
@@ -91,23 +98,31 @@ static CGFloat FOLLOWER_LABEL_HEIGHT = 18;
     [message setImage:[ImageUtil renderImage:[UIImage imageNamed:@"message"] atSize:CGSizeMake(35, 30)] forState:UIControlStateNormal];
     [self.view addSubview:message];
     
-    UIButton * wants = [[UIButton alloc] initWithFrame:CGRectMake(-1, username.frame.origin.y + username.frame.size.height + PADDING * 2, self.view.frame.size.width/2.0 + 2, 30)];
-    wants.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    wants.layer.borderWidth = 0.5;
+    UIButton * wants = [[UIButton alloc] initWithFrame:CGRectMake(PADDING, username.frame.origin.y + username.frame.size.height + PADDING * 2, (self.view.frame.size.width - PADDING * 2)/2.0, 30)];
     [wants setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor darkGrayColor]] forState:UIControlStateNormal];
-    [wants setTitle:@" 5" forState:UIControlStateNormal];
+    [wants setTitle:@" 5 wants" forState:UIControlStateNormal];
     wants.titleLabel.font = [UIFont boldSystemFontOfSize:12];
     [wants setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
-//    [self.view addSubview:wants];
+    [self.view addSubview:wants];
     
-    UIButton * haves = [[UIButton alloc] initWithFrame:CGRectMake(wants.frame.size.width + wants.frame.origin.x, wants.frame.origin.y, self.view.frame.size.width/2.0 + 1, 30)];
-    haves.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    haves.layer.borderWidth = 0.5;
+    UIButton * haves = [[UIButton alloc] initWithFrame:CGRectMake(wants.frame.size.width + wants.frame.origin.x, wants.frame.origin.y, (self.view.frame.size.width - PADDING * 2)/2.0, 30)];
     [haves setImage:[ImageUtil renderImage:[UIImage imageNamed:@"have-icon"] atSize:CGSizeMake(15, 15)] forState:UIControlStateNormal];
-    [haves setTitle:@" 15" forState:UIControlStateNormal];
+    [haves setTitle:@" 15 haves" forState:UIControlStateNormal];
     haves.titleLabel.font = [UIFont boldSystemFontOfSize:12];
     [haves setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-//    [self.view addSubview:haves];
+    [self.view addSubview:haves];
+    
+    UILabel * topLine = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, wants.frame.origin.y, self.view.frame.size.width - PADDING * 2, 0.5)];
+    topLine.backgroundColor = [UIColor lightGrayColor];
+    [self.view addSubview:topLine];
+    
+    UILabel * bottomLine = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, wants.frame.origin.y + wants.frame.size.height, self.view.frame.size.width - PADDING * 2, 0.5)];
+    bottomLine.backgroundColor = [UIColor lightGrayColor];
+    [self.view addSubview:bottomLine];
+    
+    UILabel * middleLine = [[UILabel alloc] initWithFrame:CGRectMake(wants.frame.origin.x + wants.frame.size.width, wants.frame.origin.y + 4, 1, wants.frame.size.height - 8)];
+    middleLine.backgroundColor = [UIColor lightGrayColor];
+    [self.view addSubview:middleLine];
     
     CGFloat imageSize = (self.view.frame.size.width - PADDING * 4)/3.0;
     UIImageView *image1 = [[UIImageView alloc] initWithFrame:CGRectMake(PADDING, wants.frame.origin.y + wants.frame.size.height + PADDING, imageSize, imageSize)];

@@ -42,15 +42,11 @@ static NSString * TABEL_CELL_REUSE_ID = @"menuItem";
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 4;
+    return 5;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -66,13 +62,28 @@ static NSString * TABEL_CELL_REUSE_ID = @"menuItem";
         cell.titleLabel.text = @"Shoots";
         cell.icon.image = [ImageUtil colorImage:[UIImage imageNamed:@"list-icon"] color:[UIColor whiteColor]];
     } else if (indexPath.row == 2) {
+        cell.titleLabel.text = @"Shoot";
+        cell.icon.image = [ImageUtil colorImage:[UIImage imageNamed:@"camera"] color:[UIColor whiteColor]];
+    } else if (indexPath.row == 3) {
         cell.titleLabel.text = @"Messages";
         cell.icon.image = [ImageUtil colorImage:[UIImage imageNamed:@"message"] color:[UIColor whiteColor]];
-    } else if (indexPath.row == 3) {
+    } else if (indexPath.row == 4) {
         cell.titleLabel.text = @"Profile";
         cell.icon.image = [ImageUtil colorImage:[UIImage imageNamed:@"profile_icon"] color:[UIColor whiteColor]];
     }
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 1) {
+        [self performSegueWithIdentifier:@"showShoots" sender:self];
+    } else if (indexPath.row == 3) {
+        [self performSegueWithIdentifier:@"showNotifications" sender:self];
+    } else if (indexPath.row == 4) {
+        [self performSegueWithIdentifier:@"showUser" sender:self];
+    }
+    
 }
 
 /*
