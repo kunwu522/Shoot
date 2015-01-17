@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
+#define ROOT_URL @"http://www.cannablaze.com/"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

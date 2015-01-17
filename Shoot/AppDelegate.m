@@ -23,20 +23,26 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
-//    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
-//    [[UINavigationBar appearance] setBackgroundColor:[ColorDefinition champagneColor]];
-//    [[UINavigationBar appearance] setTranslucent:YES];
-//    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-//    [[UINavigationBar appearance] setBarTintColor:[ColorDefinition champagneColor]];
 
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:ROOT_URL]];
     
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))
-    {
-//        UIView *view=[[UIView alloc] initWithFrame:CGRectMake(0, 0,320, 20)];
-//        view.backgroundColor=[UIColor grayColor];
-//        [self.window.rootViewController.view addSubview:view];
-    }
+    //[[manager HTTPClient] setDefaultHeader:@"X-Parse-REST-API-Key" value:@"your key"];
+    //[[manager HTTPClient] setDefaultHeader:@"X-Parse-Application-Id" value:@"your key"];
+    
+    
+    // Enable Activity Indicator Spinner
+    [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
+    [manager setAcceptHeaderWithMIMEType:RKMIMETypeJSON];
+    [manager setRequestSerializationMIMEType:RKMIMETypeJSON];
+    
+    // Initialize managed object store
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+    RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
+    manager.managedObjectStore = managedObjectStore;
+    
+    RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+    [errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"errorMessage"]];
+    
     return YES;
 }
 
