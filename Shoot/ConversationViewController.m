@@ -47,7 +47,7 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
 
     self.delegate = self;
     self.dataSource = self;
-    self.messages = @[[self getMessage], [self getMessage], [self getMessage], [self getMessage], [self getMessage], [self getMessage], [self getMessage], [self getMessage], [self getMessage]];
+    self.messages = @[[self getMessage], [self getMessageShort], [self getMessage], [self getMessageShort], [self getMessage], [self getMessageShort], [self getMessage], [self getMessage], [self getMessageShort]];
     [self reloadView];
     
     NSInteger rows = [self.tableView numberOfRowsInSection:0];
@@ -63,6 +63,13 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
 {
     Message *message = [[Message alloc] init];
     message.message = @"Well it is possible indeed, but the user will only see the error message when the field is cleared. Doesn't sound very useful. Also you can clear the input but I wouldn't be pleased with that if I just entered, say, 30 numbers.";
+    return message;
+}
+
+- (Message *) getMessageShort
+{
+    Message *message = [[Message alloc] init];
+    message.message = @"Doesn't sound very useful.";
     return message;
 }
 

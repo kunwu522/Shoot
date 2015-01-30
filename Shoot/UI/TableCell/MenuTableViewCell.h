@@ -11,4 +11,6 @@
 @interface MenuTableViewCell : UITableViewCell
 @property (nonatomic, retain) UIImageView * icon;
 @property (nonatomic, retain) UILabel * titleLabel;
+
++ (CGFloat) height;
 @end

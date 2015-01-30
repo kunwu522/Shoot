@@ -7,6 +7,7 @@
 //
 
 #import "MenuTableViewCell.h"
+#import "ColorDefinition.h"
 
 @implementation MenuTableViewCell
 
@@ -14,7 +15,9 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.icon = [[UIImageView alloc] initWithFrame:CGRectMake(20, 10, 30, 30)];
+        self.icon = [[UIImageView alloc] initWithFrame:CGRectMake(20, 10, 25, 25)];
+        self.icon.contentMode = UIViewContentModeScaleAspectFit;
+        self.icon.clipsToBounds = YES;
         [self addSubview:self.icon];
         self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60, 10, 100, 30)];
         self.titleLabel.font = [UIFont boldSystemFontOfSize:14];
@@ -24,11 +27,21 @@
     return self;
 }
 
++ (CGFloat) height
+{
+    return 45;
+}
+
 - (void)awakeFromNib {
     // Initialization code
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    if (selected) {
+        [self setBackgroundColor:[ColorDefinition lightRed]];
+    } else {
+        [self setBackgroundColor:[UIColor clearColor]];
+    }
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state

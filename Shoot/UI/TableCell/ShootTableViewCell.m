@@ -47,6 +47,8 @@ static CGFloat PADDING = 10;
         [l setCornerRadius:self.userAvatar.frame.size.width/2.0];
         self.userAvatar.image = [UIImage imageNamed:@"avatar.jpg"];
         [self addSubview:self.userAvatar];
+        self.userAvatar.contentMode = UIViewContentModeScaleAspectFill;
+        self.userAvatar.clipsToBounds = YES;
         self.userAvatar.userInteractionEnabled = true;
         [self.userAvatar addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleAvatarTapped)]];
 

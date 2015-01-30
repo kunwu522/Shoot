@@ -11,7 +11,7 @@
 
 @class DetailViewController;
 
-@interface MasterViewController : UITableViewController <NSFetchedResultsControllerDelegate>
+@interface MasterViewController : UIViewController <NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;

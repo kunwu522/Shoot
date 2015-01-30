@@ -11,8 +11,12 @@
 #import "ShootTableViewCell.h"
 #import "AppDelegate.h"
 #import "SWRevealViewController.h"
+#import "ImageUtil.h"
+#import "ColorDefinition.h"
 
-@interface MasterViewController ()
+@interface MasterViewController () <UITableViewDataSource, UITableViewDelegate>
+
+@property (retain, nonatomic) UITableView * tableView;
 
 @end
 
@@ -22,10 +26,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        self.clearsSelectionOnViewWillAppear = NO;
-        self.preferredContentSize = CGSizeMake(320.0, 600.0);
-    }
+    
 }
 
 - (void)viewDidLoad {
@@ -38,9 +39,27 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     self.managedObjectContext = appDelegate.managedObjectContext;
     self.title = @"Shoot";
-//    self.navigationController.navigationBarHidden = true;
+    self.tableView = [[UITableView alloc] initWithFrame:self.view.frame];
+    [self.view addSubview:self.tableView];
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
     [self.tableView setSeparatorColor:[UIColor clearColor]];
+    self.tableView.showsHorizontalScrollIndicator = false;
+    self.tableView.showsVerticalScrollIndicator = false;
     [self.tableView registerClass:[ShootTableViewCell class] forCellReuseIdentifier:TABEL_CELL_REUSE_ID];
+    [self.tableView reloadData];
+    
+    UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - 25, self.view.frame.size.height - 70, 50, 50)];
+    [self.view addSubview:addButton];
+    [addButton setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"camera"] color:[UIColor whiteColor]] atSize:CGSizeMake(25, 25)] forState:UIControlStateNormal];
+    addButton.backgroundColor = [ColorDefinition lightRed];
+    [addButton.layer setBorderColor:[UIColor whiteColor].CGColor];
+    addButton.layer.cornerRadius = addButton.frame.size.width/2.0;
+    addButton.layer.borderWidth = 2;
+    addButton.layer.shadowOffset = CGSizeMake(0, 0);
+    addButton.layer.shadowRadius = 10;
+    addButton.layer.shadowColor = [UIColor whiteColor].CGColor;
+    addButton.layer.shadowOpacity = 1.0;
 }
 
 - (void)didReceiveMemoryWarning {

@@ -22,10 +22,9 @@ static NSString * TABEL_CELL_REUSE_ID = @"menuItem";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [ColorDefinition grayColor];
+    self.view.backgroundColor = [ColorDefinition darkRed];
     [self.tableView setSeparatorColor:self.view.backgroundColor];
     self.tableView.tableFooterView = [[UIView alloc] init];
-    
     [self.tableView registerClass:[MenuTableViewCell class] forCellReuseIdentifier:TABEL_CELL_REUSE_ID];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -51,13 +50,14 @@ static NSString * TABEL_CELL_REUSE_ID = @"menuItem";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 50;
+    return [MenuTableViewCell height];
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MenuTableViewCell *cell = (MenuTableViewCell *)[tableView dequeueReusableCellWithIdentifier:TABEL_CELL_REUSE_ID forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
+    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     if (indexPath.row == 1) {
         cell.titleLabel.text = @"Shoots";
         cell.icon.image = [ImageUtil colorImage:[UIImage imageNamed:@"list-icon"] color:[UIColor whiteColor]];
@@ -70,6 +70,8 @@ static NSString * TABEL_CELL_REUSE_ID = @"menuItem";
     } else if (indexPath.row == 4) {
         cell.titleLabel.text = @"Profile";
         cell.icon.image = [ImageUtil colorImage:[UIImage imageNamed:@"profile_icon"] color:[UIColor whiteColor]];
+    } else {
+        
     }
     return cell;
 }

@@ -296,7 +296,7 @@ CGFloat const kJSAvatarSize = 50.0f;
 
 + (CGSize)textSizeForText:(NSString *)txt
 {
-    CGFloat width = [UIScreen mainScreen].applicationFrame.size.width * 0.75f;
+    CGFloat width = [UIScreen mainScreen].applicationFrame.size.width * 0.72f;
     CGFloat height = MAX([JSBubbleView numberOfLinesForMessage:txt],
                          [txt numberOfLines]) * [JSMessageInputView textViewLineHeight];
     
