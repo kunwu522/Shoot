@@ -40,7 +40,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
     UISearchBar * searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, HEADER_HEIGHT)];
     searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.tintColor = [UIColor whiteColor];
-    [searchBar setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"search_icon"] color:[UIColor whiteColor]] atSize:CGSizeMake(10, 10)] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
+    [searchBar setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"search-icon"] color:[UIColor whiteColor]] atSize:CGSizeMake(10, 10)] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
     [self.view addSubview:searchBar];
     
 //    UIImageView * compose = [[UIImageView alloc] initWithFrame:CGRectMake(self.view.frame.size.width - HEADER_HEIGHT + PADDING, PADDING, HEADER_HEIGHT - PADDING * 2, HEADER_HEIGHT - PADDING * 2)];

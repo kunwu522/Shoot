@@ -14,5 +14,6 @@
 @property (nonatomic, retain) MapCalloutView * calloutView;
 
 - (void) decorateWithAnnotation:(id<MKAnnotation>)annotation;
++ (CGFloat) getAnnotationSize;
 
 @end

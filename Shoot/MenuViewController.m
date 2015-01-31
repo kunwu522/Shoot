@@ -69,7 +69,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"menuItem";
         cell.icon.image = [ImageUtil colorImage:[UIImage imageNamed:@"message"] color:[UIColor whiteColor]];
     } else if (indexPath.row == 4) {
         cell.titleLabel.text = @"Profile";
-        cell.icon.image = [ImageUtil colorImage:[UIImage imageNamed:@"profile_icon"] color:[UIColor whiteColor]];
+        cell.icon.image = [ImageUtil colorImage:[UIImage imageNamed:@"profile-icon"] color:[UIColor whiteColor]];
     } else {
         
     }

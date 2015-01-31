@@ -315,8 +315,16 @@ static CGFloat VIEW_BUTTON_HEIGHT = 35;
     self.mapView = [[MapView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, self.view.frame.size.height - [UserViewController sectionHeaderViewHeight])];
     [self.imagesCell addSubview:self.mapView];
     self.mapView.hidden = true;
-    NSArray * annotations = @[[[MapAnnotation alloc] initWithCoordinate:CLLocationCoordinate2DMake(47.6097, -122.3331) count:50], [[MapAnnotation alloc] initWithCoordinate:CLLocationCoordinate2DMake(34.0500, -118.2500) count:30], [[MapAnnotation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.7127, -74.0059) count:12], [[MapAnnotation alloc] initWithCoordinate:CLLocationCoordinate2DMake(45.5200, -122.6819) count:4]];
-    [self.mapView setAnnotations:annotations];
+    [self.mapView setAnnotations:[self makeAnnotations]];
+}
+
+- (NSArray *) makeAnnotations
+{
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    for (int i = 0; i < 100; i++) {
+        [result addObject:[[MapAnnotation alloc]initWithCoordinate:CLLocationCoordinate2DMake(34.0500 + rand() % 13, -122.4594 + rand() % 48) count:1]];
+    }
+    return result;
 }
 
 - (void) applySameSizeConstraintToView:(UIView*)view superView:(UIView *)superView
