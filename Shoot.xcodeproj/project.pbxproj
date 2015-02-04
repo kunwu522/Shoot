@@ -89,6 +89,8 @@
 		0E5D469C1A7B01C100CEA8D6 /* MapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5D469B1A7B01C100CEA8D6 /* MapView.m */; };
 		0E7CD7141A5721CF00A27A2F /* ImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7111A5721CF00A27A2F /* ImageUtil.m */; };
 		0E7CD7151A5721CF00A27A2F /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7131A5721CF00A27A2F /* UIImage+ImageEffects.m */; };
+		0EB2F2CE1A80490100BC02A2 /* ShootDetailedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB2F2CD1A80490100BC02A2 /* ShootDetailedTableViewCell.m */; };
+		0EB2F2D11A80799700BC02A2 /* ShootCommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB2F2D01A80799700BC02A2 /* ShootCommentTableViewCell.m */; };
 		0EB82CB21A37F84D00BFBE17 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB82CB11A37F84D00BFBE17 /* main.m */; };
 		0EB82CB51A37F84D00BFBE17 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB82CB41A37F84D00BFBE17 /* AppDelegate.m */; };
 		0EB82CB81A37F84D00BFBE17 /* Shoot.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0EB82CB61A37F84D00BFBE17 /* Shoot.xcdatamodeld */; };
@@ -303,6 +305,10 @@
 		0E7CD7111A5721CF00A27A2F /* ImageUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUtil.m; sourceTree = "<group>"; };
 		0E7CD7121A5721CF00A27A2F /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
 		0E7CD7131A5721CF00A27A2F /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
+		0EB2F2CC1A80490100BC02A2 /* ShootDetailedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShootDetailedTableViewCell.h; path = UI/TableCell/ShootDetailedTableViewCell.h; sourceTree = "<group>"; };
+		0EB2F2CD1A80490100BC02A2 /* ShootDetailedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShootDetailedTableViewCell.m; path = UI/TableCell/ShootDetailedTableViewCell.m; sourceTree = "<group>"; };
+		0EB2F2CF1A80799700BC02A2 /* ShootCommentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShootCommentTableViewCell.h; path = UI/TableCell/ShootCommentTableViewCell.h; sourceTree = "<group>"; };
+		0EB2F2D01A80799700BC02A2 /* ShootCommentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShootCommentTableViewCell.m; path = UI/TableCell/ShootCommentTableViewCell.m; sourceTree = "<group>"; };
 		0EB82CAC1A37F84D00BFBE17 /* Shoot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Shoot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EB82CB01A37F84D00BFBE17 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0EB82CB11A37F84D00BFBE17 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -630,6 +636,10 @@
 			children = (
 				0EB82CDD1A37FD5A00BFBE17 /* ShootTableViewCell.h */,
 				0EB82CDE1A37FD5A00BFBE17 /* ShootTableViewCell.m */,
+				0EB2F2CC1A80490100BC02A2 /* ShootDetailedTableViewCell.h */,
+				0EB2F2CD1A80490100BC02A2 /* ShootDetailedTableViewCell.m */,
+				0EB2F2CF1A80799700BC02A2 /* ShootCommentTableViewCell.h */,
+				0EB2F2D01A80799700BC02A2 /* ShootCommentTableViewCell.m */,
 				0E5C92F61A622721008AE026 /* MenuTableViewCell.h */,
 				0E5C92F71A622721008AE026 /* MenuTableViewCell.m */,
 				0E5C93021A63B06D008AE026 /* NotificationTableViewCell.h */,
@@ -892,12 +902,14 @@
 				0E5C93521A64B5F3008AE026 /* UIView+AnimationOptionsForCurve.m in Sources */,
 				0E5D46991A7978B900CEA8D6 /* MapCalloutView.m in Sources */,
 				0EB82CB51A37F84D00BFBE17 /* AppDelegate.m in Sources */,
+				0EB2F2D11A80799700BC02A2 /* ShootCommentTableViewCell.m in Sources */,
 				0E572EC51A6F70BF00BC040D /* MNCalendarViewWeekdayCell.m in Sources */,
 				0E5C93591A64B66E008AE026 /* RemoteObject.m in Sources */,
 				0E5C933B1A64B5F3008AE026 /* JSMessageSoundEffect.m in Sources */,
 				0EB82CDF1A37FD5A00BFBE17 /* ShootTableViewCell.m in Sources */,
 				0E5C92F31A621CE2008AE026 /* MenuViewController.m in Sources */,
 				0E5C930B1A63C951008AE026 /* UIViewHelper.m in Sources */,
+				0EB2F2CE1A80490100BC02A2 /* ShootDetailedTableViewCell.m in Sources */,
 				0E5C934F1A64B5F3008AE026 /* UIButton+JSMessagesView.m in Sources */,
 				0EB82CE41A3802E300BFBE17 /* ColorDefinition.m in Sources */,
 				0E572EC61A6F70BF00BC040D /* MNFastDateEnumeration.m in Sources */,

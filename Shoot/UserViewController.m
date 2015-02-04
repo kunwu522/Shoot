@@ -15,6 +15,7 @@
 #import "MNCalendarView.h"
 #import "MapView.h"
 #import "MapAnnotation.h"
+#import "UIViewHelper.h"
 
 @interface UserViewController () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, MNCalendarViewDelegate>
 
@@ -64,6 +65,7 @@ static CGFloat USERNAME_HEIGHT = 30;
 static CGFloat FOLLOWER_LABEL_HEIGHT = 18;
 static CGFloat WANTS_BUTTON_HEIGHT = 30;
 static CGFloat VIEW_BUTTON_HEIGHT = 35;
+static CGFloat BUTTON_SIZE = 15;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -192,15 +194,19 @@ static CGFloat VIEW_BUTTON_HEIGHT = 35;
     self.username.font = [UIFont fontWithName:@"ArialRoundedMTBold" size:14];
     [self.sectionHeaderView addSubview:self.username];
     
-    self.follow = [[UIButton alloc] initWithFrame:CGRectMake(self.username.frame.origin.x + self.username.frame.size.width + PADDING, self.username.frame.origin.y, followButtonWidth, self.username.frame.size.height)];
-    [self.follow setImage:[ImageUtil renderImage:[UIImage imageNamed:@"follow"] atSize:CGSizeMake(self.username.frame.size.height, self.username.frame.size.height)] forState:UIControlStateNormal];
+    self.follow = [[UIButton alloc] initWithFrame:CGRectMake(self.username.frame.origin.x + self.username.frame.size.width + PADDING + (followButtonWidth - self.username.frame.size.height)/2.0, self.username.frame.origin.y, self.username.frame.size.height, self.username.frame.size.height)];
+    [self.follow setBackgroundColor:[ColorDefinition blueColor]];
+    [self.follow setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"follow"] atSize:CGSizeMake(self.username.frame.size.height * 0.6, self.username.frame.size.height * 0.6)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
+    self.follow.layer.cornerRadius = self.follow.frame.size.height/2.0;
     [self.sectionHeaderView addSubview:self.follow];
     
-    self.message = [[UIButton alloc] initWithFrame:CGRectMake(PADDING, self.username.frame.origin.y, followButtonWidth, self.username.frame.size.height)];
-    [self.message setImage:[ImageUtil renderImage:[UIImage imageNamed:@"message"] atSize:CGSizeMake(self.username.frame.size.height, self.username.frame.size.height * 0.9)] forState:UIControlStateNormal];
+    self.message = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + (followButtonWidth - self.username.frame.size.height)/2.0, self.username.frame.origin.y, self.username.frame.size.height, self.username.frame.size.height)];
+    [self.message setBackgroundColor:[ColorDefinition greenColor]];
+    [self.message setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"message"] atSize:CGSizeMake(self.username.frame.size.height* 0.6, self.username.frame.size.height * 0.5)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
+    self.message.layer.cornerRadius = self.message.frame.size.height/2.0;
     [self.sectionHeaderView addSubview:self.message];
     
-    self.wants = [[UIButton alloc] initWithFrame:CGRectMake(PADDING, self.username.frame.origin.y + self.username.frame.size.height + PADDING, (self.sectionHeaderView.frame.size.width - PADDING * 2)/2.0, WANTS_BUTTON_HEIGHT)];
+    self.wants = [[UIButton alloc] initWithFrame:CGRectMake(PADDING, self.username.frame.origin.y + self.username.frame.size.height + PADDING * 2, (self.sectionHeaderView.frame.size.width - PADDING * 2)/2.0, WANTS_BUTTON_HEIGHT)];
     [self.wants setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor darkGrayColor]] forState:UIControlStateNormal];
     [self.wants setTitle:@" 10 wants" forState:UIControlStateNormal];
     self.wants.titleLabel.font = [UIFont boldSystemFontOfSize:12];
@@ -231,25 +237,25 @@ static CGFloat VIEW_BUTTON_HEIGHT = 35;
     self.gridViewButton = [[UIButton alloc] initWithFrame:CGRectMake(0, bottomLine.frame.size.height + bottomLine.frame.origin.y, buttonWidth, VIEW_BUTTON_HEIGHT)];
     self.gridViewButton.tag = GRID_VIEW_TAG;
     [self.gridViewButton addTarget:self action:@selector(viewChanged:)forControlEvents:UIControlEventTouchDown];
-    [self.gridViewButton setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"grid-icon"] atSize:CGSizeMake(20, 20)] color:[ColorDefinition darkRed]] forState:UIControlStateNormal];
+    [self.gridViewButton setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"grid-icon"] atSize:CGSizeMake(BUTTON_SIZE, BUTTON_SIZE)] color:[ColorDefinition darkRed]] forState:UIControlStateNormal];
     [self.sectionHeaderView addSubview:self.gridViewButton];
     
     self.listViewButton = [[UIButton alloc] initWithFrame:CGRectMake(buttonWidth, self.gridViewButton.frame.origin.y, buttonWidth, VIEW_BUTTON_HEIGHT)];
     self.listViewButton.tag = LIST_VIEW_TAG;
     [self.listViewButton addTarget:self action:@selector(viewChanged:)forControlEvents:UIControlEventTouchDown];
-    [self.listViewButton setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"list-icon"] atSize:CGSizeMake(20, 20)] color:[UIColor grayColor]] forState:UIControlStateNormal];
+    [self.listViewButton setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"list-icon"] atSize:CGSizeMake(BUTTON_SIZE, BUTTON_SIZE)] color:[UIColor grayColor]] forState:UIControlStateNormal];
     [self.sectionHeaderView addSubview:self.listViewButton];
     
     self.locationViewButton = [[UIButton alloc] initWithFrame:CGRectMake(buttonWidth * 2, self.gridViewButton.frame.origin.y, buttonWidth, VIEW_BUTTON_HEIGHT)];
     self.locationViewButton.tag = LOCATION_VIEW_TAG;
     [self.locationViewButton addTarget:self action:@selector(viewChanged:)forControlEvents:UIControlEventTouchDown];
-    [self.locationViewButton setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"location-icon"] atSize:CGSizeMake(20, 20)] color:[UIColor grayColor]] forState:UIControlStateNormal];
+    [self.locationViewButton setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"location-icon"] atSize:CGSizeMake(BUTTON_SIZE, BUTTON_SIZE)] color:[UIColor grayColor]] forState:UIControlStateNormal];
     [self.sectionHeaderView addSubview:self.locationViewButton];
     
     self.calendarViewButton = [[UIButton alloc] initWithFrame:CGRectMake(buttonWidth * 3, self.gridViewButton.frame.origin.y, buttonWidth, VIEW_BUTTON_HEIGHT)];
     self.calendarViewButton.tag = CALENDAR_VIEW_TAG;
     [self.calendarViewButton addTarget:self action:@selector(viewChanged:)forControlEvents:UIControlEventTouchDown];
-    [self.calendarViewButton setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"calendar-icon"] atSize:CGSizeMake(20, 20)] color:[UIColor grayColor]] forState:UIControlStateNormal];
+    [self.calendarViewButton setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"calendar-icon"] atSize:CGSizeMake(BUTTON_SIZE, BUTTON_SIZE)] color:[UIColor grayColor]] forState:UIControlStateNormal];
     [self.sectionHeaderView addSubview:self.calendarViewButton];
 }
 
@@ -298,11 +304,11 @@ static CGFloat VIEW_BUTTON_HEIGHT = 35;
     [self.imageCollectionView setBackgroundColor:[UIColor clearColor]];
     [self.imageCollectionView registerClass:[ImageCollectionViewCell class] forCellWithReuseIdentifier:IMAGE_CELL_REUSE_ID];
     [self.imageCollectionView registerClass:[ImageDetailedCollectionViewCell class] forCellWithReuseIdentifier:IMAGE_DETAILED_CELL_REUSE_ID];
-    [self applySameSizeConstraintToView:self.imageCollectionView superView:self.imagesCell];
+    [UIViewHelper applySameSizeConstraintToView:self.imageCollectionView superView:self.imagesCell];
     [self updateCollectionView];
     
     self.calendarView = [[MNCalendarView alloc] initWithFrame:self.view.bounds];
-    [self applySameSizeConstraintToView:self.calendarView superView:self.imagesCell];
+    [UIViewHelper applySameSizeConstraintToView:self.calendarView superView:self.imagesCell];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss zzz"];
     [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"]];
@@ -327,21 +333,7 @@ static CGFloat VIEW_BUTTON_HEIGHT = 35;
     return result;
 }
 
-- (void) applySameSizeConstraintToView:(UIView*)view superView:(UIView *)superView
-{
-    view.translatesAutoresizingMaskIntoConstraints = NO;
-    // initialize
-    [superView addSubview:view];
-    
-    NSLayoutConstraint *width =[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:0 toItem:superView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0];
-    NSLayoutConstraint *height =[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:0 toItem:superView attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0];
-    NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeTop multiplier:1.0f constant:0.f];
-    NSLayoutConstraint *leading = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeLeading  multiplier:1.0f constant:0.f];
-    [superView addConstraint:width];
-    [superView addConstraint:height];
-    [superView addConstraint:top];
-    [superView addConstraint:leading];
-}
+
 
 - (void) updateCollectionView
 {

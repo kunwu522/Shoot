@@ -123,7 +123,7 @@ static NSString * IMAGE_CELL_REUSE_ID = @"ImageCell";
     [self.mapView removeAnnotations:self.mapView.annotations];
     NSMutableSet *annotationCandidates = [[NSMutableSet alloc] initWithSet:self.annotationSet];
     
-    CGFloat minimalDiff = MIN(self.mapView.region.span.latitudeDelta/self.mapView.frame.size.width, self.mapView.region.span.longitudeDelta/self.mapView.frame.size.height) * ([MapAnnotationView getAnnotationSize] + 10);
+    CGFloat minimalDiff = MIN(self.mapView.region.span.latitudeDelta/self.mapView.frame.size.width, self.mapView.region.span.longitudeDelta/self.mapView.frame.size.height) * ([MapAnnotationView getAnnotationSize] + 50);
     
     while ([annotationCandidates count] > 0) {
         MapAnnotation *maxValue = nil;
@@ -201,12 +201,7 @@ static NSString * IMAGE_CELL_REUSE_ID = @"ImageCell";
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row % 4 == 1 || indexPath.row % 4 == 2) {
-        return CGSizeMake([self getCollectionViewCellHeight] * 2, [self getCollectionViewCellHeight]);
-    } else {
-        return CGSizeMake([self getCollectionViewCellHeight] + PADDING / 4.0 - .1, [self getCollectionViewCellHeight]);
-    }
-    
+    return CGSizeMake([self getCollectionViewCellHeight], [self getCollectionViewCellHeight]);
 }
 
 - (CGFloat) getCollectionViewCellHeight

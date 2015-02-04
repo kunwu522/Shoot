@@ -21,4 +21,6 @@
 
 + (UIImage *)imageWithImage:(UIImage *)image aspectScaleFitSize:(CGSize)size;
 
++ (UIColor *)averageColorOfImage:(UIImage *)image;
+
 @end

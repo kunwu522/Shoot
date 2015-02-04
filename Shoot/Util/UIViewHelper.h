@@ -15,4 +15,5 @@
 + (void) insertLeftPaddingToTextField:(UITextField *) textField width:(double)width;
 + (NSString *) getCountString:(NSNumber*) count;
 + (NSString *) formatTime:(NSDate *)time;
++ (void) applySameSizeConstraintToView:(UIView*)view superView:(UIView *)superView;
 @end

@@ -22,7 +22,6 @@
 @implementation NotificationViewController
 
 static CGFloat HEADER_HEIGHT = 50;
-static CGFloat PADDING = 10;
 static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
 
 - (void)viewDidLoad {
@@ -43,10 +42,6 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
     [searchBar setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"search-icon"] color:[UIColor whiteColor]] atSize:CGSizeMake(10, 10)] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
     [self.view addSubview:searchBar];
     
-//    UIImageView * compose = [[UIImageView alloc] initWithFrame:CGRectMake(self.view.frame.size.width - HEADER_HEIGHT + PADDING, PADDING, HEADER_HEIGHT - PADDING * 2, HEADER_HEIGHT - PADDING * 2)];
-//    compose.image = [ImageUtil colorImage:[UIImage imageNamed:@"compose"] color:[UIColor whiteColor]];
-//    [self.view addSubview:compose];
-    
     self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, HEADER_HEIGHT, self.view.frame.size.width, self.view.frame.size.height - HEADER_HEIGHT)];
     self.tableView.showsHorizontalScrollIndicator = false;
     self.tableView.showsVerticalScrollIndicator = false;
@@ -57,9 +52,9 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
     [self.tableView registerClass:[NotificationTableViewCell class] forCellReuseIdentifier:TABEL_CELL_REUSE_ID];
     [self.tableView reloadData];
     
-    UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - 25, self.view.frame.size.height - 70, 50, 50)];
+    UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - 20, self.view.frame.size.height - 60, 40, 40)];
     [self.view addSubview:addButton];
-    [addButton setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"compose"] color:[UIColor whiteColor]] atSize:CGSizeMake(25, 25)] forState:UIControlStateNormal];
+    [addButton setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"compose"] color:[UIColor whiteColor]] atSize:CGSizeMake(20, 20)] forState:UIControlStateNormal];
     addButton.backgroundColor = [ColorDefinition lightRed];
     [addButton.layer setBorderColor:[UIColor whiteColor].CGColor];
     addButton.layer.cornerRadius = addButton.frame.size.width/2.0;

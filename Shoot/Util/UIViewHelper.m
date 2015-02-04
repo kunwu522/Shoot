@@ -74,5 +74,20 @@
     return timeString;
 }
 
++ (void) applySameSizeConstraintToView:(UIView*)view superView:(UIView *)superView
+{
+    view.translatesAutoresizingMaskIntoConstraints = NO;
+    // initialize
+    [superView addSubview:view];
+    
+    NSLayoutConstraint *width =[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:0 toItem:superView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0];
+    NSLayoutConstraint *height =[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:0 toItem:superView attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0];
+    NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeTop multiplier:1.0f constant:0.f];
+    NSLayoutConstraint *leading = [NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeLeading  multiplier:1.0f constant:0.f];
+    [superView addConstraint:width];
+    [superView addConstraint:height];
+    [superView addConstraint:top];
+    [superView addConstraint:leading];
+}
 
 @end

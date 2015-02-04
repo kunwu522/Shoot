@@ -13,6 +13,7 @@
 #import "SWRevealViewController.h"
 #import "ImageUtil.h"
 #import "ColorDefinition.h"
+#import "BlurView.h"
 
 @interface MasterViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -38,7 +39,6 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
     }
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     self.managedObjectContext = appDelegate.managedObjectContext;
-    self.title = @"Shoot";
     self.tableView = [[UITableView alloc] initWithFrame:self.view.frame];
     [self.view addSubview:self.tableView];
     self.tableView.dataSource = self;
@@ -49,9 +49,9 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
     [self.tableView registerClass:[ShootTableViewCell class] forCellReuseIdentifier:TABEL_CELL_REUSE_ID];
     [self.tableView reloadData];
     
-    UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - 25, self.view.frame.size.height - 70, 50, 50)];
+    UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - 20, self.view.frame.size.height - 60, 40, 40)];
     [self.view addSubview:addButton];
-    [addButton setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"camera"] color:[UIColor whiteColor]] atSize:CGSizeMake(25, 25)] forState:UIControlStateNormal];
+    [addButton setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"camera"] color:[UIColor whiteColor]] atSize:CGSizeMake(20, 20)] forState:UIControlStateNormal];
     addButton.backgroundColor = [ColorDefinition lightRed];
     [addButton.layer setBorderColor:[UIColor whiteColor].CGColor];
     addButton.layer.cornerRadius = addButton.frame.size.width/2.0;
@@ -72,9 +72,8 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-        DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
-        [controller setDetailItem:object];
+        DetailViewController *controller = (DetailViewController *)[segue destinationViewController];
+        [controller setDetailItem:@"Some string"];
         controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
     }
@@ -100,6 +99,11 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return [ShootTableViewCell height];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self performSegueWithIdentifier:@"showDetail" sender:self];
 }
 
 - (void)configureCell:(ShootTableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {

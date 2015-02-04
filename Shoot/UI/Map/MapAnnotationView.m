@@ -31,7 +31,7 @@ static const CGFloat SIZE = 25;
         self.label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, SIZE, SIZE)];
         self.label.textColor = [UIColor whiteColor];
         self.label.textAlignment = NSTextAlignmentCenter;
-        self.label.font = [UIFont boldSystemFontOfSize:11];
+        self.label.font = [UIFont boldSystemFontOfSize:9];
         self.backgroundColor = [ColorDefinition lightRed];
         [self addSubview:self.label];
     }
