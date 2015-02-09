@@ -53,6 +53,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
     [self.view addSubview:addButton];
     [addButton setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"camera"] color:[UIColor whiteColor]] atSize:CGSizeMake(20, 20)] forState:UIControlStateNormal];
     addButton.backgroundColor = [ColorDefinition lightRed];
+    addButton.alpha = 0.5;
     [addButton.layer setBorderColor:[UIColor whiteColor].CGColor];
     addButton.layer.cornerRadius = addButton.frame.size.width/2.0;
     addButton.layer.borderWidth = 2;
@@ -71,7 +72,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
-        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+//        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         DetailViewController *controller = (DetailViewController *)[segue destinationViewController];
         [controller setDetailItem:@"Some string"];
         controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;

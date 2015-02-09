@@ -157,7 +157,7 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
         } else  if (yPos < 0 && self.tableView.contentOffset.y > 0) {
             [self.tableView setContentOffset:CGPointMake(self.tableView.contentOffset.x, MAX(self.tableView.contentOffset.y + yPos, 0))];
         }
-    } 
+    }
 }
 
 - (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section {
