@@ -96,6 +96,7 @@
     self.textView.userInteractionEnabled = YES;
     self.textView.font = [JSBubbleView font];
     self.textView.textColor = [UIColor blackColor];
+    self.textView.tintColor = [ColorDefinition lightRed];
     self.textView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:ALPHA];
     self.textView.keyboardAppearance = UIKeyboardAppearanceDefault;
     self.textView.keyboardType = UIKeyboardTypeDefault;

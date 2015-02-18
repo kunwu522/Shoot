@@ -41,6 +41,7 @@
 #import "JSMessageInputView.h"
 #import "UserViewController.h"
 #import "AppDelegate.h"
+#import "ColorDefinition.h"
 
 #define INPUT_HEIGHT 35.0f
 
@@ -98,6 +99,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [self.view addSubview:self.inputToolBarView];
     
     self.sendMessageProgressBar = [[UIProgressView alloc] initWithFrame:CGRectMake(self.inputToolBarView.frame.origin.x, self.inputToolBarView.frame.origin.y - 1, self.inputToolBarView.frame.size.width, self.inputToolBarView.frame.size.height)];
+    self.sendMessageProgressBar.tintColor = [ColorDefinition lightRed];
     [self.view addSubview:self.sendMessageProgressBar];
     self.sendMessageProgressBar.hidden = true;
 }

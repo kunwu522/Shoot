@@ -38,7 +38,7 @@
 #import "NSString+JSMessagesView.h"
 #import "UIImage+JSMessagesView.h"
 #import "ImageUtil.h"
-#import "WeedImage.h"
+#import "MessageImage.h"
 
 CGFloat const kJSAvatarSize = 50.0f;
 
@@ -315,7 +315,7 @@ CGFloat const kJSAvatarSize = 50.0f;
 + (CGSize)bubbleSizeForMessage:(Message *)message
 {
     if (message.image) {
-        WeedImage *image = (WeedImage *)message.image;
+        MessageImage *image = (MessageImage *)message.image;
 
         if ([image.width floatValue] < kMaxImageWidth) {
             return CGSizeMake(round([image.width floatValue]), round([image.height floatValue]));

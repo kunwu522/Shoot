@@ -7,21 +7,19 @@ include './library/NotificationHelper.php';
 class MessageDAO extends BaseDAO
 {
 	public function create($message, $notification_message) {
-		$query = 'INSERT INTO message (sender_id, receiver_id, message, type, related_shoot_id, related_user_id, image_metadata, time) VALUES ('
+		$query = 'INSERT INTO message (sender_id, receiver_id, message, type, related_shoot_id, image_metadata, time) VALUES ('
 			    . $message->get_sender_id() . ',' 
 			    . $message->get_receiver_id() . ',' 
 				. ($message->get_message() == NULL ? 'NULL' : ('\'' . mysql_real_escape_string($message->get_message()) . '\'')) . ',\'' 
 				. $message->get_type() . '\','
 				. ($message->get_related_shoot_id() == NULL ? 'NULL' : $message->get_related_shoot_id()) . ','  
-				. ($message->get_related_user_id() == NULL ? 'NULL' : $message->get_related_user_id()) . ',\''  
-				. ($message->get_image_metadata() == NULL ? 'NULL' : $message->get_image_metadata()) . '\', now())';
+				. ($message->get_image_metadata() == NULL ? 'NULL' : ('\'' . $message->get_image_metadata()) . '\'') . ', now())';
 		$id = $this->db_conn->insert($query);
 		
 		$unread_message_count_query = 'select count(*) as count from message where is_read = 0 and receiver_id = ' . $message->get_receiver_id();
 		$unread_message_count_query_result = $this->db_conn->query($unread_message_count_query);
 		if(mysql_num_rows($unread_message_count_query_result)) {
 			while($count_result = mysql_fetch_assoc($unread_message_count_query_result)) {
-				error_log($count_result['count']);
 				$this->sendNotificationToUser($message->get_receiver_id(), $notification_message, intval($count_result['count']));
 				break;
 			}
@@ -60,8 +58,12 @@ class MessageDAO extends BaseDAO
 				if ($message['image_metadata']) {
 					$image_metadata = json_decode($message['image_metadata']);
 				}
+				$related_shoot = null;
+				if($message['related_shoot_id']) {
+					$related_shoot = array('id' => $message['related_shoot_id']);
+				}
 				$is_read = $user_id == $message['sender_id'] ? 1 : $message['is_read'];
-				$messageObj = array('id' => $message['id'], 'sender_id' => $message['sender_id'], 'image_metadata' => $image_metadata, 'message' => $message['message'], 'time' => $message['time'], 'deleted' => $message['deleted'], 'type' => $message['type'], 'related_shoot_id' => $message['related_shoot_id'], 'is_read' => $is_read, 'participant_id' => $participant_id, 'participant_type' => $participant_type, 'participant_username' => $participant_username);
+				$messageObj = array('id' => $message['id'], 'sender_id' => $message['sender_id'], 'image_metadata' => $image_metadata, 'message' => $message['message'], 'time' => $message['time'], 'deleted' => $message['deleted'], 'type' => $message['type'], 'related_shoot' => $related_shoot, 'is_read' => $is_read, 'participant' => array('id' => $participant_id, 'user_type' => $participant_type, 'username' => $participant_username));
 				$messages[] = $messageObj;
 			}
 		}

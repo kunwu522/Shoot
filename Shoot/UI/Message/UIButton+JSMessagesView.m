@@ -34,7 +34,7 @@
 //    [sendButton setTitleShadowColor:titleShadow forState:UIControlStateHighlighted];
 //    sendButton.titleLabel.shadowOffset = CGSizeMake(0.0f, -1.0f);
     
-    [sendButton setTitleColor:[ColorDefinition darkRed] forState:UIControlStateNormal];
+    [sendButton setTitleColor:[ColorDefinition lightRed] forState:UIControlStateNormal];
     [sendButton setTitleColor:[ColorDefinition grayColor] forState:UIControlStateHighlighted];
     [sendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateDisabled];
     

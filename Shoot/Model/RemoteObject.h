@@ -10,7 +10,7 @@
 #import <CoreData/CoreData.h>
 
 
-@interface RemoteObject : NSObject
+@interface RemoteObject : NSManagedObject
 
 @property (nonatomic, retain) NSNumber * shouldBeDeleted;
 @property (nonatomic, retain) NSNumber * id;

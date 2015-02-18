@@ -7,20 +7,33 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "User.h"
 #import <CoreData/CoreData.h>
+
 #define ROOT_URL @"http://www.cannablaze.com/"
+
+@protocol NotificationDelegate <NSObject>
+@required
+- (void) updateBadgeCount:(NSInteger) badgeCount;
+@end
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
+
 @property (strong, nonatomic) UIWindow *window;
 
-@property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-@property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
-@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, retain) User * currentUser;
+@property NSInteger badgeCount;
+@property (nonatomic, weak) id<NotificationDelegate> notificationDelegate;
 
-- (void)saveContext;
-- (NSURL *)applicationDocumentsDirectory;
+- (void) decreaseBadgeCount:(NSInteger) decreaseBy;
+- (void) updateBadgeCount;
+- (void) populateCurrentUserFromCookie;
+- (void) clearLoginCookies;
+- (void)signoutFrom:(UIViewController *) sender;
 
-
++ (UIStatusBarStyle) getUIStatusBarStyle;
++ (UIStoryboard *) getMainStoryboard;
 @end
+
 

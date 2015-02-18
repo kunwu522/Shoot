@@ -7,6 +7,10 @@
 //
 
 #import "NotificationTableViewCell.h"
+#import "User.h"
+#import "ImageUtil.h"
+#import "UIViewHelper.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @implementation NotificationTableViewCell
 static double PADDING = 10;
@@ -49,6 +53,21 @@ static double TIME_LABEL_WIDTH = 70;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     return self;
+}
+
+- (void) decorateCellWithMessage:(Message *) message
+{
+    self.contentLabel.text = (message.image ? @"[image]" : message.message);
+    
+    NSString *nameLabel = [NSString stringWithFormat:@"@%@", message.participant.username];
+    [self.usernameLabel setText:nameLabel];
+    double maxWidth = self.frame.size.width - PADDING * 4 - AVATAR_SIZE - TIME_LABEL_WIDTH;
+    CGSize size = [self.usernameLabel sizeThatFits:CGSizeMake(maxWidth, AVATAR_SIZE/2.0)];
+    [self.usernameLabel setFrame:CGRectMake(self.usernameLabel.frame.origin.x, self.usernameLabel.frame.origin.y, MIN(size.width, maxWidth), AVATAR_SIZE/2.0)];
+    
+    self.timeLabel.text = self.timeLabel.text = [UIViewHelper formatTime:message.time];
+    
+    [self.userAvatar sd_setImageWithURL:[ImageUtil imageURLOfAvatar:message.participant.id] placeholderImage:[UIImage imageNamed:@"avatar.jpg"] options:SDWebImageHandleCookies];
 }
 
 - (void)awakeFromNib {

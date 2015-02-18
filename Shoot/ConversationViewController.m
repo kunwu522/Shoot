@@ -8,19 +8,21 @@
 
 #import "ConversationViewController.h"
 #import "AppDelegate.h"
+#import <SDWebImage/UIImageView+WebCache.h>
+#import <RestKit/RestKit.h>
 #import "NSString+JSMessagesView.h"
+#import "UserTableViewCell.h"
 #import "UserViewController.h"
 #import "ImageUtil.h"
-#import "Message.h"
-#import "SWRevealViewController.h"
-#import "ColorDefinition.h"
 
 @interface ConversationViewController ()
+
+@property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
 @property (nonatomic, strong) UIImage *participant_avatar;
 @property (nonatomic, strong) UIImage *current_user_avatar;
 
-@property (nonatomic, retain) NSArray *messages;
+@property (nonatomic, retain) NSMutableArray *users;
 
 @end
 
@@ -41,67 +43,178 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.delegate = self;
+    self.dataSource = self;
+    
     UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget: self action:@selector(doDoubleTap)];
     doubleTap.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:doubleTap];
-
-    self.delegate = self;
-    self.dataSource = self;
-    self.messages = @[[self getMessage], [self getMessageShort], [self getMessage], [self getMessageShort], [self getMessage], [self getMessageShort], [self getMessage], [self getMessage], [self getMessageShort]];
+    
     [self reloadView];
-    
-    NSInteger rows = [self.tableView numberOfRowsInSection:0];
-    
-    if(rows > 0) {
-        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rows - 1 inSection:0]
-                              atScrollPosition:UITableViewScrollPositionBottom
-                                      animated:YES];
-    }
 }
 
-- (Message *) getMessage
+- (void)doDoubleTap
 {
-    Message *message = [[Message alloc] init];
-    message.message = @"Well it is possible indeed, but the user will only see the error message when the field is cleared. Doesn't sound very useful. Also you can clear the input but I wouldn't be pleased with that if I just entered, say, 30 numbers.";
-    return message;
-}
-
-- (Message *) getMessageShort
-{
-    Message *message = [[Message alloc] init];
-    message.message = @"Doesn't sound very useful.";
-    return message;
-}
-
-- (void) viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [self tabBarController].tabBar.hidden = true;
-}
-
-- (void) viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    [self.view sendSubviewToBack:self.usernameTextField];
-    [self.view sendSubviewToBack:self.usernameList];
-    [self tabBarController].tabBar.hidden = false;
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void) reloadView {
-    self.inputToolBarView.hidden = false;
-    self.title = self.participant_username;
-    self.usernameTextField.hidden = true;
-    self.usernameList.hidden = true;
+    if ([self isNewConversation]) {
+//        self.title = @"New Message";
+//        self.users = [NSMutableArray array];
+//        [self.view bringSubviewToFront:self.usernameTextField];
+//        [self.view bringSubviewToFront:self.usernameList];
+//        [self.usernameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+//        [self.usernameTextField becomeFirstResponder];
+//        self.usernameList.tag = USER_LIST_TAG;
+//        self.usernameList.hidden = false;
+//        [self.usernameList setSeparatorInset:UIEdgeInsetsZero];
+//        self.usernameList.tableFooterView = [[UIView alloc] init];
+//        self.usernameList.delegate = self;
+//        [self.usernameList registerClass:[UserTableViewCell class] forCellReuseIdentifier:USER_TABLE_CELL_REUSE_ID];
+//        [self.usernameList setFrame:CGRectMake(self.usernameList.frame.origin.x, self.usernameList.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height - self.usernameList.frame.origin.y)];
+//        self.inputToolBarView.hidden = true;
+//        [self loadFollowingUsers];
+    } else {
+        //init fetch controller
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Message"];
+        NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
+        fetchRequest.sortDescriptors = @[descriptor];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"type = 'message' and (participant.id = %@)", self.participant.id]];
+        fetchRequest.predicate = predicate;
+        [fetchRequest setFetchBatchSize:10];
+        // Setup fetched results
+        self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:[RKManagedObjectStore defaultStore].mainQueueManagedObjectContext sectionNameKeyPath:nil cacheName:nil];
+        
+        [self.fetchedResultsController setDelegate:self];
+        
+        [[SDWebImageManager sharedManager] downloadImageWithURL:[ImageUtil imageURLOfAvatar:self.participant.id] options:(SDWebImageHandleCookies | SDWebImageRefreshCached) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+            if (finished) {
+                if (image) self.participant_avatar = image;
+                else self.participant_avatar = [UIImage imageNamed:@"avatar.jpg"];
+                if (self.current_user_avatar) {
+                    [self loadData];
+                    [self showConversation];
+                }
+            }
+        }];
+        
+        AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+        [[SDWebImageManager sharedManager] downloadImageWithURL:[ImageUtil imageURLOfAvatar:appDelegate.currentUser.id] options:(SDWebImageHandleCookies | SDWebImageRefreshCached) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+            if (finished) {
+                if (image) self.current_user_avatar = image;
+                else self.current_user_avatar = [UIImage imageNamed:@"avatar.jpg"];
+                if (self.participant_avatar) {
+                    [self loadData];
+                    [self showConversation];
+                }
+            }
+        }];
+        
+        self.inputToolBarView.hidden = false;
+        self.title = self.participant.username;
+        self.usernameTextField.hidden = true;
+        self.usernameList.hidden = true;
+    }
+}
+
+- (BOOL) isNewConversation
+{
+    return self.participant == nil;
+}
+
+#pragma mark - Username TextField delegate
+- (void)textFieldDidChange:(UITextField *)textField
+{
+    self.usernameList.hidden = false;
+    NSString *usernamePrefix = textField.text;
+    if ([usernamePrefix isEqualToString:@""]) {
+        [self loadFollowingUsers];
+    } else {
+        [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/getUsernamesByPrefix/%@", usernamePrefix] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+            [self updateUsernameListWithMappingResult:mappingResult];
+        } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+            RKLogError(@"Load getUsernamesByPrefix failed with error: %@", error);
+        }];
+    }
+}
+
+- (void) loadFollowingUsers
+{
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/getFollowingUsers/%@/%d",appDelegate.currentUser.id, 10] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        [self updateUsernameListWithMappingResult:mappingResult];
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        RKLogError(@"Load getFollowingUsers failed with error: %@", error);
+    }];
+}
+
+- (void) updateUsernameListWithMappingResult:(RKMappingResult *)mappingResult
+{
+    [self.users removeAllObjects];
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    for (User * user in mappingResult.array) {
+        if (![user.id isEqualToNumber:appDelegate.currentUser.id]) {
+            [self.users addObject:user];
+        }
+    }
+    [self.usernameList reloadData];
 }
 
 - (void) loadData {
-
+    NSError *error = nil;
+    BOOL fetchSuccessful = [self.fetchedResultsController performFetch:&error];
+    if (! fetchSuccessful) {
+        NSLog(@"Fetch Error: %@",error);
+    }
 }
 
 #pragma mark - Table view data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.messages count];
+    if (tableView.tag == USER_LIST_TAG) {
+        return self.users.count;
+    } else {
+        id sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
+        return [sectionInfo numberOfObjects];
+    }
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    if (tableView.tag == USER_LIST_TAG) {
+        return 1;
+    } else {
+        return [super numberOfSectionsInTableView:tableView];
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView.tag == USER_LIST_TAG) {
+        return USER_TABLE_VIEW_CELL_HEIGHT;
+    } else {
+        return [super tableView:tableView heightForRowAtIndexPath:indexPath];
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView.tag == USER_LIST_TAG) {
+        UserTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:USER_TABLE_CELL_REUSE_ID forIndexPath:indexPath];
+        if (cell) {
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            User *user = [self.users objectAtIndex:indexPath.row];
+            [cell decorateCellWithUser:user];
+            cell.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:0.4];
+        }
+        
+        return cell;
+    } else {
+        return [super tableView:tableView cellForRowAtIndexPath:indexPath];
+    }
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -113,14 +226,30 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
     }
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView.tag == USER_LIST_TAG) {
+        User *user = [self.users objectAtIndex:indexPath.row];
+        self.participant = user;
+        [self.usernameTextField resignFirstResponder];
+        [self reloadView];
+    }
+}
+
 #pragma mark - Messages view delegate
 - (void)sendPressed:(UIButton *)sender withText:(NSString *)text
 {
     self.sendButton.enabled = false;
-    Message *message = [[Message alloc] init];
-    message.id = [NSNumber numberWithInt:-1];
-    message.participant_id = self.participant_id;
-    message.participant_username = self.participant_username;
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    RKManagedObjectStore *objectStore = [[RKObjectManager sharedManager] managedObjectStore];
+    Message *message = [NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:objectStore.mainQueueManagedObjectContext];
+//    message.id = [NSNumber numberWithInt:-1];
+    if (message.objectID.isTemporaryID) {
+        NSLog(@"temp id");
+    }
+    
+    message.sender_id = appDelegate.currentUser.id;
+    message.participant = self.participant;
     message.time = [NSDate date];
     message.type = MESSAGE_TYPE;
     message.is_read = [NSNumber numberWithInt:1];//to make it marked as read locally
@@ -130,15 +259,52 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
 
 - (void)avatarTappedForIndexPath:(NSIndexPath *)indexPath
 {
-    
+    Message *message = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    UserViewController *controller = (UserViewController *)[[AppDelegate getMainStoryboard] instantiateViewControllerWithIdentifier:@"UserViewController"];
+//    [controller setUser_id:message.sender_id];
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void) createMessageOnServer:(Message *) message {
+    [self showProgressBar];
+    [[RKObjectManager sharedManager] postObject:message path:@"message/create" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        [self loadData];
+        [self finishSend];
+        [self hideProgressBar];
+        self.sendButton.enabled = true;
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        NSLog(@"Failure saving message: %@", error.localizedDescription);
+        [[[RKObjectManager sharedManager] managedObjectStore].mainQueueManagedObjectContext deleteObject:message];
+        self.sendButton.enabled = true;
+        [self hideProgressBar];
+    }];
 
 }
 
 - (void)selectedImage:(UIImage *)image
 {
+    UIImage *compressedImage = [ImageUtil imageWithCompress:image];
+    RKManagedObjectStore *objectStore = [[RKObjectManager sharedManager] managedObjectStore];
+    NSString *url = [NSString stringWithFormat:@"message/upload/%@", self.participant.id];
+    NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:nil method:RKRequestMethodPOST path:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        [formData appendPartWithFileData:UIImageJPEGRepresentation(compressedImage, 1.0f)
+                                    name:@"image"
+                                fileName:@"image.jpeg"
+                                mimeType:@"image/jpeg"];
+    }];
+    [self showProgressBar];
+    RKManagedObjectRequestOperation *operation = [[RKObjectManager sharedManager] managedObjectRequestOperationWithRequest:(NSURLRequest *)request
+                                                                                                      managedObjectContext:(NSManagedObjectContext *)objectStore.mainQueueManagedObjectContext
+                                                                                                                   success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+                                                                                                                       [self loadData];
+                                                                                                                       [self showConversation];
+                                                                                                                       [self hideProgressBar];
+                                                                                                                   } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+                                                                                                                       NSLog(@"Uploading image failed. url:%@, error: %@", url, error);
+                                                                                                                       [self hideProgressBar];
+                                                                                                                   }];
+    
+    [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation];
 }
 
 - (void) showProgressBar
@@ -164,9 +330,26 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
 
 - (JSBubbleMessageType)messageTypeForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.row % 2 == 1) {
+    Message *message = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    NSLog(@"%@", message.objectID);
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    if ([appDelegate.currentUser.id isEqualToNumber:message.sender_id]) {
         return JSBubbleMessageTypeOutgoing;
     } else {
+        if ([message.is_read intValue] == 0) {
+            [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"message/read/%@", message.id]  parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+                message.is_read = [NSNumber numberWithInt:1];
+                [[[RKObjectManager sharedManager] managedObjectStore].mainQueueManagedObjectContext refreshObject:message mergeChanges:YES];
+                NSError *error = nil;
+                BOOL successful = [message.managedObjectContext save:&error];
+                if (! successful) {
+                    NSLog(@"Save Error: %@",error);
+                }
+                [appDelegate decreaseBadgeCount:1];
+            } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+                RKLogError(@"Failed to call message/read due to error: %@", error);
+            }];
+        }
         return JSBubbleMessageTypeIncoming;
     }
 }
@@ -200,28 +383,25 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
 #pragma mark - Messages view data source
 - (Message *)textForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [self.messages objectAtIndex:indexPath.row];
+    Message *message = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    return message;
 }
 
 - (NSDate *)timestampForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [NSDate date];
+    Message *message = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    return message.time;
 }
 
 - (UIImage *)avatarImageForIncomingMessage
 {
     
-    return [UIImage imageNamed:@"image1.jpg"];
+    return self.participant_avatar;
 }
 
 - (UIImage *)avatarImageForOutgoingMessage
 {
-    return [UIImage imageNamed:@"image2.jpg"];
-}
-
-- (void)doDoubleTap
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
+    return self.current_user_avatar;
 }
 
 @end

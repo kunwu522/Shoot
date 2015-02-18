@@ -7,6 +7,8 @@
 //
 
 #import "ImageUtil.h"
+#import "User.h"
+#import "AppDelegate.h"
 
 #define MAX_UPLOAD_IMAGE_SIZE 2 * 1024 * 1024
 #define MAX_IMAGE_WIDTH 1500
@@ -221,6 +223,138 @@
                                 blue:((CGFloat)rgba[2])/255.0
                                alpha:((CGFloat)rgba[3])/255.0];
     }
+}
+
++ (NSURL *)imageURLOfAvatar:(NSNumber *)userId
+{
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/avatar_%@", [ImageUtil getBaseUrl], userId]];
+}
+
++ (NSURL *)imageURLOfShoot:(Shoot *)shoot
+{
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/shoot_%@_%@", [ImageUtil getBaseUrl], shoot.user.id, shoot.id]];
+}
+
++ (NSURL *)imageURLOfMessage:(Message *)message
+{
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/message_%@_%@?quality=100", [ImageUtil getBaseUrl], message.sender_id, message.id]];
+}
+
++ (NSString *)imageRelatedURLWithShoot:(Shoot *)shoot
+{
+    return [NSString stringWithFormat:@"shoot_%@_%@", shoot.user.id, shoot.id];
+}
+
++ (NSURL *)imageURLOfShootId:(NSNumber *)shootId userId:(NSNumber *)userId quality:(long)quality
+{
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/shoot_%@_%@?quality=%ld", [ImageUtil getBaseUrl], userId, shootId, quality]];
+}
+
++ (NSURL *)imageURLOfImageId:(NSString *)imageId quality:(NSNumber *)quality
+{
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@?quality=%@", [ImageUtil getBaseUrl], imageId, quality]];
+}
+
++ (UIImage *)imageWithImage:(UIImage*)originalImage scaledToSize:(CGSize)size
+{
+    CGFloat width = originalImage.size.width;
+    CGFloat height = originalImage.size.height;
+    
+    CGFloat ratio = width / height;
+    CGFloat frameRatio = size.width / size.height;
+    
+    CGSize newSize;
+    
+    if (size.width > size.height && frameRatio > ratio) {
+        newSize = CGSizeMake(size.width, size.width / ratio);
+    } else {
+        newSize = CGSizeMake(size.height * ratio, size.height);
+    }
+    
+    UIImage *newImage = nil;
+    UIGraphicsBeginImageContext( newSize );
+    [originalImage drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return newImage;
+}
+
++ (CGSize)translateSizeWithFrameSize:(CGSize)size frameSize:(CGSize)frameSize
+{
+    CGFloat ratio = size.width / size.height;
+    CGFloat frameRatio = frameSize.width / size.height;
+    
+    CGSize newSize;
+    if (frameSize.width > frameSize.height && frameRatio > ratio) {
+        newSize = CGSizeMake(frameSize.width, frameSize.width / ratio);
+    } else {
+        newSize = CGSizeMake(frameSize.height * ratio, frameSize.height);
+    }
+    
+    return newSize;
+}
+
++ (CGSize)sizeAspectScaleFitWithSize:(CGSize)originalSize frameSize:(CGSize)frameSize
+{
+    CGFloat ratio = fminf(frameSize.height / originalSize.height, frameSize.width / originalSize.width);
+    
+    CGFloat width = originalSize.width * ratio;
+    CGFloat heigth = originalSize.height * ratio;
+    
+    return CGSizeMake(width, heigth);
+}
+
++ (UIImage *)imageWithImage:(UIImage *)originalImage scaledToWidth:(CGFloat)width
+{
+    CGFloat originalWidth = originalImage.size.width;
+    CGFloat originalHeight = originalImage.size.height;
+    
+    CGFloat ratio = originalWidth / originalHeight;
+    
+    CGSize newSize = CGSizeMake(width, width / ratio);
+    
+    UIGraphicsBeginImageContext(newSize);
+    [originalImage drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return newImage;
+}
+
++ (UIImage *)imageWithImage:(UIImage *)originalImage scaledToHeight:(CGFloat)height
+{
+    if (!originalImage) {
+        return nil;
+    }
+    
+    CGFloat originalWidth = originalImage.size.width;
+    CGFloat originalHeight = originalImage.size.height;
+    CGFloat ratio = originalWidth / originalHeight;
+    
+    CGSize newSize = CGSizeMake(height * ratio, height);
+    
+    UIGraphicsBeginImageContext(newSize);
+    [originalImage drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return newImage;
+}
+
++ (UIImage *)imageWithImage:(UIImage *)originalImage scaledToRatio:(CGFloat)ratio
+{
+    if (!originalImage) {
+        return nil;
+    }
+    
+    CGSize newSize = CGSizeMake(originalImage.size.width * ratio, originalImage.size.height * ratio);
+    return [self imageWithImage:originalImage toSize:newSize];
+}
+
++ (NSString *) getBaseUrl
+{
+    return [ROOT_URL stringByAppendingString:@"image/query"];
 }
 
 @end

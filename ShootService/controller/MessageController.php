@@ -81,27 +81,26 @@ class MessageController extends Controller
 		$message = new Message();
 		$message->set_message($data->message);
 		$message->set_sender_id($currentUser_id);
-		$message->set_receiver_id($data->participant_id);
+		$message->set_receiver_id(2);
 		$message->set_time($data->time);
 		$message->set_type(Message::$MESSAGE_TYPE_MESSAGE);
 		return $message;
 	}
 	
 	private function check_para($data)
-	{		
-		$time = trim($data->time);
-		if ($time == '') {
-			return 'Input error, time is null';
+	{	
+		$participant = $data->participant;
+		if ($participant == null) {
+			return 'Input error, participant is null';
 		}
 		
-		$participant_id = trim($data->participant_id);
-		if ($participant_id == '') {
-			return 'Input error, participant_id is null';
+		$message = trim($data->message);
+		if ($message == '') {
+			return 'Input error, message is null';
 		}
 		
-		$type = trim($data->type);
-		if ($type == '') {
-			return 'Input error, type is null';
+		if ($participant->id == null) {
+			return 'Input error, participant.id is null';
 		}
 		return null;		
 	}

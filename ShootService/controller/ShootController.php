@@ -1,7 +1,7 @@
 <?php
 
-ini_set('display_errors',1);
-error_reporting(E_ALL);
+// ini_set('display_errors',1);
+// error_reporting(E_ALL);
 
 include './library/ImageHandler.php';
 
@@ -34,7 +34,7 @@ class ShootController extends Controller
 		$shoots = $this->shoot_dao->trends($current_user_id);
 		foreach ($shoots as &$shoot) {
 			$relationship = $this->user_dao->getRelationship($current_user_id, $shoot['user_id']);
-			$shoot['relationshipWithCurrentUser'] = $relationship;
+			$shoot['relationship_with_currentUser'] = $relationship;
 		}
 		return json_encode(array('shoots'=>$shoots));
 	}

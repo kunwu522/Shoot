@@ -7,11 +7,18 @@
 //
 
 #import "AppDelegate.h"
-#import "DetailViewController.h"
-#import "MasterViewController.h"
 #import "ColorDefinition.h"
 #import <RestKit/RestKit.h>
 #import <SDWebImage/UIImageView+WebCache.h>
+#import "UserDao.h"
+#import "ShootDao.h"
+#import "TagDao.h"
+#import "UserTagShootDao.h"
+#import "MessageDao.h"
+
+#define IS_OS_6_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.0)
+#define IS_OS_8_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
+
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -21,9 +28,225 @@
 
 @implementation AppDelegate
 
+static NSString * USER_ID_COOKIE_NAME = @"user_id";
+static NSString * USERNAME_COOKIE_NAME = @"username";
+static NSString * PASSWORD_COOKIE_NAME = @"password";
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+NSString * _deviceToken;
 
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    [self setupRestKit];
+    [self populateCurrentUserFromCookie];
+//    [[UIApplication sharedApplication] setStatusBarStyle:[AppDelegate getUIStatusBarStyle]];
+//    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
+//    [[UINavigationBar appearance] setBackgroundColor:[ColorDefinition greenColor]];
+//    [[UINavigationBar appearance] setTranslucent:YES];
+//    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+//    [[UINavigationBar appearance] setBarTintColor:[ColorDefinition greenColor]];
+    
+    // Let the device know we want to receive push notifications
+    UIUserNotificationSettings* notificationSettings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert) categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+    
+    self.badgeCount = [UIApplication sharedApplication].applicationIconBadgeNumber;
+    
+    
+    User *user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:[RKObjectManager sharedManager].managedObjectStore.mainQueueManagedObjectContext];
+    user.username = @"lv";
+    user.password = @"Lvlv1234";
+//    user.id = [NSNumber numberWithInt:-1];
+    
+    NSDictionary *param = @{@"cookie" : @NO};
+    [[RKObjectManager sharedManager] postObject:user path:@"user/login" parameters:param success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        [self populateCurrentUserFromCookie];
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        NSLog(@"Failure login: %@", error.localizedDescription);
+    }];
+    
+    return YES;
+}
+
+- (NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void) setCurrentUser:(User *)currentUser
+{
+    bool userSwitched = true;
+    if (_currentUser && currentUser) {
+        if ([_currentUser.id isEqualToNumber:currentUser.id]) {
+            userSwitched = false;
+        }
+    } else if (!_currentUser && !currentUser) {
+        userSwitched = false;
+    }
+    if (userSwitched) {
+        NSLog(@"user switched from %@ to %@", _currentUser.id, currentUser.id);
+    }
+    _currentUser = currentUser;
+    if (userSwitched) {
+        [self resetPersistentStores];
+        [self setupRestKit];
+    }
+}
+
+- (void)signoutFrom:(UIViewController *) sender
+{
+    if (_deviceToken) {
+        [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/unregisterDevice/%@", _deviceToken] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+            [self logoutLocally:sender];
+        } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+            RKLogError(@"unregisterDevice failed with error: %@", error);
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
+                                                                message:@"Failed to logout. Please try again later."
+                                                               delegate:self
+                                                      cancelButtonTitle:@"Ok"
+                                                      otherButtonTitles:nil, nil];
+            [alertView show];
+        }];
+    } else {
+        [self logoutLocally:sender];
+    }
+}
+
+- (void) logoutLocally:(UIViewController *) sender {
+    [self clearLoginCookies];
+    _currentUser = nil;
+    UIViewController *controller = [[AppDelegate getMainStoryboard] instantiateViewControllerWithIdentifier:@"WelcomeViewController"];
+    [sender presentViewController:controller animated:YES completion:nil];
+}
+
+- (void) populateCurrentUserFromCookie
+{
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+    if (!cookies || cookies.count == 0) {
+        return;
+    }
+    
+    NSDate *currentTime = [NSDate date];
+    NSHTTPCookie *userIdCookie = [self findCookieByName:USER_ID_COOKIE_NAME isExpiredBy:currentTime];
+    NSHTTPCookie *usernameCookie = [self findCookieByName:USERNAME_COOKIE_NAME isExpiredBy:currentTime];
+    NSHTTPCookie *passwordCookie = [self findCookieByName:PASSWORD_COOKIE_NAME isExpiredBy:currentTime];
+    
+    if (userIdCookie == nil || userIdCookie.value == nil || usernameCookie == nil || usernameCookie.value == nil || passwordCookie == nil || passwordCookie.value == nil) {
+        NSLog(@"There is no available cookie.");
+        return;
+    }
+    
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    f.numberStyle = NSNumberFormatterDecimalStyle;
+    User * user = [[UserDao sharedManager] findUserByIdLocally:[f numberFromString:userIdCookie.value]];
+    
+    user.id = [NSNumber numberWithInteger:[userIdCookie.value integerValue]];
+    user.username = usernameCookie.value;
+    user.password = passwordCookie.value;
+    self.currentUser = user;
+    [self registerDeviceToken];
+}
+
+- (NSHTTPCookie *) findCookieByName:(NSString *)name isExpiredBy:(NSDate *) time
+{
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+    if (!cookies || cookies.count == 0) {
+        return nil;
+    }
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:name] && [cookie.expiresDate compare:time] == NSOrderedDescending) {
+            return cookie;
+        }
+    }
+    return nil;
+}
+
+- (void) clearLoginCookies
+{
+    [self removeCookieByName:USER_ID_COOKIE_NAME];
+    [self removeCookieByName:USERNAME_COOKIE_NAME];
+    [self removeCookieByName:PASSWORD_COOKIE_NAME];
+}
+
+- (void) removeCookieByName:(NSString *)name
+{
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+    if (!cookies || cookies.count == 0) {
+        return;
+    }
+    for (NSHTTPCookie *cookie in cookies) {
+        if ([cookie.name isEqualToString:name]) {
+            [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
+        }
+    }
+}
+
+- (void) registerDeviceToken
+{
+    if (_deviceToken) {
+        [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/registerDevice/%@", _deviceToken] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+            RKLogError(@"registerDevice failed with error: %@", error);
+        }];
+    }
+}
+
+- (void) resetPersistentStores
+{
+    [[RKObjectManager sharedManager] cancelAllObjectRequestOperationsWithMethod:RKRequestMethodAny matchingPathPattern:@"/"];
+    
+    [[RKObjectManager sharedManager].operationQueue cancelAllOperations];
+    
+    [RKObjectManager sharedManager].managedObjectStore.managedObjectCache = nil;
+    // Clear our object manager
+    [RKObjectManager setSharedManager:nil];
+    
+    // Clear our default store
+    [RKManagedObjectStore setDefaultStore:nil];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    self.badgeCount = [UIApplication sharedApplication].applicationIconBadgeNumber;
+    [self updateBadgeCount];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    NSLog(@"received notification as %@", [userInfo objectForKey:@"aps"]);
+    NSString * badgeString = [NSString stringWithFormat:@"%@", [[userInfo objectForKey:@"aps"] objectForKey:@"badge"]];
+    self.badgeCount = MAX([badgeString integerValue], [UIApplication sharedApplication].applicationIconBadgeNumber);
+    [self updateBadgeCount];
+}
+
+- (void) decreaseBadgeCount:(NSInteger) decreaseBy
+{
+    self.badgeCount = self.badgeCount - decreaseBy;
+    [self updateBadgeCount];
+}
+
+- (void) updateBadgeCount
+{
+    if (self.notificationDelegate) {
+        [self.notificationDelegate updateBadgeCount:self.badgeCount];
+    }
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:self.badgeCount];
+}
+
+
+- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
+{
+    _deviceToken = [[[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSLog(@"Got device token as %@", _deviceToken);
+}
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
+{
+    NSLog(@"Failed to get token, error: %@", error);
+}
+
+- (void) setupRestKit {
+    
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:ROOT_URL]];
     
     //[[manager HTTPClient] setDefaultHeader:@"X-Parse-REST-API-Key" value:@"your key"];
@@ -40,10 +263,33 @@
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
     manager.managedObjectStore = managedObjectStore;
     
-    RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
-    [errorMapping addPropertyMapping:[RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"errorMessage"]];
+    [[UserTagShootDao sharedManager] registerRestKitMapping];
+    [[UserDao sharedManager] registerRestKitMapping];
+    [[ShootDao sharedManager] registerRestKitMapping];
+    [[TagDao sharedManager] registerRestKitMapping];
+    [[MessageDao sharedManager] registerRestKitMapping];
     
-    return YES;
+    /**
+     Complete Core Data stack initialization
+     */
+    if (!managedObjectStore.persistentStoreCoordinator) {
+        [managedObjectStore createPersistentStoreCoordinator];
+    }
+    
+    
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@Shoot.sqlite", (self.currentUser.id == nil?@"":self.currentUser.id)]];
+    
+    NSError *error;
+    
+    NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil withConfiguration:nil options:@{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES} error:&error];
+    
+    NSAssert(persistentStore, @"Failed to add persistent store with error: %@", error);
+    
+    [managedObjectStore createManagedObjectContexts];
+    
+    // Configure a managed object cache to ensure we do not create duplicate objects
+    managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.persistentStoreManagedObjectContext];
+    
 }
 
 + (UIStatusBarStyle) getUIStatusBarStyle
@@ -51,119 +297,9 @@
     return UIStatusBarStyleLightContent;
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application {
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application {
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    // Saves changes in the application's managed object context before the application terminates.
-    [self saveContext];
-}
-
-#pragma mark - Split view
-
-- (BOOL)splitViewController:(UISplitViewController *)splitViewController collapseSecondaryViewController:(UIViewController *)secondaryViewController ontoPrimaryViewController:(UIViewController *)primaryViewController {
-    if ([secondaryViewController isKindOfClass:[UINavigationController class]] && [[(UINavigationController *)secondaryViewController topViewController] isKindOfClass:[DetailViewController class]] && ([(DetailViewController *)[(UINavigationController *)secondaryViewController topViewController] detailItem] == nil)) {
-        // Return YES to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
-#pragma mark - Core Data stack
-
-@synthesize managedObjectContext = _managedObjectContext;
-@synthesize managedObjectModel = _managedObjectModel;
-@synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
-
-- (NSURL *)applicationDocumentsDirectory {
-    // The directory the application uses to store the Core Data store file. This code uses a directory named "com.shoot.Shoot" in the application's documents directory.
-    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-}
-
-- (NSManagedObjectModel *)managedObjectModel {
-    // The managed object model for the application. It is a fatal error for the application not to be able to find and load its model.
-    if (_managedObjectModel != nil) {
-        return _managedObjectModel;
-    }
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"Shoot" withExtension:@"momd"];
-    _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-    return _managedObjectModel;
-}
-
-- (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
-    // The persistent store coordinator for the application. This implementation creates and return a coordinator, having added the store for the application to it.
-    if (_persistentStoreCoordinator != nil) {
-        return _persistentStoreCoordinator;
-    }
-    
-    // Create the coordinator and store
-    
-    _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"Shoot.sqlite"];
-    NSError *error = nil;
-    NSString *failureReason = @"There was an error creating or loading the application's saved data.";
-    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
-        // Report any error we got.
-        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-        dict[NSLocalizedDescriptionKey] = @"Failed to initialize the application's saved data";
-        dict[NSLocalizedFailureReasonErrorKey] = failureReason;
-        dict[NSUnderlyingErrorKey] = error;
-        error = [NSError errorWithDomain:@"YOUR_ERROR_DOMAIN" code:9999 userInfo:dict];
-        // Replace this with code to handle the error appropriately.
-        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        abort();
-    }
-    
-    return _persistentStoreCoordinator;
-}
-
-
-- (NSManagedObjectContext *)managedObjectContext {
-    // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.)
-    if (_managedObjectContext != nil) {
-        return _managedObjectContext;
-    }
-    
-    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
-    if (!coordinator) {
-        return nil;
-    }
-    _managedObjectContext = [[NSManagedObjectContext alloc] init];
-    [_managedObjectContext setPersistentStoreCoordinator:coordinator];
-    return _managedObjectContext;
-}
-
-#pragma mark - Core Data Saving support
-
-- (void)saveContext {
-    NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
-    if (managedObjectContext != nil) {
-        NSError *error = nil;
-        if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
-        }
-    }
++ (UIStoryboard *) getMainStoryboard
+{
+    return [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
 }
 
 @end

@@ -8,7 +8,7 @@ class ShootDAO extends BaseDAO
 	public static $TYPE_WANT = 1;
 	
 	public function queryById($user_id, $shoot_id) {
-		$query = "SELECT shoot.*, user_tag_shoot.*, user.user_type, user.username from shoot LEFT JOIN user_tag_shoot ON shoot.id = user_tag_shoot.shoot_id AND user_tag_shoot.user_id = $user_id LEFT JOIN tag ON tag.id = user_tag_shoot.tag_id LEFT JOIN user ON user_tag_shoot.user_id = user.id where shoot.id = $shoot_id";
+		$query = "SELECT shoot.*, user_tag_shoot.*, tag.tag, user.user_type, user.username from shoot LEFT JOIN user_tag_shoot ON shoot.id = user_tag_shoot.shoot_id AND user_tag_shoot.user_id = $user_id LEFT JOIN tag ON tag.id = user_tag_shoot.tag_id LEFT JOIN user ON user_tag_shoot.user_id = user.id where shoot.id = $shoot_id";
 		
 		$result = $this->db_conn->query($query);
 		if(mysql_num_rows($result)) {
@@ -35,7 +35,7 @@ class ShootDAO extends BaseDAO
 		} 
 		if(is_null($filter)) {
 			$isFeed = true;
-			$filter = "LEFT JOIN follow ON follow.followee_uid = user_tag_shoot.user_id where (follower_uid = $currentUser_id and datediff(now(), user_tag_shoot.time) < 7)";
+			$filter = "LEFT JOIN follow ON follow.followee_uid = user_tag_shoot.user_id where (follower_uid = $currentUser_id and datediff(now(), user_tag_shoot.time) < 27)";
 		} 
 		
 		$query = "SELECT shoot.*, tag.tag, user_tag_shoot.*, user.user_type, user.username FROM shoot LEFT JOIN user_tag_shoot ON shoot.id = user_tag_shoot.shoot_id LEFT JOIN tag on tag.id = user_tag_shoot.tag_id LEFT JOIN user ON user_tag_shoot.user_id = user.id $filter";
@@ -58,7 +58,7 @@ class ShootDAO extends BaseDAO
 	
 	public function trends($currentUser_id) {
 
-		$query = "SELECT shoot.*, user_tag_shoot.*, user.user_type, user.username, shoot.want_count + like_count as score FROM shoot LEFT JOIN user_tag_shoot ON shoot.id = user_tag_shoot.shoot_id LEFT JOIN user ON user_tag_shoot.user_id = user.id LEFT JOIN tag on user_tag_shoot.tag_id = tag.id group by shoot.id ORDER BY score DESC limit 20;";
+		$query = "SELECT shoot.*, user_tag_shoot.*, tag.tag, user.user_type, user.username, shoot.want_count + like_count as score FROM shoot LEFT JOIN user_tag_shoot ON shoot.id = user_tag_shoot.shoot_id LEFT JOIN user ON user_tag_shoot.user_id = user.id LEFT JOIN tag on user_tag_shoot.tag_id = tag.id group by shoot.id ORDER BY score DESC limit 20;";
 
 		$result = $this->db_conn->query($query);
 

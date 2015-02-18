@@ -1,9 +1,77 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="Test1.xcdatamodel" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
-    <entity name="Event">
-        <attribute name="timeStamp" optional="YES" attributeType="Date"/>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14D72i" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Message" representedClassName="Message" parentEntity="RemoteObject" syncable="YES">
+        <attribute name="is_read" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sender_id" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MessageImage" inverseName="message" inverseEntity="MessageImage" syncable="YES"/>
+        <relationship name="participant" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="messages" inverseEntity="User" syncable="YES"/>
+        <relationship name="related_shoot" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Shoot" syncable="YES"/>
+    </entity>
+    <entity name="MessageImage" representedClassName="MessageImage" syncable="YES">
+        <attribute name="height" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="image_id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="width" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="message" maxCount="1" deletionRule="Nullify" destinationEntity="Message" inverseName="image" inverseEntity="Message" syncable="YES"/>
+    </entity>
+    <entity name="RemoteObject" representedClassName="RemoteObject" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="Integer 64" indexed="YES" syncable="YES"/>
+        <attribute name="shouldBeDeleted" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
+    </entity>
+    <entity name="Shoot" representedClassName="Shoot" parentEntity="RemoteObject" syncable="YES">
+        <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="if_cur_user_have_it" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="if_cur_user_like_it" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="if_cur_user_want_it" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="like_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="score" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="want_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="shoots" inverseEntity="User" syncable="YES"/>
+        <relationship name="user_tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UserTagShoot" inverseName="shoot" inverseEntity="UserTagShoot" syncable="YES"/>
+    </entity>
+    <entity name="Tag" representedClassName="Tag" parentEntity="RemoteObject" syncable="YES">
+        <attribute name="have_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="tag" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="want_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="tag_users" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UserTagShoot" inverseName="tag" inverseEntity="UserTagShoot" syncable="YES"/>
+    </entity>
+    <entity name="User" representedClassName="User" parentEntity="RemoteObject" syncable="YES">
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="follower_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="following_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="has_avatar" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="password" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="relationship_with_currentUser" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="user_type" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="followers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="followings" inverseEntity="User" syncable="YES"/>
+        <relationship name="followings" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="followers" inverseEntity="User" syncable="YES"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Message" inverseName="participant" inverseEntity="Message" syncable="YES"/>
+        <relationship name="shoot_tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UserTagShoot" inverseName="user" inverseEntity="UserTagShoot" syncable="YES"/>
+        <relationship name="shoots" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Shoot" inverseName="user" inverseEntity="Shoot" syncable="YES"/>
+    </entity>
+    <entity name="UserTagShoot" representedClassName="UserTagShoot" syncable="YES">
+        <attribute name="latitude" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longtitude" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="shoot_id" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="shouldBeDeleted" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="tag_id" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="user_id" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <relationship name="shoot" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Shoot" inverseName="user_tags" inverseEntity="Shoot" syncable="YES"/>
+        <relationship name="tag" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tag" inverseName="tag_users" inverseEntity="Tag" syncable="YES"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="shoot_tags" inverseEntity="User" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Event" positionX="261" positionY="189" width="128" height="60"/>
+        <element name="Message" positionX="-297" positionY="-81" width="128" height="148"/>
+        <element name="MessageImage" positionX="-126" positionY="-85" width="128" height="103"/>
+        <element name="RemoteObject" positionX="-216" positionY="-1080" width="128" height="88"/>
+        <element name="Shoot" positionX="-765" positionY="153" width="128" height="178"/>
+        <element name="Tag" positionX="-45" positionY="288" width="128" height="103"/>
+        <element name="User" positionX="70" positionY="-24" width="128" height="240"/>
+        <element name="UserTagShoot" positionX="304" positionY="152" width="128" height="208"/>
     </elements>
 </model>
