@@ -81,7 +81,7 @@ class MessageController extends Controller
 		$message = new Message();
 		$message->set_message($data->message);
 		$message->set_sender_id($currentUser_id);
-		$message->set_receiver_id(2);
+		$message->set_receiver_id($data->$participant->id);
 		$message->set_time($data->time);
 		$message->set_type(Message::$MESSAGE_TYPE_MESSAGE);
 		return $message;
