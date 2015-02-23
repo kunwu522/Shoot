@@ -11,6 +11,9 @@
 
 @implementation Message
 
+@dynamic messageID;
+@dynamic time;
+@dynamic shouldBeDeleted;
 @dynamic is_read;
 @dynamic message;
 @dynamic sender_id;

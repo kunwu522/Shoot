@@ -15,6 +15,9 @@
 
 @implementation User
 
+@dynamic userID;
+@dynamic time;
+@dynamic shouldBeDeleted;
 @dynamic email;
 @dynamic password;
 @dynamic follower_count;

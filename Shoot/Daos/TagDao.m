@@ -23,8 +23,14 @@
                                                                @"have_count" : @"have_count",
                                                                @"want_count" : @"want_count"
                                                                }];
+    NSDictionary *parentObjectMapping = @{
+                                          @"id" : @"tagID",
+                                          @"time" : @"time",
+                                          @"deleted" : @"shouldBeDeleted"
+                                          };
+    [responseMapping addAttributeMappingsFromDictionary:parentObjectMapping];
     
-    responseMapping.identificationAttributes = @[ @"id" ];
+    responseMapping.identificationAttributes = @[ @"tagID" ];
     return responseMapping;
 }
 

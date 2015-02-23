@@ -232,17 +232,17 @@
 
 + (NSURL *)imageURLOfShoot:(Shoot *)shoot
 {
-    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/shoot_%@_%@", [ImageUtil getBaseUrl], shoot.user.id, shoot.id]];
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/shoot_%@_%@", [ImageUtil getBaseUrl], shoot.user.userID, shoot.shootID]];
 }
 
 + (NSURL *)imageURLOfMessage:(Message *)message
 {
-    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/message_%@_%@?quality=100", [ImageUtil getBaseUrl], message.sender_id, message.id]];
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/message_%@_%@?quality=100", [ImageUtil getBaseUrl], message.sender_id, message.messageID]];
 }
 
 + (NSString *)imageRelatedURLWithShoot:(Shoot *)shoot
 {
-    return [NSString stringWithFormat:@"shoot_%@_%@", shoot.user.id, shoot.id];
+    return [NSString stringWithFormat:@"shoot_%@_%@", shoot.user.userID, shoot.shootID];
 }
 
 + (NSURL *)imageURLOfShootId:(NSNumber *)shootId userId:(NSNumber *)userId quality:(long)quality

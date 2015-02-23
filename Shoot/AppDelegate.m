@@ -38,6 +38,23 @@ NSString * _deviceToken;
 {
     [self setupRestKit];
     [self populateCurrentUserFromCookie];
+    
+    if (!self.currentUser || !self.currentUser.userID) {
+        User *user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:[RKObjectManager sharedManager].managedObjectStore.mainQueueManagedObjectContext];
+        user.username = @"lv";
+        user.userID = [NSNumber numberWithInt:1];
+        user.password = @"Lvlv1234";
+        NSDictionary *param = @{@"cookie" : @NO};
+        [[RKObjectManager sharedManager] postObject:user path:@"user/login" parameters:param success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+            self.currentUser = [mappingResult firstObject];
+        } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+            NSLog(@"Failure login: %@", error.localizedDescription);
+        }];
+    } else {
+        NSLog(@"%@", self.currentUser.userID);
+    }
+    
+    
 //    [[UIApplication sharedApplication] setStatusBarStyle:[AppDelegate getUIStatusBarStyle]];
 //    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
 //    [[UINavigationBar appearance] setBackgroundColor:[ColorDefinition greenColor]];
@@ -53,17 +70,7 @@ NSString * _deviceToken;
     self.badgeCount = [UIApplication sharedApplication].applicationIconBadgeNumber;
     
     
-    User *user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:[RKObjectManager sharedManager].managedObjectStore.mainQueueManagedObjectContext];
-    user.username = @"lv";
-    user.password = @"Lvlv1234";
-//    user.id = [NSNumber numberWithInt:-1];
-    
-    NSDictionary *param = @{@"cookie" : @NO};
-    [[RKObjectManager sharedManager] postObject:user path:@"user/login" parameters:param success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        [self populateCurrentUserFromCookie];
-    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        NSLog(@"Failure login: %@", error.localizedDescription);
-    }];
+
     
     return YES;
 }
@@ -77,14 +84,14 @@ NSString * _deviceToken;
 {
     bool userSwitched = true;
     if (_currentUser && currentUser) {
-        if ([_currentUser.id isEqualToNumber:currentUser.id]) {
+        if ([_currentUser.userID isEqualToNumber:currentUser.userID]) {
             userSwitched = false;
         }
     } else if (!_currentUser && !currentUser) {
         userSwitched = false;
     }
     if (userSwitched) {
-        NSLog(@"user switched from %@ to %@", _currentUser.id, currentUser.id);
+        NSLog(@"user switched from %@ to %@", _currentUser.userID, currentUser.userID);
     }
     _currentUser = currentUser;
     if (userSwitched) {
@@ -138,13 +145,12 @@ NSString * _deviceToken;
     
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     f.numberStyle = NSNumberFormatterDecimalStyle;
-    User * user = [[UserDao sharedManager] findUserByIdLocally:[f numberFromString:userIdCookie.value]];
+    User * user = [[UserDao new] findUserByIdLocally:[f numberFromString:userIdCookie.value]];
+    if (user && user.userID) {
+        self.currentUser = user;
+        [self registerDeviceToken];
+    }
     
-    user.id = [NSNumber numberWithInteger:[userIdCookie.value integerValue]];
-    user.username = usernameCookie.value;
-    user.password = passwordCookie.value;
-    self.currentUser = user;
-    [self registerDeviceToken];
 }
 
 - (NSHTTPCookie *) findCookieByName:(NSString *)name isExpiredBy:(NSDate *) time
@@ -263,11 +269,11 @@ NSString * _deviceToken;
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
     manager.managedObjectStore = managedObjectStore;
     
-    [[UserTagShootDao sharedManager] registerRestKitMapping];
-    [[UserDao sharedManager] registerRestKitMapping];
-    [[ShootDao sharedManager] registerRestKitMapping];
-    [[TagDao sharedManager] registerRestKitMapping];
-    [[MessageDao sharedManager] registerRestKitMapping];
+    [[UserTagShootDao new] registerRestKitMapping];
+    [[UserDao new] registerRestKitMapping];
+    [[ShootDao new] registerRestKitMapping];
+    [[TagDao new] registerRestKitMapping];
+    [[MessageDao new] registerRestKitMapping];
     
     /**
      Complete Core Data stack initialization
@@ -277,7 +283,7 @@ NSString * _deviceToken;
     }
     
     
-    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@Shoot.sqlite", (self.currentUser.id == nil?@"":self.currentUser.id)]];
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@Shoot.sqlite", (self.currentUser.userID == nil?@"":self.currentUser.userID)]];
     
     NSError *error;
     

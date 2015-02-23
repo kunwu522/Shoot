@@ -94,6 +94,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     
     UIButton *takePhotoButton = [[UIButton alloc] initWithFrame:CGRectMake(LEFT_PADDING, self.inputToolBarView.frame.size.height / 2.0 - TAKE_PHOTO_BUTTON_WIDTH/2.0, TAKE_PHOTO_BUTTON_WIDTH, TAKE_PHOTO_BUTTON_WIDTH)];
     [takePhotoButton setBackgroundImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
+    [takePhotoButton addTarget:self action:@selector(takePhotoPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.inputToolBarView setTakePhotoButton:takePhotoButton];
     
     [self.view addSubview:self.inputToolBarView];

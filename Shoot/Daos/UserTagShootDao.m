@@ -29,9 +29,9 @@
                                                                @"type" : @"type"
                                                                }];
     
-    [responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"user" toKeyPath:@"user" withMapping:[[UserDao sharedManager] getResponseMapping]]];
-    [responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"shoot" toKeyPath:@"shoot" withMapping:[[ShootDao sharedManager] getResponseMapping]]];
-    [responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"tag" toKeyPath:@"tag" withMapping:[[TagDao sharedManager] getResponseMapping]]];
+    [responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"user" toKeyPath:@"user" withMapping:[[UserDao new] getResponseMapping]]];
+    [responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"shoot" toKeyPath:@"shoot" withMapping:[[ShootDao new] getResponseMapping]]];
+    [responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"tag" toKeyPath:@"tag" withMapping:[[TagDao new] getResponseMapping]]];
     
     responseMapping.identificationAttributes = @[ @"user_id", @"shoot_id", @"tag_id" ];
     return responseMapping;

@@ -67,7 +67,7 @@ static double TIME_LABEL_WIDTH = 70;
     
     self.timeLabel.text = self.timeLabel.text = [UIViewHelper formatTime:message.time];
     
-    [self.userAvatar sd_setImageWithURL:[ImageUtil imageURLOfAvatar:message.participant.id] placeholderImage:[UIImage imageNamed:@"avatar.jpg"] options:SDWebImageHandleCookies];
+    [self.userAvatar sd_setImageWithURL:[ImageUtil imageURLOfAvatar:message.participant.userID] placeholderImage:[UIImage imageNamed:@"avatar.jpg"] options:SDWebImageHandleCookies];
 }
 
 - (void)awakeFromNib {

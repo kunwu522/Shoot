@@ -13,8 +13,8 @@
 
 @interface ConversationViewController : JSMessagesViewController <JSMessagesViewDelegate, JSMessagesViewDataSource, NSFetchedResultsControllerDelegate>
 
-@property (nonatomic, strong) User * participant;
-@property (nonatomic, weak) IBOutlet UITextField *usernameTextField;
-@property (nonatomic, weak) IBOutlet UITableView *usernameList;
+@property (nonatomic, retain) User * participant;
+@property (nonatomic, retain) UITextField *usernameTextField;
+@property (nonatomic, retain) UITableView *usernameList;
 
 @end

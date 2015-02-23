@@ -10,6 +10,8 @@
 
 @implementation Tag
 
+@dynamic tagID;
+@dynamic time;
 @dynamic have_count;
 @dynamic tag;
 @dynamic want_count;

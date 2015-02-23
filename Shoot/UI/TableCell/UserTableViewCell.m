@@ -74,10 +74,8 @@ const double STORE_TYPE_ICON_SIZE = 15;
 
 - (void)decorateCellWithUser:(User *)user subtitle:(NSString*) subtitle {
     self.user = user;
-    [self.userAvatar sd_setImageWithURL:[ImageUtil imageURLOfAvatar:user.id] placeholderImage:[UIImage imageNamed:@"avatar.jpg"] options:SDWebImageHandleCookies];
-    NSString *nameLabel;
-    nameLabel = user.username;
-    self.usernameLabel.text = nameLabel;
+    [self.userAvatar sd_setImageWithURL:[ImageUtil imageURLOfAvatar:user.userID] placeholderImage:[UIImage imageNamed:@"avatar.jpg"] options:SDWebImageHandleCookies];
+    self.usernameLabel.text = [NSString stringWithFormat:@"@%@", user.username];
     self.addressLabel.text = subtitle;
     [self.storeTypeIcon setUserType:user.user_type];
     
@@ -105,7 +103,7 @@ const double STORE_TYPE_ICON_SIZE = 15;
         self.addressLabel.hidden = false;
     }
     
-    [self.followButton setUser_id:user.id relationshipWithCurrentUser:user.relationship_with_currentUser];
+    [self.followButton setUser_id:user.userID relationshipWithCurrentUser:user.relationship_with_currentUser];
 }
 
 

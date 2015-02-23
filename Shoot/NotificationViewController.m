@@ -80,7 +80,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
     [self.tableView registerClass:[NotificationTableViewCell class] forCellReuseIdentifier:TABEL_CELL_REUSE_ID];
     
     self.notificationFetchedResultsController = [self createNSFetchedResultsController:NOTIFICATION_TYPE sectionNameKeyPath:nil];
-    self.messageFetchedResultsController = [self createNSFetchedResultsController:MESSAGE_TYPE sectionNameKeyPath:@"participant.id"];
+    self.messageFetchedResultsController = [self createNSFetchedResultsController:MESSAGE_TYPE sectionNameKeyPath:@"participant.userID"];
     
     CGFloat customRefreshControlHeight = 50.0f;
     CGFloat customRefreshControlWidth = 100.0;
@@ -96,6 +96,8 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
     UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - 20, self.view.frame.size.height - 60, 40, 40)];
     [self.view addSubview:addButton];
     [addButton setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"compose"] color:[UIColor whiteColor]] atSize:CGSizeMake(20, 20)] forState:UIControlStateNormal];
+    [addButton addTarget:self action:@selector(startNewConversation:)forControlEvents:UIControlEventTouchDown];
+
     addButton.backgroundColor = [ColorDefinition lightRed];
     [addButton.layer setBorderColor:[UIColor whiteColor].CGColor];
     addButton.layer.cornerRadius = addButton.frame.size.width/2.0;
@@ -104,6 +106,11 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
     addButton.layer.shadowRadius = 10;
     addButton.layer.shadowColor = [UIColor whiteColor].CGColor;
     addButton.layer.shadowOpacity = 1.0;
+}
+
+-(void)startNewConversation:(id)sender {
+    ConversationViewController * viewController = [[ConversationViewController alloc] initWithNibName:nil bundle:nil];
+    [self presentViewController:viewController animated:YES completion:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -313,7 +320,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     if (([message.type isEqualToString:NOTIFICATION_TYPE])) {
         if ([message.is_read intValue] == 0) {
-            [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"message/read/%@", message.id]  parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+            [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"message/read/%@", message.messageID]  parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
                 message.is_read = [NSNumber numberWithInt:1];
                 [[[RKObjectManager sharedManager] managedObjectStore].mainQueueManagedObjectContext refreshObject:message mergeChanges:YES];
                 NSError *error = nil;

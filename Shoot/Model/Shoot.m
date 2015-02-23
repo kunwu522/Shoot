@@ -12,6 +12,9 @@
 
 @implementation Shoot
 
+@dynamic shootID;
+@dynamic time;
+@dynamic shouldBeDeleted;
 @dynamic content;
 @dynamic like_count;
 @dynamic want_count;

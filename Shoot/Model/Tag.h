@@ -8,12 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "RemoteObject.h"
 
 @class UserTagShoot;
 
-@interface Tag : RemoteObject
+@interface Tag : NSManagedObject
 
+@property (nonatomic, retain) NSNumber * tagID;
+@property (nonatomic, retain) NSDate * time;
 @property (nonatomic, retain) NSNumber * have_count;
 @property (nonatomic, retain) NSString * tag;
 @property (nonatomic, retain) NSNumber * want_count;

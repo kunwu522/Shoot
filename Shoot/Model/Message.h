@@ -7,15 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RemoteObject.h"
+#import <RestKit/CoreData.h>
 
 #define NOTIFICATION_TYPE @"notification"
 #define MESSAGE_TYPE @"message"
 
 @class MessageImage, Shoot, User;
 
-@interface Message : RemoteObject
+@interface Message : NSManagedObject
 
+@property (nonatomic, retain) NSNumber * messageID;
+@property (nonatomic, retain) NSDate * time;
+@property (nonatomic, retain) NSNumber * shouldBeDeleted;
 @property (nonatomic, retain) NSNumber * is_read;
 @property (nonatomic, retain) NSString * message;
 @property (nonatomic, retain) NSNumber * sender_id;

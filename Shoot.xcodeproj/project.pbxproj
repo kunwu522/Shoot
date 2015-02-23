@@ -84,7 +84,6 @@
 		0E5C93501A64B5F3008AE026 /* UIColor+JSMessagesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C93321A64B5F3008AE026 /* UIColor+JSMessagesView.m */; };
 		0E5C93511A64B5F3008AE026 /* UIImage+JSMessagesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C93341A64B5F3008AE026 /* UIImage+JSMessagesView.m */; };
 		0E5C93521A64B5F3008AE026 /* UIView+AnimationOptionsForCurve.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C93361A64B5F3008AE026 /* UIView+AnimationOptionsForCurve.m */; };
-		0E5C93591A64B66E008AE026 /* RemoteObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C93571A64B66E008AE026 /* RemoteObject.m */; };
 		0E5C935F1A64B929008AE026 /* ConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5C935E1A64B929008AE026 /* ConversationViewController.m */; };
 		0E5D46891A78AFCD00CEA8D6 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E5D46881A78AFCD00CEA8D6 /* MapKit.framework */; };
 		0E5D46931A78CD3800CEA8D6 /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5D46921A78CD3800CEA8D6 /* MapAnnotation.m */; };
@@ -311,8 +310,6 @@
 		0E5C93341A64B5F3008AE026 /* UIImage+JSMessagesView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+JSMessagesView.m"; sourceTree = "<group>"; };
 		0E5C93351A64B5F3008AE026 /* UIView+AnimationOptionsForCurve.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+AnimationOptionsForCurve.h"; sourceTree = "<group>"; };
 		0E5C93361A64B5F3008AE026 /* UIView+AnimationOptionsForCurve.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+AnimationOptionsForCurve.m"; sourceTree = "<group>"; };
-		0E5C93561A64B66E008AE026 /* RemoteObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RemoteObject.h; path = Model/RemoteObject.h; sourceTree = "<group>"; };
-		0E5C93571A64B66E008AE026 /* RemoteObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RemoteObject.m; path = Model/RemoteObject.m; sourceTree = "<group>"; };
 		0E5C935D1A64B929008AE026 /* ConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewController.h; sourceTree = "<group>"; };
 		0E5C935E1A64B929008AE026 /* ConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewController.m; sourceTree = "<group>"; };
 		0E5D46881A78AFCD00CEA8D6 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
@@ -546,8 +543,6 @@
 			isa = PBXGroup;
 			children = (
 				0EB82CB61A37F84D00BFBE17 /* Shoot.xcdatamodeld */,
-				0E5C93561A64B66E008AE026 /* RemoteObject.h */,
-				0E5C93571A64B66E008AE026 /* RemoteObject.m */,
 				0EFD5B241A8D532B00658FC0 /* Tag.h */,
 				0EFD5B251A8D532B00658FC0 /* Tag.m */,
 				0EFD5B1B1A8D532A00658FC0 /* UserTagShoot.h */,
@@ -994,7 +989,6 @@
 				0EB2F2D11A80799700BC02A2 /* ShootCommentTableViewCell.m in Sources */,
 				0EFD5B1D1A8D532A00658FC0 /* UserTagShoot.m in Sources */,
 				0E572EC51A6F70BF00BC040D /* MNCalendarViewWeekdayCell.m in Sources */,
-				0E5C93591A64B66E008AE026 /* RemoteObject.m in Sources */,
 				0E16A7F71A913EE10096B41D /* User.m in Sources */,
 				0E5C933B1A64B5F3008AE026 /* JSMessageSoundEffect.m in Sources */,
 				0EB82CDF1A37FD5A00BFBE17 /* ShootTableViewCell.m in Sources */,

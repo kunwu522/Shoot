@@ -14,6 +14,7 @@
 #import "UserTableViewCell.h"
 #import "UserViewController.h"
 #import "ImageUtil.h"
+#import "ColorDefinition.h"
 
 @interface ConversationViewController ()
 
@@ -30,6 +31,8 @@
 
 const NSInteger USER_LIST_TAG = 1;
 static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
+static CGFloat USERNAME_TEXT_FIELD_HEIGHT = 25;
+static CGFloat PADDING = 5;
 
 #pragma mark - Initialization
 - (UIButton *)sendButton
@@ -60,27 +63,44 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
 
 - (void) reloadView {
     if ([self isNewConversation]) {
-//        self.title = @"New Message";
-//        self.users = [NSMutableArray array];
-//        [self.view bringSubviewToFront:self.usernameTextField];
-//        [self.view bringSubviewToFront:self.usernameList];
-//        [self.usernameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-//        [self.usernameTextField becomeFirstResponder];
-//        self.usernameList.tag = USER_LIST_TAG;
-//        self.usernameList.hidden = false;
-//        [self.usernameList setSeparatorInset:UIEdgeInsetsZero];
-//        self.usernameList.tableFooterView = [[UIView alloc] init];
-//        self.usernameList.delegate = self;
-//        [self.usernameList registerClass:[UserTableViewCell class] forCellReuseIdentifier:USER_TABLE_CELL_REUSE_ID];
-//        [self.usernameList setFrame:CGRectMake(self.usernameList.frame.origin.x, self.usernameList.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height - self.usernameList.frame.origin.y)];
-//        self.inputToolBarView.hidden = true;
-//        [self loadFollowingUsers];
+        self.title = @"New Message";
+        self.users = [NSMutableArray array];
+        
+        self.usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(PADDING, PADDING, self.view.frame.size.width - PADDING * 2, USERNAME_TEXT_FIELD_HEIGHT)];
+        [self.view addSubview:self.usernameTextField];
+        [self.usernameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+        self.usernameTextField.font = [UIFont systemFontOfSize:12];
+        self.usernameTextField.placeholder = @"Username";
+        [self.usernameTextField setTintColor:[ColorDefinition lightRed]];
+        [self.usernameTextField becomeFirstResponder];
+        UIView *paddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, 20)];
+        self.usernameTextField.leftView = paddingView;
+        self.usernameTextField.leftViewMode = UITextFieldViewModeAlways;
+        [self.usernameTextField setTextColor:[UIColor darkGrayColor]];
+        self.usernameTextField.layer.borderWidth = 0.5;
+        self.usernameTextField.layer.cornerRadius = 5;
+        self.usernameTextField.layer.borderColor = [UIColor lightGrayColor].CGColor;
+        
+        CGFloat usernameListY = self.usernameTextField.frame.origin.y + self.usernameTextField.frame.size.height + PADDING;
+        self.usernameList = [[UITableView alloc] initWithFrame:CGRectMake(0, usernameListY, self.view.frame.size.width, self.view.frame.size.height - usernameListY)];
+        self.usernameList.dataSource = self;
+        self.usernameList.delegate = self;
+        [self.view addSubview:self.usernameList];
+        self.usernameList.tag = USER_LIST_TAG;
+        self.usernameList.hidden = false;
+        [self.usernameList setSeparatorInset:UIEdgeInsetsZero];
+        self.usernameList.tableFooterView = [[UIView alloc] init];
+        self.usernameList.delegate = self;
+        [self.usernameList registerClass:[UserTableViewCell class] forCellReuseIdentifier:USER_TABLE_CELL_REUSE_ID];
+        [self.usernameList setFrame:CGRectMake(self.usernameList.frame.origin.x, self.usernameList.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height - self.usernameList.frame.origin.y)];
+        self.inputToolBarView.hidden = true;
+        [self loadFollowingUsers];
     } else {
         //init fetch controller
         NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Message"];
         NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
         fetchRequest.sortDescriptors = @[descriptor];
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"type = 'message' and (participant.id = %@)", self.participant.id]];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"type = 'message' and (participant.userID = %@)", self.participant.userID]];
         fetchRequest.predicate = predicate;
         [fetchRequest setFetchBatchSize:10];
         // Setup fetched results
@@ -88,7 +108,7 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
         
         [self.fetchedResultsController setDelegate:self];
         
-        [[SDWebImageManager sharedManager] downloadImageWithURL:[ImageUtil imageURLOfAvatar:self.participant.id] options:(SDWebImageHandleCookies | SDWebImageRefreshCached) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        [[SDWebImageManager sharedManager] downloadImageWithURL:[ImageUtil imageURLOfAvatar:self.participant.userID] options:(SDWebImageHandleCookies | SDWebImageRefreshCached) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
         } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
             if (finished) {
                 if (image) self.participant_avatar = image;
@@ -101,7 +121,7 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
         }];
         
         AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-        [[SDWebImageManager sharedManager] downloadImageWithURL:[ImageUtil imageURLOfAvatar:appDelegate.currentUser.id] options:(SDWebImageHandleCookies | SDWebImageRefreshCached) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        [[SDWebImageManager sharedManager] downloadImageWithURL:[ImageUtil imageURLOfAvatar:appDelegate.currentUser.userID] options:(SDWebImageHandleCookies | SDWebImageRefreshCached) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
         } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
             if (finished) {
                 if (image) self.current_user_avatar = image;
@@ -144,7 +164,7 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
 - (void) loadFollowingUsers
 {
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-    [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/getFollowingUsers/%@/%d",appDelegate.currentUser.id, 10] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+    [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/getFollowingUsers/%@/%d",appDelegate.currentUser.userID, 10] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         [self updateUsernameListWithMappingResult:mappingResult];
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         RKLogError(@"Load getFollowingUsers failed with error: %@", error);
@@ -156,7 +176,7 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
     [self.users removeAllObjects];
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     for (User * user in mappingResult.array) {
-        if (![user.id isEqualToNumber:appDelegate.currentUser.id]) {
+        if (![user.userID isEqualToNumber:appDelegate.currentUser.userID]) {
             [self.users addObject:user];
         }
     }
@@ -248,7 +268,7 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
         NSLog(@"temp id");
     }
     
-    message.sender_id = appDelegate.currentUser.id;
+    message.sender_id = appDelegate.currentUser.userID;
     message.participant = self.participant;
     message.time = [NSDate date];
     message.type = MESSAGE_TYPE;
@@ -285,7 +305,7 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
 {
     UIImage *compressedImage = [ImageUtil imageWithCompress:image];
     RKManagedObjectStore *objectStore = [[RKObjectManager sharedManager] managedObjectStore];
-    NSString *url = [NSString stringWithFormat:@"message/upload/%@", self.participant.id];
+    NSString *url = [NSString stringWithFormat:@"message/upload/%@", self.participant.userID];
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:nil method:RKRequestMethodPOST path:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:UIImageJPEGRepresentation(compressedImage, 1.0f)
                                     name:@"image"
@@ -331,13 +351,12 @@ static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
 - (JSBubbleMessageType)messageTypeForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     Message *message = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    NSLog(@"%@", message.objectID);
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-    if ([appDelegate.currentUser.id isEqualToNumber:message.sender_id]) {
+    if ([appDelegate.currentUser.userID isEqualToNumber:message.sender_id]) {
         return JSBubbleMessageTypeOutgoing;
     } else {
         if ([message.is_read intValue] == 0) {
-            [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"message/read/%@", message.id]  parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+            [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"message/read/%@", message.messageID]  parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
                 message.is_read = [NSNumber numberWithInt:1];
                 [[[RKObjectManager sharedManager] managedObjectStore].mainQueueManagedObjectContext refreshObject:message mergeChanges:YES];
                 NSError *error = nil;

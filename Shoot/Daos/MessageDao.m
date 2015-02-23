@@ -29,18 +29,23 @@ static NSString * UPLOAD_URL = @"message/upload/:receiver_id";
     RKEntityMapping *messageMapping = [RKEntityMapping mappingForEntityForName:NSStringFromClass([Message class]) inManagedObjectStore:[RKObjectManager sharedManager].managedObjectStore];
     
     NSDictionary *messageObjectMapping = @{
-                                           @"id" : @"id",
-                                           @"time" : @"time",
-                                           @"deleted" : @"shouldBeDeleted",
+                                           
                                            @"sender_id" : @"sender_id",
                                            @"message" : @"message",
                                            @"type" : @"type",
                                            @"is_read" : @"is_read"
                                            };
     
+    NSDictionary *parentObjectMapping = @{
+                                          @"id" : @"messageID",
+                                          @"time" : @"time",
+                                          @"deleted" : @"shouldBeDeleted"
+                                          };
+    [messageMapping addAttributeMappingsFromDictionary:parentObjectMapping];
+    
     [messageMapping addAttributeMappingsFromDictionary:messageObjectMapping];
     
-    [messageMapping setIdentificationAttributes: @[ @"id" ]];
+    [messageMapping setIdentificationAttributes: @[ @"messageID" ]];
     
     RKEntityMapping *messageImageMapping = [RKEntityMapping mappingForEntityForName:NSStringFromClass([MessageImage class]) inManagedObjectStore:[RKObjectManager sharedManager].managedObjectStore];
     [messageImageMapping addAttributeMappingsFromDictionary:@{@"id" : @"image_id", @"width" : @"width", @"height" : @"height"}];
@@ -49,9 +54,9 @@ static NSString * UPLOAD_URL = @"message/upload/:receiver_id";
     
     [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"image_metadata" toKeyPath:@"image" withMapping:messageImageMapping]];
     
-    [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"participant" toKeyPath:@"participant" withMapping:[[UserDao sharedManager] getResponseMapping]]];
+    [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"participant" toKeyPath:@"participant" withMapping:[[UserDao new] getResponseMapping]]];
     
-    [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"related_shoot" toKeyPath:@"related_shoot" withMapping:[[ShootDao sharedManager] getResponseMapping]]];
+    [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"related_shoot" toKeyPath:@"related_shoot" withMapping:[[ShootDao new] getResponseMapping]]];
     
     return messageMapping;
 }
@@ -59,6 +64,7 @@ static NSString * UPLOAD_URL = @"message/upload/:receiver_id";
 - (void) registerRestKitMapping
 {
     [super registerRestKitMapping];
+    
     RKObjectManager * manager = [RKObjectManager sharedManager];
     RKEntityMapping * messageMapping = [self getResponseMapping];
     

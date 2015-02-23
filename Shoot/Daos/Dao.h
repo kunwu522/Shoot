@@ -12,7 +12,7 @@
 
 @interface Dao : NSObject
 
-+ (instancetype)sharedManager;
+//+ (instancetype)sharedManager;
 
 - (RKObjectMapping *) getErrorResponseMapping;
 - (RKEntityMapping *) createResponseMapping;

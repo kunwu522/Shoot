@@ -9,14 +9,16 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import <MapKit/MapKit.h>
-#import "RemoteObject.h"
 
 #define USER_TYPE_USER @"User"
 
 @class Message, Shoot, User, UserTagShoot;
 
-@interface User : RemoteObject
+@interface User : NSManagedObject
 
+@property (nonatomic, retain) NSNumber * userID;
+@property (nonatomic, retain) NSDate * time;
+@property (nonatomic, retain) NSNumber * shouldBeDeleted;
 @property (nonatomic, retain) NSString * email;
 @property (nonatomic, retain) NSString * password;
 @property (nonatomic, retain) NSNumber * follower_count;

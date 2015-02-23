@@ -160,7 +160,7 @@ CGFloat const kJSAvatarSize = 50.0f;
     CGRect bubbleFrame = [self bubbleFrame];
     UIImage *bgImage = (self.selectedToShowCopyMenu) ? [self bubbleImageHighlighted] : [self bubbleImage];
     [bgImage drawInRect:bubbleFrame blendMode:kCGBlendModeNormal alpha:0.8];
-    NSNumber * message_id = message.id;
+    NSNumber * message_id = message.messageID;
     if (message.image) {
         UIImage * missingImage = [ImageUtil colorImage:[UIImage imageNamed:@"Oops.png"] color:[UIColor whiteColor]];
         double height = missingImage.size.height;

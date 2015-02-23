@@ -37,12 +37,9 @@ static const NSString * UPDATE_PASSWORD_URL = @"user/updatePassword/:password";
     RKEntityMapping * responseMapping = [RKEntityMapping mappingForEntityForName:NSStringFromClass([User class]) inManagedObjectStore:[RKObjectManager sharedManager].managedObjectStore];
     
     NSDictionary * userMappingDictionary = @{
-                                             @"id" : @"id",
-                                             @"time" : @"time",
                                              @"username" : @"username",
                                              @"password" : @"password",
                                              @"email" : @"email",
-                                             @"deleted" : @"shouldBeDeleted",
                                              @"follower_count" : @"follower_count",
                                              @"following_count" : @"following_count",
                                              @"relationship_with_currentUser" : @"relationship_with_currentUser",
@@ -50,11 +47,17 @@ static const NSString * UPDATE_PASSWORD_URL = @"user/updatePassword/:password";
                                              @"has_avatar" : @"has_avatar"
                                              };
     
+    NSDictionary *parentObjectMapping = @{
+                                          @"id" : @"userID",
+                                          @"time" : @"time",
+                                          @"deleted" : @"shouldBeDeleted"
+                                          };
+    [responseMapping addAttributeMappingsFromDictionary:parentObjectMapping];
+    
     NSMutableDictionary * userResponseMappingDictionary = [NSMutableDictionary dictionaryWithDictionary:userMappingDictionary];
 
-    responseMapping.identificationAttributes = @[ @"id" ];
+    responseMapping.identificationAttributes = @[ @"userID" ];
 
-    [userResponseMappingDictionary setValue:@"shouldBeDeleted" forKey:@"deleted"];
     [responseMapping addAttributeMappingsFromDictionary:userResponseMappingDictionary];
 //    [self.responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"followers" toKeyPath:@"followers" withMapping:self.responseMapping]];
     
@@ -129,7 +132,7 @@ static const NSString * UPDATE_PASSWORD_URL = @"user/updatePassword/:password";
 
 - (User *) findUserByIdLocally:(NSNumber *)id {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"User"];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"id = %ld", [id longValue]]];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"userID == %ld", [id longValue]]];
     fetchRequest.predicate = predicate;
     [fetchRequest setFetchLimit:1];
     NSError *error = nil;

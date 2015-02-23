@@ -17,9 +17,6 @@
     RKEntityMapping * responseMapping = [RKEntityMapping mappingForEntityForName:NSStringFromClass([Shoot class]) inManagedObjectStore:[RKObjectManager sharedManager].managedObjectStore];
     
     [responseMapping addAttributeMappingsFromDictionary:@{
-                                                      @"id" : @"id",
-                                                      @"time" : @"time",
-                                                      @"deleted" : @"shouldBeDeleted",
                                                       @"content" : @"content",
                                                       @"want_count" : @"want_count",
                                                       @"like_count" : @"like_count",
@@ -30,9 +27,16 @@
                                                       @"if_cur_user_have_it" : @"if_cur_user_have_it",
                                                       }];
     
-    responseMapping.identificationAttributes = @[ @"id" ];
+    NSDictionary *parentObjectMapping = @{
+                                          @"id" : @"shootID",
+                                          @"time" : @"time",
+                                          @"deleted" : @"shouldBeDeleted"
+                                          };
+    [responseMapping addAttributeMappingsFromDictionary:parentObjectMapping];
     
-    [responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"user" toKeyPath:@"user" withMapping:[[UserDao sharedManager] getResponseMapping]]];
+    responseMapping.identificationAttributes = @[ @"shootID" ];
+    
+    [responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"user" toKeyPath:@"user" withMapping:[[UserDao new] getResponseMapping]]];
     return responseMapping;
 }
 
