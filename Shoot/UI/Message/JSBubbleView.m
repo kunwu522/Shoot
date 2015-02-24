@@ -39,6 +39,7 @@
 #import "UIImage+JSMessagesView.h"
 #import "ImageUtil.h"
 #import "MessageImage.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 CGFloat const kJSAvatarSize = 50.0f;
 
@@ -84,9 +85,11 @@ CGFloat const kJSAvatarSize = 50.0f;
         [self setup];
         self.type = bubleType;
         self.style = bubbleStyle;
-        self.imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, rect.size.width, rect.size.height)];
+        self.imageView = [[ShootImageView alloc] initWithFrame:CGRectMake(0, 0, rect.size.width, rect.size.height)];
         [self addSubview:self.imageView];
         self.imageView.hidden = true;
+        self.imageView.allowFullScreenDisplay = true;
+        self.imageView.shouldDownloadForFullScreenDisplay = false;
         UITapGestureRecognizer *singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
         [self addGestureRecognizer:singleFingerTap];
     }
@@ -162,20 +165,44 @@ CGFloat const kJSAvatarSize = 50.0f;
     [bgImage drawInRect:bubbleFrame blendMode:kCGBlendModeNormal alpha:0.8];
     NSNumber * message_id = message.messageID;
     if (message.image) {
-        UIImage * missingImage = [ImageUtil colorImage:[UIImage imageNamed:@"Oops.png"] color:[UIColor whiteColor]];
-        double height = missingImage.size.height;
-        double width = missingImage.size.width;
-        if (width > bubbleFrame.size.width) {
-            height = bubbleFrame.size.width/width*height;
-            width = bubbleFrame.size.width;
-        }
-        if (height > bubbleFrame.size.height) {
-            width = bubbleFrame.size.height/height*width;
-            height = bubbleFrame.size.height;
-        }
+        [[SDWebImageManager sharedManager] downloadImageWithURL:[ImageUtil imageURLOfMessage:message]
+                                                        options:(SDWebImageHandleCookies)
+                                                       progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                                                           
+                                                       } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                           if (finished && [message_id isEqualToNumber:message.messageID]/*check if cell has been reused*/) {
+                                                               if (image) {
+                                                                   UIImage *originalImg = [ImageUtil renderImage:image atSize:bubbleFrame.size];
+                                                                   [self.imageView setFrame:bubbleFrame];
+                                                                   self.imageView.hidden = false;
+                                                                   [self.imageView setAlpha:0.0];
+                                                                   self.imageView.image = image;
+                                                                   UIImage *maskImgOrg = [JSBubbleView bubbleImageMaskForType:self.type style:self.style];
+                                                                   
+                                                                   UIImage *maskImg = [ImageUtil renderImage:maskImgOrg atSize:originalImg.size];
+                                                                   
+                                                                   [[self maskImage:originalImg withMask:maskImg] drawInRect:bubbleFrame blendMode:kCGBlendModeNormal alpha:1.0];
+                                                               } else {
+                                                                   UIImage * missingImage = [ImageUtil colorImage:[UIImage imageNamed:@"Oops.png"] color:[UIColor whiteColor]];
+                                                                   double height = missingImage.size.height;
+                                                                   double width = missingImage.size.width;
+                                                                   if (width > bubbleFrame.size.width) {
+                                                                       height = bubbleFrame.size.width/width*height;
+                                                                       width = bubbleFrame.size.width;
+                                                                   }
+                                                                   if (height > bubbleFrame.size.height) {
+                                                                       width = bubbleFrame.size.height/height*width;
+                                                                       height = bubbleFrame.size.height;
+                                                                   }
+                                                                   
+                                                                   [missingImage drawInRect:CGRectMake(bubbleFrame.origin.x + bubbleFrame.size.width/2.0 - width/2.0, bubbleFrame.origin.y + bubbleFrame.size.height/2.0 - height/2.0, width, height) blendMode:kCGBlendModeNormal alpha:1.0];
+                                                                   
+                                                               }
+                                                               
+                                                               [self setNeedsDisplay];
+                                                           }
+                                                       }];
         
-        [missingImage drawInRect:CGRectMake(bubbleFrame.origin.x + bubbleFrame.size.width/2.0 - width/2.0, bubbleFrame.origin.y + bubbleFrame.size.height/2.0 - height/2.0, width, height) blendMode:kCGBlendModeNormal alpha:1.0];
-        [self setNeedsDisplay];
         
         
     } else {
@@ -221,7 +248,7 @@ CGFloat const kJSAvatarSize = 50.0f;
 
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
     if (!self.imageView.hidden) {
-//        [self.imageView displayFullScreen];
+        [self.imageView displayFullScreen];
     }
 }
 

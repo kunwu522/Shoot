@@ -42,10 +42,13 @@
 #import "UserViewController.h"
 #import "AppDelegate.h"
 #import "ColorDefinition.h"
+#import "ShootActionSheet.h"
+#import "CropImageViewController.h"
+#import "ImageUtil.h"
 
 #define INPUT_HEIGHT 35.0f
 
-@interface JSMessagesViewController () <JSDismissiveTextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, JSBubbleMessageCellDelegate>
+@interface JSMessagesViewController () <JSDismissiveTextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, JSBubbleMessageCellDelegate, ShootActionSheetDelegate, CropImageDelegate>
 
 - (void)setup;
 
@@ -92,8 +95,8 @@ static NSString * TAKE_PHOTO = @"Take Photo";
          forControlEvents:UIControlEventTouchUpInside];
     [self.inputToolBarView setSendButton:sendButton];
     
-    UIButton *takePhotoButton = [[UIButton alloc] initWithFrame:CGRectMake(LEFT_PADDING, self.inputToolBarView.frame.size.height / 2.0 - TAKE_PHOTO_BUTTON_WIDTH/2.0, TAKE_PHOTO_BUTTON_WIDTH, TAKE_PHOTO_BUTTON_WIDTH)];
-    [takePhotoButton setBackgroundImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
+    UIButton *takePhotoButton = [[UIButton alloc] initWithFrame:CGRectMake(LEFT_PADDING, self.inputToolBarView.frame.size.height / 2.0 - TAKE_PHOTO_BUTTON_HEIGHT/2.0, TAKE_PHOTO_BUTTON_WIDTH, TAKE_PHOTO_BUTTON_HEIGHT)];
+    [takePhotoButton setBackgroundImage:[ImageUtil colorImage:[UIImage imageNamed:@"camera-filled"] color:[ColorDefinition lightRed]] forState:UIControlStateNormal];
     [takePhotoButton addTarget:self action:@selector(takePhotoPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.inputToolBarView setTakePhotoButton:takePhotoButton];
     
@@ -175,6 +178,43 @@ static NSString * TAKE_PHOTO = @"Take Photo";
 {
     [self.delegate sendPressed:sender
                       withText:[self.inputToolBarView.textView.text trimWhitespace]];
+}
+
+#pragma mark - ActionSheet delegate
+- (void)actionSheet:(ShootActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    NSString *buttonString = [actionSheet buttonTitleAtIndex:buttonIndex];
+    UIImagePickerController *imagePicker = [[UIImagePickerController alloc]init];
+    imagePicker.delegate = self;
+    if ([TAKE_PHOTO isEqualToString:buttonString]) {
+        imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        [self presentViewController:imagePicker animated:YES completion:nil];
+    } else if ([PHOTO_LIBARARY isEqualToString:buttonString]) {
+        imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        imagePicker.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeSavedPhotosAlbum];
+        imagePicker.allowsEditing = NO;
+        [self presentViewController:imagePicker animated:YES completion:nil];
+    }
+}
+
+- (void)takePhotoPressed:(UIButton *)sender
+{
+    [self.view endEditing:TRUE];
+    ShootActionSheet *as;
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        as = [[ShootActionSheet alloc]initWithTitle:nil
+                                        delegate:self
+                               cancelButtonTitle:@"Cancel"
+                          destructiveButtonTitle:nil
+                               otherButtonTitles:PHOTO_LIBARARY, nil];
+    } else {
+        as = [[ShootActionSheet alloc]initWithTitle:nil
+                                        delegate:self
+                               cancelButtonTitle:@"Cancel"
+                          destructiveButtonTitle:nil
+                               otherButtonTitles:TAKE_PHOTO, PHOTO_LIBARARY, nil];
+    }
+    [as showInView:self.view];
 }
 
 #pragma mark - Table view data source
@@ -450,6 +490,24 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     CGPoint keyboardOrigin = [self.view convertPoint:pt fromView:nil];
     inputViewFrame.origin.y = keyboardOrigin.y - inputViewFrame.size.height;
     self.inputToolBarView.frame = inputViewFrame;
+}
+
+- (void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    UIImage *userPickedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+    CropImageViewController* viewController = [[CropImageViewController alloc] initWithNibName:nil bundle:nil];
+    viewController.image = userPickedImage;
+    viewController.delegate = self;
+    if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+        [picker dismissViewControllerAnimated:YES completion:^{[self presentViewController:viewController animated:YES completion:nil];}];
+    } else {
+        [picker pushViewController:viewController animated:YES];
+    }
+}
+
+- (void)addItemViewContrller:(CropImageViewController *)controller didFinishCropImage:(UIImage *)cropedImage
+{
+    [self.delegate selectedImage:cropedImage];
 }
 
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated

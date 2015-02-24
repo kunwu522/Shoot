@@ -35,6 +35,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Message.h"
+#import "ShootImageView.h"
 
 extern CGFloat const kJSAvatarSize;
 
@@ -56,7 +57,7 @@ typedef enum {
 @property (assign, nonatomic) JSBubbleMessageType type;
 @property (assign, nonatomic) JSBubbleMessageStyle style;
 @property (copy, nonatomic) Message *message;
-@property (strong, nonatomic) UIImageView *imageView;
+@property (strong, nonatomic) ShootImageView *imageView;
 @property (assign, nonatomic) BOOL selectedToShowCopyMenu;
 
 #pragma mark - Initialization

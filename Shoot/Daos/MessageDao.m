@@ -50,8 +50,6 @@ static NSString * UPLOAD_URL = @"message/upload/:receiver_id";
     RKEntityMapping *messageImageMapping = [RKEntityMapping mappingForEntityForName:NSStringFromClass([MessageImage class]) inManagedObjectStore:[RKObjectManager sharedManager].managedObjectStore];
     [messageImageMapping addAttributeMappingsFromDictionary:@{@"id" : @"image_id", @"width" : @"width", @"height" : @"height"}];
     
-    messageImageMapping.identificationAttributes = @[ @"image_id" ];
-    
     [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"image_metadata" toKeyPath:@"image" withMapping:messageImageMapping]];
     
     [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"participant" toKeyPath:@"participant" withMapping:[[UserDao new] getResponseMapping]]];
