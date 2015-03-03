@@ -10,34 +10,34 @@
 
 @implementation Dao
 
-//static NSMutableDictionary *_sharedInstances = nil;
-//
-//+ (instancetype)sharedManager {
-//    id sharedInstance = nil;
-//    
-//    @synchronized(self) {
-//        NSString *instanceClass = NSStringFromClass(self);
-//        
-//        // Looking for existing instance
-//        sharedInstance = [_sharedInstances objectForKey:instanceClass];
-//        
-//        // If there's no instance – create one and add it to the dictionary
-//        if (sharedInstance == nil) {
-//            sharedInstance = [[super allocWithZone:nil] init];
-//            [_sharedInstances setObject:sharedInstance forKey:instanceClass];
-//        }
-//    }
-//    
-//    return sharedInstance;
-//}
-//
-//
-//+ (void)initialize
-//{
-//    if (_sharedInstances == nil) {
-//        _sharedInstances = [NSMutableDictionary dictionary];
-//    }
-//}
+static NSMutableDictionary *_sharedInstances = nil;
+
++ (instancetype)sharedManager {
+    id sharedInstance = nil;
+    
+    @synchronized(self) {
+        NSString *instanceClass = NSStringFromClass(self);
+        
+        // Looking for existing instance
+        sharedInstance = [_sharedInstances objectForKey:instanceClass];
+        
+        // If there's no instance – create one and add it to the dictionary
+        if (sharedInstance == nil) {
+            sharedInstance = [[super allocWithZone:nil] init];
+            [_sharedInstances setObject:sharedInstance forKey:instanceClass];
+        }
+    }
+    
+    return sharedInstance;
+}
+
+
++ (void)initialize
+{
+    if (_sharedInstances == nil) {
+        _sharedInstances = [NSMutableDictionary dictionary];
+    }
+}
 
 - (RKObjectMapping *) getErrorResponseMapping {
     RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];

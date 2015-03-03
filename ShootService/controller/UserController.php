@@ -25,7 +25,7 @@ class UserController extends Controller
 		
 		$user = $this->user_dao->find_by_id($id, $currentUser_id);
 		if($user)
-			return json_encode(array('user' => $user));
+			return json_encode($user);
 	}
 	
 	public function registerDevice($device_id) {
@@ -136,8 +136,11 @@ class UserController extends Controller
 			throw new InvalidRequestException('Input error, id is null.');
 		}
 		$currentUser_id = $this->getCurrentUser();
-		$this->user_dao->setAUnfollowB($currentUser_id, $id);
-		return $this->query($id);
+		if($this->user_dao->setAUnfollowB($currentUser_id, $id)) {
+			return $this->query($id);
+		} else {
+			throw new DependencyFailureException('Failed to set current user '. $currentUser_id . ' unfollow ' . $id);
+		}
 	}
 	
 	public function login($parameters) {
@@ -173,7 +176,7 @@ class UserController extends Controller
 		}
 		
 		$this->update_cookie($user);
-		return json_encode(array("user" => $user));
+		return json_encode($user);
 	}
 
 	public function signout() {		
@@ -210,7 +213,7 @@ class UserController extends Controller
 		$userPropertyMap = array('id'=>$user->get_id(), 'username'=>$user->get_username(), 'password'=>$user->get_password());
 		$this->update_cookie($userPropertyMap);	
 		
-		return json_encode(array('user' => $user));
+		return json_encode($user);
 	}
 	
 	public function forgotPassword($token_id)

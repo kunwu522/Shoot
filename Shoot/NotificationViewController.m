@@ -17,8 +17,9 @@
 #import <RestKit/RestKit.h>
 #import "DetailViewController.h"
 #import "UserViewController.h"
+#import "UserListView.h"
 
-@interface NotificationViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, NotificationTableViewCellDelegate>
+@interface NotificationViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, NotificationTableViewCellDelegate, UserListViewDelegate>
 
 @property (retain, nonatomic) UITableView * tableView;
 @property (retain, nonatomic) UISearchBar * searchBar;
@@ -29,6 +30,7 @@
 @property (nonatomic,retain) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) NSFetchedResultsController *notificationFetchedResultsController;
 @property (nonatomic, strong) NSFetchedResultsController *messageFetchedResultsController;
+@property (nonatomic, retain) UserListView *userListView;
 
 @property (nonatomic, retain) NSMutableArray* conversations;
 
@@ -106,11 +108,30 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
     addButton.layer.shadowRadius = 10;
     addButton.layer.shadowColor = [UIColor whiteColor].CGColor;
     addButton.layer.shadowOpacity = 1.0;
+    
 }
 
 -(void)startNewConversation:(id)sender {
-    ConversationViewController * viewController = [[ConversationViewController alloc] initWithNibName:nil bundle:nil];
-    [self presentViewController:viewController animated:YES completion:nil];
+    if (!self.userListView) {
+        self.userListView = [[UserListView alloc] initWithFrame:self.view.bounds];
+        self.userListView.urlPathToPullUsers = @"user/getUsernamesByPrefix";
+        AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+        self.userListView.urlPathToPullUsersWhenSearchStringIsEmpty = [NSString stringWithFormat:@"user/getFollowingUsers/%@/%d",appDelegate.currentUser.userID, 10];
+        self.userListView.hidden = true;
+        self.userListView.delegate = self;
+        [self.view addSubview:self.userListView];
+    }
+    [self.userListView reload];
+    self.userListView.alpha = 0.0;
+    self.userListView.hidden = false;
+    [UIView animateWithDuration:0.3 animations:^{
+        self.userListView.alpha = 1.0;
+    }];
+}
+
+- (void) selectedUser:(User *) user
+{
+    [self startConversationWith:user];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -164,20 +185,23 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
 }
 
 -(void) viewSwitched:(UIButton *)sender {
-    UIButton * previewViewButton = (UIButton *) [self.view viewWithTag:self.viewStatus];
-    if (previewViewButton) {
-        previewViewButton.backgroundColor = [UIColor whiteColor];
-        [previewViewButton setTitleColor:[ColorDefinition lightRed] forState:UIControlStateNormal];
-    }
-    self.viewStatus = sender.tag;
     
-    sender.backgroundColor = [ColorDefinition lightRed];
-    [sender setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [self loadData];
+    @synchronized(self) {
+        UIButton * previewViewButton = (UIButton *) [self.view viewWithTag:self.viewStatus];
+        if (previewViewButton) {
+            previewViewButton.backgroundColor = [UIColor whiteColor];
+            [previewViewButton setTitleColor:[ColorDefinition lightRed] forState:UIControlStateNormal];
+        }
+        self.viewStatus = sender.tag;
+        
+        sender.backgroundColor = [ColorDefinition lightRed];
+        [sender setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [self loadData];
+    }
 }
 
 -(void)refreshView:(UIRefreshControl *)refresh {
-    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Refreshing data..."];
+    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Refreshing..."];
     [self fetachData];
 }
 
@@ -212,21 +236,24 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
 
 - (void)loadData
 {
-    NSError *error = nil;
-    BOOL fetchSuccessful = [[self getNSFetchedResultsController] performFetch:&error];
-    if (! fetchSuccessful) {
-        NSLog(@"Fetch Error: %@",error);
+    @synchronized(self) {
+        NSError *error = nil;
+        BOOL fetchSuccessful = [[self getNSFetchedResultsController] performFetch:&error];
+        if (! fetchSuccessful) {
+            NSLog(@"Fetch Error: %@",error);
+        }
+        if (self.viewStatus == MESSAGE_VIEW_TAG) {
+            [self.conversations removeAllObjects];
+            NSMutableArray * latestMessages = [[NSMutableArray alloc] init];
+            for (int i = 0; i < [[self.messageFetchedResultsController sections] count]; i++) {
+                [latestMessages addObject:[self.messageFetchedResultsController objectAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:i]]];
+            };
+            NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:NO];
+            [self.conversations addObjectsFromArray:[latestMessages sortedArrayUsingDescriptors:@[sd]]];
+        }
+        [self.tableView reloadData];
     }
-    if (self.viewStatus == MESSAGE_VIEW_TAG) {
-        [self.conversations removeAllObjects];
-        NSMutableArray * latestMessages = [[NSMutableArray alloc] init];
-        for (int i = 0; i < [[self.messageFetchedResultsController sections] count]; i++) {
-            [latestMessages addObject:[self.messageFetchedResultsController objectAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:i]]];
-        };
-        NSSortDescriptor *sd = [[NSSortDescriptor alloc] initWithKey:@"time" ascending:NO];
-        [self.conversations addObjectsFromArray:[latestMessages sortedArrayUsingDescriptors:@[sd]]];
-    }
-    [self.tableView reloadData];
+    
 }
 
 - (NSFetchedResultsController *) getNSFetchedResultsController
@@ -342,11 +369,16 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
             [self presentViewController:viewController animated:YES completion:nil];
         }
     } else if ([message.type isEqualToString:MESSAGE_TYPE]) {
-        ConversationViewController * viewController = [[ConversationViewController alloc] initWithNibName:nil bundle:nil];
-        viewController.participant = message.participant;
-        [self presentViewController:viewController animated:YES completion:nil];
+        [self startConversationWith:message.participant];
     }
    
+}
+
+- (void) startConversationWith:(User *) user
+{
+    ConversationViewController * viewController = [[ConversationViewController alloc] initWithNibName:nil bundle:nil];
+    viewController.participant = user;
+    [self presentViewController:viewController animated:YES completion:nil];
 }
 
 - (void) initRedDotViews

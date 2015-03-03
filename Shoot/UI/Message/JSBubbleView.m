@@ -247,8 +247,12 @@ CGFloat const kJSAvatarSize = 50.0f;
 }
 
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
-    if (!self.imageView.hidden) {
-        [self.imageView displayFullScreen];
+    
+    CGPoint p = [recognizer locationInView:self];
+    if (CGRectContainsPoint([self bubbleFrame], p)) {
+        if (!self.imageView.hidden) {
+            [self.imageView displayFullScreen];
+        }
     }
 }
 
@@ -323,7 +327,7 @@ CGFloat const kJSAvatarSize = 50.0f;
 
 + (CGSize)textSizeForText:(NSString *)txt
 {
-    CGFloat width = [UIScreen mainScreen].applicationFrame.size.width * 0.72f;
+    CGFloat width = [UIScreen mainScreen].applicationFrame.size.width * 0.75f;
     CGFloat height = MAX([JSBubbleView numberOfLinesForMessage:txt],
                          [txt numberOfLines]) * [JSMessageInputView textViewLineHeight];
     

@@ -9,9 +9,10 @@
 #import "ShootDetailedTableViewCell.h"
 #import "ColorDefinition.h"
 #import "ImageUtil.h"
+#import "ShootImageView.h"
 
 @interface ShootDetailedTableViewCell ()
-@property (retain, nonatomic) UIImageView *userAvatar;
+@property (retain, nonatomic) ShootImageView *userAvatar;
 @property (retain, nonatomic) UILabel *username;
 @property (retain, nonatomic) UILabel *imageTitle;
 @property (retain, nonatomic) UIImageView *imageDisplayView;
@@ -38,7 +39,7 @@ static const CGFloat COMMENT_BUTTON_HEIGHT = 30;
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.userAvatar = [[UIImageView alloc] initWithFrame:CGRectMake(PADDING, PADDING, AVATAR_SIZE, AVATAR_SIZE)];
+        self.userAvatar = [[ShootImageView alloc] initWithFrame:CGRectMake(PADDING, PADDING, AVATAR_SIZE, AVATAR_SIZE)];
         self.userAvatar.image = [UIImage imageNamed:@"image5.jpg"];
         self.userAvatar.contentMode = UIViewContentModeScaleAspectFill;
         self.userAvatar.clipsToBounds = YES;

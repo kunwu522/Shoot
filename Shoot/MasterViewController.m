@@ -14,6 +14,8 @@
 #import "ImageUtil.h"
 #import "ColorDefinition.h"
 #import "BlurView.h"
+#import <RestKit/RestKit.h>
+#import "UserTagShoot.h"
 
 @interface MasterViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -52,7 +54,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
     
     UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - 20, self.view.frame.size.height - 60, 40, 40)];
     [self.view addSubview:addButton];
-    [addButton setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"camera"] color:[UIColor whiteColor]] atSize:CGSizeMake(20, 20)] forState:UIControlStateNormal];
+    [addButton setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"camera-filled"] color:[UIColor whiteColor]] atSize:CGSizeMake(20, 20)] forState:UIControlStateNormal];
     addButton.backgroundColor = [ColorDefinition lightRed];
     addButton.alpha = 0.5;
     [addButton.layer setBorderColor:[UIColor whiteColor].CGColor];
@@ -62,6 +64,15 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
     addButton.layer.shadowRadius = 10;
     addButton.layer.shadowColor = [UIColor whiteColor].CGColor;
     addButton.layer.shadowOpacity = 1.0;
+    
+//    [[RKObjectManager sharedManager] getObjectsAtPath:@"shoot/query"  parameters:nil success:^
+//     (RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+//         for (UserTagShoot *userTagShoot in mappingResult.array) {
+//             NSLog(@"%@", userTagShoot.shoot.user_tags);
+//         }
+//     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+//         RKLogError(@"Failed to call shoot/query due to error: %@", error);
+//     }];
 }
 
 - (void)didReceiveMemoryWarning {

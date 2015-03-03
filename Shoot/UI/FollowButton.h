@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#define FOLLOW_BUTTON_HEIGHT 20;
-#define FOLLOW_BUTTON_WIDTH 40;
+#define FOLLOW_BUTTON_HEIGHT 25.0;
+#define FOLLOW_BUTTON_WIDTH 25.0;
 
 @interface FollowButton : UIView
 

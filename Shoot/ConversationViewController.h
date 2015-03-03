@@ -11,10 +11,8 @@
 #import "JSMessagesViewController.h"
 #import "User.h"
 
-@interface ConversationViewController : JSMessagesViewController <JSMessagesViewDelegate, JSMessagesViewDataSource, NSFetchedResultsControllerDelegate>
+@interface ConversationViewController : JSMessagesViewController
 
 @property (nonatomic, retain) User * participant;
-@property (nonatomic, retain) UITextField *usernameTextField;
-@property (nonatomic, retain) UITableView *usernameList;
 
 @end

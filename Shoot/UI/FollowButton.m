@@ -10,6 +10,7 @@
 #import "ColorDefinition.h"
 #import <RestKit/RestKit.h>
 #import "User.h"
+#import "ImageUtil.h"
 
 @interface FollowButton ()
 @property (nonatomic, retain) id user_id;
@@ -35,8 +36,10 @@
             effectiveWidth = preferredWidth / preferredHeight * frame.size.height;
         }
         self.followButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        [self.followButton setFrame:CGRectMake(frame.size.width/2.0 - effectiveWidth/2.0, frame.size.height/2.0 - effectiveHeight/2.0, effectiveWidth, effectiveHeight)];
+        [self.followButton setFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+        self.followButton.layer.cornerRadius = frame.size.height/2.0;
         self.followButton.tintColor = [UIColor whiteColor];
+        self.followButton.backgroundColor = [ColorDefinition blueColor];
         [self addSubview:self.followButton];
         self.layer.cornerRadius = 5;
     }
@@ -67,18 +70,16 @@
 
 - (void)makeFollowButton:(UIButton *)button
 {
-    [button setImage:[UIImage imageNamed:@"follow.png"] forState:UIControlStateNormal];
-    button.tintColor = [ColorDefinition blueColor];
-    self.layer.borderColor = [ColorDefinition blueColor].CGColor;
+    CGFloat iconSize = MIN(self.followButton.frame.size.width, self.followButton.frame.size.height) * 0.7;
+    [button setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"follow"] atSize:CGSizeMake(iconSize, iconSize)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
     [button removeTarget:nil action:NULL forControlEvents:UIControlEventAllEvents];
     [button addTarget:self action:@selector(follow:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)makeFollowingButton:(UIButton *)button
 {
-    [button setImage:[UIImage imageNamed:@"followed.png"] forState:UIControlStateNormal];
-    button.tintColor = [ColorDefinition greenColor];
-    self.layer.borderColor = [ColorDefinition greenColor].CGColor;
+    CGFloat iconSize = MIN(self.followButton.frame.size.width, self.followButton.frame.size.height) * 0.7;
+    [button setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"followed"] atSize:CGSizeMake(iconSize, iconSize)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
     [button removeTarget:nil action:NULL forControlEvents:UIControlEventAllEvents];
     [button addTarget:self action:@selector(unfollow:) forControlEvents:UIControlEventTouchUpInside];
 }
@@ -86,21 +87,29 @@
 
 - (void)follow:(id)sender
 {
+    self.followButton.enabled = false;
+    [self makeFollowingButton:self.followButton];
     [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/follow/%@", self.user_id] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         self.relationshipWithCurrentUser = ((User *)[mappingResult.array objectAtIndex:0]).relationship_with_currentUser;
-        [self makeFollowingButton:self.followButton];
+        self.followButton.enabled = true;
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         RKLogError(@"Follow failed with error: %@", error);
+        [self makeFollowButton:self.followButton];
+        self.followButton.enabled = true;
     }];
 }
 
 - (void)unfollow:(id)sender
 {
+    self.followButton.enabled = false;
+    [self makeFollowButton:self.followButton];
     [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/unfollow/%@", self.user_id] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         self.relationshipWithCurrentUser = ((User *)[mappingResult.array objectAtIndex:0]).relationship_with_currentUser;
-        [self makeFollowButton:self.followButton];
+        self.followButton.enabled = true;
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        RKLogError(@"Follow failed with error: %@", error);
+        RKLogError(@"Unfollow failed with error: %@", error);
+        [self makeFollowingButton:self.followButton];
+        self.followButton.enabled = true;
     }];
 }
 

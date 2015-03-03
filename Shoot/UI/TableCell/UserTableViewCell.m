@@ -26,6 +26,7 @@ const double STORE_TYPE_ICON_SIZE = 15;
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
+        self.backgroundColor = [UIColor clearColor];
         self.autoresizesSubviews = YES;
         self.userAvatar = [[UIImageView alloc] initWithFrame:CGRectMake(LEFT_PADDING, UI_PADDING, AVATAR_SIZE, AVATAR_SIZE)];
         [self addSubview:self.userAvatar];
@@ -36,12 +37,12 @@ const double STORE_TYPE_ICON_SIZE = 15;
         [l setCornerRadius:AVATAR_SIZE/2.0];
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        double labelX = LEFT_PADDING + self.userAvatar.frame.origin.x + self.userAvatar.frame.size.width + UI_PADDING;
+        double labelX = self.userAvatar.frame.origin.x + self.userAvatar.frame.size.width + UI_PADDING * 2;
         
         double followButtonWidth = FOLLOW_BUTTON_WIDTH;
         double followButtonHeight = FOLLOW_BUTTON_HEIGHT;
-        
-        double labelWidth = self.frame.size.width - UI_PADDING * 2 - followButtonWidth - labelX;
+
+        double labelWidth = self.frame.size.width - UI_PADDING * 4 - followButtonWidth - labelX;
         self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(labelX, self.userAvatar.frame.origin.y, labelWidth, LABEL_HEIGHT)];
         [self.usernameLabel setFont:[UIFont systemFontOfSize:12]];
         [self addSubview:self.usernameLabel];
@@ -54,7 +55,7 @@ const double STORE_TYPE_ICON_SIZE = 15;
         [self.addressLabel setTextColor:[UIColor darkGrayColor]];
         [self addSubview:self.addressLabel];
         
-        self.followButton = [[FollowButton alloc] initWithFrame:CGRectMake(UI_PADDING + self.usernameLabel.frame.origin.x + self.usernameLabel.frame.size.width, self.userAvatar.center.y - followButtonHeight/2.0, followButtonWidth, followButtonHeight)];
+        self.followButton = [[FollowButton alloc] initWithFrame:CGRectMake(UI_PADDING*2 + self.usernameLabel.frame.origin.x + self.usernameLabel.frame.size.width, self.userAvatar.center.y - followButtonHeight/2.0, followButtonWidth, followButtonHeight)];
         self.followButton.tintColor = [UIColor whiteColor];
         [self addSubview:self.followButton];
     }
@@ -69,6 +70,12 @@ const double STORE_TYPE_ICON_SIZE = 15;
 }
 
 - (void)decorateCellWithUser:(User *)user {
+    double labelX = self.userAvatar.frame.origin.x + self.userAvatar.frame.size.width + UI_PADDING * 2;
+    double followButtonWidth = FOLLOW_BUTTON_WIDTH;
+    double followButtonHeight = FOLLOW_BUTTON_HEIGHT;
+    double labelWidth = self.frame.size.width - UI_PADDING * 4 - followButtonWidth - labelX;
+    [self.usernameLabel setFrame:CGRectMake(labelX, self.userAvatar.frame.origin.y, labelWidth, LABEL_HEIGHT)];
+    [self.followButton setFrame:CGRectMake(UI_PADDING*2 + self.usernameLabel.frame.origin.x + self.usernameLabel.frame.size.width, self.userAvatar.center.y - followButtonHeight/2.0, followButtonWidth, followButtonHeight)];
     [self decorateCellWithUser:user subtitle:nil];
 }
 

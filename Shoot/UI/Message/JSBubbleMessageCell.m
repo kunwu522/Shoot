@@ -130,6 +130,13 @@
                                                  | UIViewAutoresizingFlexibleRightMargin
                                                  | UIViewAutoresizingFlexibleBottomMargin);
         [self.contentView addSubview:self.avatarImageView];
+    } else {
+        
+        if(type == JSBubbleMessageTypeOutgoing) {
+            offsetX = 5.0;
+        } else {
+            offsetX = -5.0;
+        }
     }
     
     CGRect frame = CGRectMake(bubbleX - offsetX,

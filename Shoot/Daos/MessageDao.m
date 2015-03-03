@@ -21,6 +21,7 @@
 static NSString * MESSAGES_KEY_PATH_URL = @"messages";
 static NSString * QUERY_URL = @"message/query";
 static NSString * CREATE_URL = @"message/create";
+static NSString * READ_URL = @"message/read/:id";
 static NSString * UPLOAD_URL = @"message/upload/:receiver_id";
 
 
@@ -52,9 +53,9 @@ static NSString * UPLOAD_URL = @"message/upload/:receiver_id";
     
     [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"image_metadata" toKeyPath:@"image" withMapping:messageImageMapping]];
     
-    [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"participant" toKeyPath:@"participant" withMapping:[[UserDao new] getResponseMapping]]];
+    [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"participant" toKeyPath:@"participant" withMapping:[[UserDao sharedManager] getResponseMapping]]];
     
-    [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"related_shoot" toKeyPath:@"related_shoot" withMapping:[[ShootDao new] getResponseMapping]]];
+    [messageMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"related_shoot" toKeyPath:@"related_shoot" withMapping:[[ShootDao sharedManager] getResponseMapping]]];
     
     return messageMapping;
 }
@@ -67,6 +68,8 @@ static NSString * UPLOAD_URL = @"message/upload/:receiver_id";
     RKEntityMapping * messageMapping = [self getResponseMapping];
     
     [manager addResponseDescriptor: [RKResponseDescriptor responseDescriptorWithMapping:messageMapping method:RKRequestMethodGET pathPattern:QUERY_URL keyPath:MESSAGES_KEY_PATH_URL statusCodes: RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
+    
+    [manager addResponseDescriptor: [RKResponseDescriptor responseDescriptorWithMapping:messageMapping method:RKRequestMethodGET pathPattern:READ_URL keyPath:nil statusCodes: RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
     
     //post response mapping
     [manager addResponseDescriptor:[RKResponseDescriptor responseDescriptorWithMapping:messageMapping method:RKRequestMethodAny pathPattern:CREATE_URL keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];

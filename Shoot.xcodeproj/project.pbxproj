@@ -123,6 +123,10 @@
 		0EB82CEC1A39EFE900BFBE17 /* image3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0EB82CE91A39EFE900BFBE17 /* image3.jpg */; };
 		0EB82CF01A39F0F000BFBE17 /* avatar.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0EB82CEF1A39F0F000BFBE17 /* avatar.jpg */; };
 		0EB82CF31A39FD9200BFBE17 /* BlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB82CF21A39FD9200BFBE17 /* BlurView.m */; };
+		0ECE66FD1AA1734800A03641 /* followed.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ECE66FC1AA1734800A03641 /* followed.png */; };
+		0ECE67051AA1735200A03641 /* setting-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ECE67041AA1735200A03641 /* setting-icon.png */; };
+		0ECE67071AA1BDC500A03641 /* message-filled.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ECE67061AA1BDC500A03641 /* message-filled.png */; };
+		0ECE670A1AA2534100A03641 /* UserListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECE67091AA2534100A03641 /* UserListView.m */; };
 		0EFD5B1D1A8D532A00658FC0 /* UserTagShoot.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EFD5B1C1A8D532A00658FC0 /* UserTagShoot.m */; };
 		0EFD5B261A8D532B00658FC0 /* Tag.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EFD5B251A8D532B00658FC0 /* Tag.m */; };
 		0EFD5B2C1A8D9BE400658FC0 /* UserTagShootDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EFD5B2B1A8D9BE400658FC0 /* UserTagShootDao.m */; };
@@ -382,6 +386,11 @@
 		0EB82CEF1A39F0F000BFBE17 /* avatar.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = avatar.jpg; path = Images/avatar.jpg; sourceTree = "<group>"; };
 		0EB82CF11A39FD9200BFBE17 /* BlurView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlurView.h; path = UI/BlurView.h; sourceTree = "<group>"; };
 		0EB82CF21A39FD9200BFBE17 /* BlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BlurView.m; path = UI/BlurView.m; sourceTree = "<group>"; };
+		0ECE66FC1AA1734800A03641 /* followed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = followed.png; path = Images/followed.png; sourceTree = "<group>"; };
+		0ECE67041AA1735200A03641 /* setting-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "setting-icon.png"; path = "Images/setting-icon.png"; sourceTree = "<group>"; };
+		0ECE67061AA1BDC500A03641 /* message-filled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "message-filled.png"; path = "Images/message-filled.png"; sourceTree = "<group>"; };
+		0ECE67081AA2534100A03641 /* UserListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserListView.h; path = UI/UserListView.h; sourceTree = "<group>"; };
+		0ECE67091AA2534100A03641 /* UserListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserListView.m; path = UI/UserListView.m; sourceTree = "<group>"; };
 		0EFD5B1B1A8D532A00658FC0 /* UserTagShoot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserTagShoot.h; path = Model/UserTagShoot.h; sourceTree = "<group>"; };
 		0EFD5B1C1A8D532A00658FC0 /* UserTagShoot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserTagShoot.m; path = Model/UserTagShoot.m; sourceTree = "<group>"; };
 		0EFD5B241A8D532B00658FC0 /* Tag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tag.h; path = Model/Tag.h; sourceTree = "<group>"; };
@@ -731,6 +740,8 @@
 				0EB82CF11A39FD9200BFBE17 /* BlurView.h */,
 				0EB82CF21A39FD9200BFBE17 /* BlurView.m */,
 				0EB82CDC1A37FCC100BFBE17 /* TableCell */,
+				0ECE67081AA2534100A03641 /* UserListView.h */,
+				0ECE67091AA2534100A03641 /* UserListView.m */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -761,6 +772,7 @@
 		0EB82CE01A38009200BFBE17 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				0ECE67061AA1BDC500A03641 /* message-filled.png */,
 				0E65C2441A9BEF550083FD73 /* Oops.png */,
 				0E90D4F61A9B25C800B6F60C /* camera-filled.png */,
 				0EB82CEF1A39F0F000BFBE17 /* avatar.jpg */,
@@ -771,6 +783,7 @@
 				0E572E8E1A6CE79000BC040D /* calendar-icon.png */,
 				0E572E8C1A6CE38E00BC040D /* location-icon.png */,
 				0E5C92E71A60E62C008AE026 /* follow.png */,
+				0ECE66FC1AA1734800A03641 /* followed.png */,
 				0E5C92FD1A639CBA008AE026 /* camera.png */,
 				0E5C92FB1A62627B008AE026 /* list-icon.png */,
 				0E572E8A1A6CE23400BC040D /* grid-icon.png */,
@@ -778,6 +791,7 @@
 				0E1422D61A5DD29B00783F0F /* have-icon.png */,
 				0E1422D21A57B41100783F0F /* like-icon.png */,
 				0E1422D41A58B8F100783F0F /* want-icon.png */,
+				0ECE67041AA1735200A03641 /* setting-icon.png */,
 				0E5C92F91A62284F008AE026 /* profile-icon.png */,
 				0EB82CE71A39EFE900BFBE17 /* image1.jpg */,
 				0EB82CE81A39EFE900BFBE17 /* image2.jpg */,
@@ -850,6 +864,7 @@
 				TargetAttributes = {
 					0EB82CAB1A37F84D00BFBE17 = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = Y3A2ZZ64DE;
 					};
 					0EB82CCA1A37F84E00BFBE17 = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -958,12 +973,15 @@
 				0E5C93461A64B5F3008AE026 /* bubble-square-incoming@2x.png in Resources */,
 				0E5C933F1A64B5F3008AE026 /* bubble-default-incoming-selected@2x.png in Resources */,
 				0E5C93411A64B5F3008AE026 /* bubble-default-outgoing-green@2x.png in Resources */,
+				0ECE66FD1AA1734800A03641 /* followed.png in Resources */,
 				0E5C933E1A64B5F3008AE026 /* bubble-default-incoming-green@2x.png in Resources */,
 				0E5C92E81A60E62C008AE026 /* follow.png in Resources */,
 				0EB82CF01A39F0F000BFBE17 /* avatar.jpg in Resources */,
+				0ECE67051AA1735200A03641 /* setting-icon.png in Resources */,
 				0E5C934C1A64B5F3008AE026 /* send@2x.png in Resources */,
 				0E1422D91A5F8F9600783F0F /* time.png in Resources */,
 				0E5C934D1A64B5F3008AE026 /* messageReceived.aiff in Resources */,
+				0ECE67071AA1BDC500A03641 /* message-filled.png in Resources */,
 				0EB82CEB1A39EFE900BFBE17 /* image2.jpg in Resources */,
 				0E572E8F1A6CE79000BC040D /* calendar-icon.png in Resources */,
 				0E1422D71A5DD29B00783F0F /* have-icon.png in Resources */,
@@ -1043,6 +1061,7 @@
 				0E1422DC1A6067C000783F0F /* UserViewController.m in Sources */,
 				0E5C933C1A64B5F3008AE026 /* JSMessagesViewController.m in Sources */,
 				0E5C93391A64B5F3008AE026 /* JSDismissiveTextView.m in Sources */,
+				0ECE670A1AA2534100A03641 /* UserListView.m in Sources */,
 				0E572EC71A6F70BF00BC040D /* NSDate+MNAdditions.m in Sources */,
 				0E572EC41A6F70BF00BC040D /* MNCalendarViewLayout.m in Sources */,
 				0EFD5B321A8DA7AD00658FC0 /* Shoot.m in Sources */,
@@ -1200,6 +1219,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -1217,6 +1237,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,

@@ -16,7 +16,6 @@
 @implementation UserDao
 
 static NSString * USERS_KEY_PATH_URL = @"users";
-static NSString * USER_KEY_PATH_URL = @"user";
 static NSString * ERRORS_KEY_PATH_URL = @"errors";
 static const NSString * USERS_LIKE_SHOOT_URL = @"user/getUsersLikeShoot/:id";
 static const NSString * USERS_WANT_SHOOT_URL = @"user/getUsersWantShoot/:id";
@@ -37,22 +36,21 @@ static const NSString * UPDATE_PASSWORD_URL = @"user/updatePassword/:password";
     RKEntityMapping * responseMapping = [RKEntityMapping mappingForEntityForName:NSStringFromClass([User class]) inManagedObjectStore:[RKObjectManager sharedManager].managedObjectStore];
     
     NSDictionary * userMappingDictionary = @{
+                                             @"id" : @"userID",
+                                             @"time" : @"time",
+                                             @"deleted" : @"shouldBeDeleted",
                                              @"username" : @"username",
                                              @"password" : @"password",
                                              @"email" : @"email",
+                                             @"has_bg_image" : @"has_bg_image",
                                              @"follower_count" : @"follower_count",
                                              @"following_count" : @"following_count",
+                                             @"have_count" : @"have_count",
+                                             @"want_count" : @"want_count",
                                              @"relationship_with_currentUser" : @"relationship_with_currentUser",
                                              @"user_type" : @"user_type",
                                              @"has_avatar" : @"has_avatar"
                                              };
-    
-    NSDictionary *parentObjectMapping = @{
-                                          @"id" : @"userID",
-                                          @"time" : @"time",
-                                          @"deleted" : @"shouldBeDeleted"
-                                          };
-    [responseMapping addAttributeMappingsFromDictionary:parentObjectMapping];
     
     NSMutableDictionary * userResponseMappingDictionary = [NSMutableDictionary dictionaryWithDictionary:userMappingDictionary];
 
@@ -93,7 +91,7 @@ static const NSString * UPDATE_PASSWORD_URL = @"user/updatePassword/:password";
                            ]){
         
         [manager addResponseDescriptor:
-         [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodGET pathPattern:url keyPath:USER_KEY_PATH_URL statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
+         [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodGET pathPattern:url keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
         
     }
     
@@ -104,7 +102,7 @@ static const NSString * UPDATE_PASSWORD_URL = @"user/updatePassword/:password";
                            ]){
         
         [manager addResponseDescriptor:
-         [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodPOST pathPattern:url keyPath:USER_KEY_PATH_URL statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
+         [RKResponseDescriptor responseDescriptorWithMapping:userMapping method:RKRequestMethodPOST pathPattern:url keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
         
     }
     

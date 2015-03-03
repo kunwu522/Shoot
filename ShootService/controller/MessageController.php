@@ -22,6 +22,7 @@ class MessageController extends Controller
 	public function read($message_id) {
 		$currentUser_id = $this->getCurrentUser();
 		$this->message_dao->mark_message_as_read($currentUser_id, $message_id);
+		return json_encode(array('id' => $message_id, 'is_read' => 1));
 	}
 	
 	public function create() {

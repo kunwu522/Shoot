@@ -8,18 +8,18 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "Shoot.h"
-#import "Tag.h"
-#import "User.h"
+
+@class Tag, Shoot, User;
 
 @interface UserTagShoot : NSManagedObject
 
-@property (nonatomic, retain) NSNumber * user_id;
-@property (nonatomic, retain) NSNumber * shoot_id;
-@property (nonatomic, retain) NSNumber * tag_id;
+@property (nonatomic, retain) NSNumber * userID;
+@property (nonatomic, retain) NSNumber * tagID;
+@property (nonatomic, retain) NSNumber * shootID;
 @property (nonatomic, retain) NSDecimalNumber * latitude;
 @property (nonatomic, retain) NSDecimalNumber * longtitude;
 @property (nonatomic, retain) NSNumber * shouldBeDeleted;
+@property (nonatomic, retain) NSNumber * is_feed;
 @property (nonatomic, retain) NSDate * time;
 @property (nonatomic, retain) NSNumber * type;
 @property (nonatomic, retain) Shoot * shoot;

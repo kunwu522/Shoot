@@ -39,9 +39,8 @@ class ShootController extends Controller
 		return json_encode(array('shoots'=>$shoots));
 	}
 	
-	public function queryById($shoot_id) {
-		$current_user_id = $this->getCurrentUser();
-		$shoot = $this->shoot_dao->queryById($current_user_id, $shoot_id);
+	public function queryById($user_id, $shoot_id) {
+		$shoot = $this->shoot_dao->queryById($user_id, $shoot_id);
 		return json_encode(array('shoots'=>$shoot));
 	}
 	

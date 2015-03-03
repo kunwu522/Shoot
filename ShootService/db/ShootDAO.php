@@ -12,11 +12,34 @@ class ShootDAO extends BaseDAO
 		
 		$result = $this->db_conn->query($query);
 		if(mysql_num_rows($result)) {
-			while($shoot = mysql_fetch_assoc($result)) {
-				return $shoot;	
+			while($user_tag_shoot = mysql_fetch_assoc($result)) {
+				return $this->getStructuredUserTagShoot($user_tag_shoot);	
 			}
 		}
 		return null;
+	}
+	
+	private function getStructuredUserTagShoot($user_tag_shoot) {
+		
+		$shoot = array('id' => $user_tag_shoot['shoot_id'], 
+					   'content' => $user_tag_shoot['content'],
+				       'want_count' => $user_tag_shoot['want_count'],
+				       'like_count' => $user_tag_shoot['like_count'],
+				   	   'time' => $user_tag_shoot['shoot_time'],
+				       'user' => array('id' => $user_tag_shoot['shoot_user_id']));
+		$user = array('id' => $user_tag_shoot['user_id'], 
+		              'user_type' => $user_tag_shoot['user_type'],
+				      'username' => $user_tag_shoot['username']);
+		$tag = array('id' => $user_tag_shoot['tag_id'], 'tag' => $user_tag_shoot['tag']);
+		return array('shoot' => $shoot, 
+		             'tag' => $tag, 
+					 'user' => $user, 
+					 'type' => $user_tag_shoot['type'],
+					 'time' => $user_tag_shoot['time'],
+					 'latitude' => $user_tag_shoot['latitude'],
+					 'longtitude' => $user_tag_shoot['longtitude'],
+					 'deleted' => $user_tag_shoot['deleted']
+				     );
 	}
 	
 	public function query($currentUser_id, $user_id, $keyword) {
@@ -44,8 +67,8 @@ class ShootDAO extends BaseDAO
 
 		$shoots = array();
 		if(mysql_num_rows($result)) {
-			while($shoot = mysql_fetch_assoc($result)) {
-				$shootObj = $shoot;
+			while($user_tag_shoot = mysql_fetch_assoc($result)) {
+				$shootObj = $this->getStructuredUserTagShoot($user_tag_shoot);
 				if ($isFeed) {
 					$shootObj['is_feed'] = true;
 				}
@@ -65,8 +88,8 @@ class ShootDAO extends BaseDAO
 		/* create one master array of the records */
 		$shoots = array();
 		if(mysql_num_rows($result)) {
-			while($shoot = mysql_fetch_assoc($result)) {
-				$shoots[] = $shoot;
+			while($user_tag_shoot = mysql_fetch_assoc($result)) {
+				$shoots[] = $this->getStructuredUserTagShoot($user_tag_shoot);
 			}
 		}
 

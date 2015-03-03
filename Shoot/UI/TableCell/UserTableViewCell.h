@@ -13,6 +13,11 @@
 
 #define USER_TABLE_VIEW_CELL_HEIGHT 50.0f;
 
+@protocol UserTableViewCellDelegate <NSObject>
+@optional
+- (void) followingStatusChangedForUser:(User *) user to:(NSNumber *)newStatus;
+@end
+
 @interface UserTableViewCell : UITableViewCell
 
 @property (nonatomic, strong) FollowButton *followButton;

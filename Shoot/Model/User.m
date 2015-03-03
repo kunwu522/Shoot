@@ -22,7 +22,10 @@
 @dynamic password;
 @dynamic follower_count;
 @dynamic following_count;
+@dynamic have_count;
+@dynamic want_count;
 @dynamic has_avatar;
+@dynamic has_bg_image;
 @dynamic relationship_with_currentUser;
 @dynamic user_type;
 @dynamic username;

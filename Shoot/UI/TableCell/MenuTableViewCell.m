@@ -15,14 +15,24 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        self.icon = [[UIImageView alloc] initWithFrame:CGRectMake(20, 10, 25, 25)];
+        self.icon = [[UIImageView alloc] initWithFrame:CGRectMake(15, 10, 25, 25)];
         self.icon.contentMode = UIViewContentModeScaleAspectFit;
         self.icon.clipsToBounds = YES;
         [self addSubview:self.icon];
-        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60, 10, 100, 30)];
+        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, 10, 70, 25)];
         self.titleLabel.font = [UIFont boldSystemFontOfSize:14];
         self.titleLabel.textColor = [UIColor whiteColor];
         [self addSubview:self.titleLabel];
+        self.counterLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, 15, 15, 15)];
+        [self addSubview:self.counterLabel];
+        self.counterLabel.font = [UIFont systemFontOfSize:9];
+        self.counterLabel.textColor = [ColorDefinition darkRed];
+        self.counterLabel.backgroundColor = [UIColor whiteColor];
+        self.counterLabel.hidden = true;
+        self.counterLabel.textAlignment = NSTextAlignmentCenter;
+        CALayer * l = [self.counterLabel layer];
+        [l setMasksToBounds:YES];
+        [l setCornerRadius:5];
     }
     return self;
 }

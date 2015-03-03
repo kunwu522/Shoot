@@ -190,13 +190,13 @@ class UserDAO extends BaseDAO
 		if (mysql_num_rows($result)) {
 			$user = mysql_fetch_assoc($result);
 			$followerCount = $this->getFollowerCount($id);
-			$user['followerCount'] = $followerCount;
+			$user['follower_count'] = $followerCount;
 			$followingCount = $this->getFollowingCount($id);
-			$user['followingCount'] = $followingCount;
+			$user['following_count'] = $followingCount;
 			$haveCount = $this->getHaveCount($id);
-			$user['haveCount'] = $haveCount;
+			$user['have_count'] = $haveCount;
 			$wantCount = $this->getWantCount($id);
-			$user['wantCount'] = $wantCount;
+			$user['want_count'] = $wantCount;
 			$relationship = $this->getRelationship($currentUser_id, $id);
 			$user['relationship_with_currentUser'] = $relationship;
 			return $user;
@@ -254,6 +254,7 @@ class UserDAO extends BaseDAO
 			return false;
 		$query = "INSERT INTO follow VALUES($userB_id,$userA_id)";	
 		$this->db_conn->query($query);
+		return true;
 	}
 	
 	public function setAUnfollowB($userA_id, $userB_id) {
@@ -261,6 +262,7 @@ class UserDAO extends BaseDAO
 			return false;
 		$query = "DELETE FROM follow WHERE followee_uid = $userB_id AND follower_uid = $userA_id";	
 		$this->db_conn->query($query);
+		return true;
 	}
 	
 	

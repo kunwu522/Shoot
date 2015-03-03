@@ -462,7 +462,6 @@ static NSString * TAKE_PHOTO = @"Take Photo";
                          
                          self.tableView.contentInset = insets;
                          self.tableView.scrollIndicatorInsets = insets;
-                         [self scrollToBottomAnimated:YES];
                      }
                      completion:^(BOOL finished) {
                      }];

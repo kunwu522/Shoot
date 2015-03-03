@@ -16,23 +16,23 @@
 #import "ImageUtil.h"
 #import "ColorDefinition.h"
 
-@interface ConversationViewController ()
+@interface ConversationViewController () <JSMessagesViewDelegate, JSMessagesViewDataSource, NSFetchedResultsControllerDelegate>
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
-@property (nonatomic, strong) UIImage *participant_avatar;
-@property (nonatomic, strong) UIImage *current_user_avatar;
-
-@property (nonatomic, retain) NSMutableArray *users;
+@property (nonatomic, retain) UIView *headerView;
+@property (nonatomic, retain) UIImageView *userAvatar;
+@property (nonatomic, retain) UILabel * usernameLabel;
 
 @end
 
 @implementation ConversationViewController
 
-const NSInteger USER_LIST_TAG = 1;
 static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
 static CGFloat USERNAME_TEXT_FIELD_HEIGHT = 25;
 static CGFloat PADDING = 5;
+static CGFloat AVATAR_SIZE = 50;
+static CGFloat HEADER_HEIGHT = 30;
 
 #pragma mark - Initialization
 - (UIButton *)sendButton
@@ -46,6 +46,34 @@ static CGFloat PADDING = 5;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, HEADER_HEIGHT)];
+    [self.headerView setBackgroundColor:[ColorDefinition lightRed]];
+    [self.view addSubview:self.headerView];
+    
+    self.userAvatar = [[UIImageView alloc] initWithFrame:CGRectMake(PADDING * 3, PADDING, AVATAR_SIZE, AVATAR_SIZE)];
+    CALayer * l = [self.userAvatar layer];
+    [l setMasksToBounds:YES];
+    [l setBorderColor:[UIColor whiteColor].CGColor];
+    [l setBorderWidth:2];
+    [l setCornerRadius:self.userAvatar.frame.size.width/2.0];
+    
+    [self.view addSubview:self.userAvatar];
+    self.userAvatar.contentMode = UIViewContentModeScaleAspectFill;
+    self.userAvatar.clipsToBounds = YES;
+    self.userAvatar.userInteractionEnabled = true;
+    UITapGestureRecognizer *singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTapped:)];
+    [self.userAvatar addGestureRecognizer:singleFingerTap];
+    
+    CGFloat usernameLabelX = self.userAvatar.frame.size.width + self.userAvatar.frame.origin.x + PADDING;
+    self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(usernameLabelX, self.headerView.frame.origin.y, self.view.frame.size.width - usernameLabelX - PADDING * 2, self.headerView.frame.size.height)];
+    [self.view addSubview:self.usernameLabel];
+    self.usernameLabel.font = [UIFont boldSystemFontOfSize:12];
+    self.usernameLabel.textColor = [UIColor whiteColor];
+    self.usernameLabel.textAlignment = NSTextAlignmentLeft;
+    
+    [self.tableView setFrame:CGRectMake(0, self.headerView.frame.origin.y + self.headerView.frame.size.height, self.tableView.frame.size.width, self.tableView.frame.size.height - (self.headerView.frame.origin.y + self.headerView.frame.size.height))];
+    self.tableView.showsVerticalScrollIndicator = false;
     self.delegate = self;
     self.dataSource = self;
     
@@ -62,125 +90,25 @@ static CGFloat PADDING = 5;
 }
 
 - (void) reloadView {
-    if ([self isNewConversation]) {
-        self.title = @"New Message";
-        self.users = [NSMutableArray array];
-        
-        self.usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(PADDING, PADDING, self.view.frame.size.width - PADDING * 2, USERNAME_TEXT_FIELD_HEIGHT)];
-        [self.view addSubview:self.usernameTextField];
-        [self.usernameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-        self.usernameTextField.font = [UIFont systemFontOfSize:12];
-        self.usernameTextField.placeholder = @"Username";
-        [self.usernameTextField setTintColor:[ColorDefinition lightRed]];
-        [self.usernameTextField becomeFirstResponder];
-        UIView *paddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, 20)];
-        self.usernameTextField.leftView = paddingView;
-        self.usernameTextField.leftViewMode = UITextFieldViewModeAlways;
-        [self.usernameTextField setTextColor:[UIColor darkGrayColor]];
-        self.usernameTextField.layer.borderWidth = 0.5;
-        self.usernameTextField.layer.cornerRadius = 5;
-        self.usernameTextField.layer.borderColor = [UIColor lightGrayColor].CGColor;
-        
-        CGFloat usernameListY = self.usernameTextField.frame.origin.y + self.usernameTextField.frame.size.height + PADDING;
-        self.usernameList = [[UITableView alloc] initWithFrame:CGRectMake(0, usernameListY, self.view.frame.size.width, self.view.frame.size.height - usernameListY)];
-        self.usernameList.dataSource = self;
-        self.usernameList.delegate = self;
-        [self.view addSubview:self.usernameList];
-        self.usernameList.tag = USER_LIST_TAG;
-        self.usernameList.hidden = false;
-        [self.usernameList setSeparatorInset:UIEdgeInsetsZero];
-        self.usernameList.tableFooterView = [[UIView alloc] init];
-        self.usernameList.delegate = self;
-        [self.usernameList registerClass:[UserTableViewCell class] forCellReuseIdentifier:USER_TABLE_CELL_REUSE_ID];
-        [self.usernameList setFrame:CGRectMake(self.usernameList.frame.origin.x, self.usernameList.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height - self.usernameList.frame.origin.y)];
-        self.inputToolBarView.hidden = true;
-        [self loadFollowingUsers];
-    } else {
-        //init fetch controller
-        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Message"];
-        NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
-        fetchRequest.sortDescriptors = @[descriptor];
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"type = 'message' and (participant.userID = %@)", self.participant.userID]];
-        fetchRequest.predicate = predicate;
-        [fetchRequest setFetchBatchSize:10];
-        // Setup fetched results
-        self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:[RKManagedObjectStore defaultStore].mainQueueManagedObjectContext sectionNameKeyPath:nil cacheName:nil];
-        
-        [self.fetchedResultsController setDelegate:self];
-        
-        [[SDWebImageManager sharedManager] downloadImageWithURL:[ImageUtil imageURLOfAvatar:self.participant.userID] options:(SDWebImageHandleCookies | SDWebImageRefreshCached) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-        } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-            if (finished) {
-                if (image) self.participant_avatar = image;
-                else self.participant_avatar = [UIImage imageNamed:@"avatar.jpg"];
-                if (self.current_user_avatar) {
-                    [self loadData];
-                    [self showConversation];
-                }
-            }
-        }];
-        
-        AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-        [[SDWebImageManager sharedManager] downloadImageWithURL:[ImageUtil imageURLOfAvatar:appDelegate.currentUser.userID] options:(SDWebImageHandleCookies | SDWebImageRefreshCached) progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-        } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-            if (finished) {
-                if (image) self.current_user_avatar = image;
-                else self.current_user_avatar = [UIImage imageNamed:@"avatar.jpg"];
-                if (self.participant_avatar) {
-                    [self loadData];
-                    [self showConversation];
-                }
-            }
-        }];
-        
-        self.inputToolBarView.hidden = false;
-        self.title = self.participant.username;
-        self.usernameTextField.hidden = true;
-        self.usernameList.hidden = true;
-    }
-}
-
-- (BOOL) isNewConversation
-{
-    return self.participant == nil;
-}
-
-#pragma mark - Username TextField delegate
-- (void)textFieldDidChange:(UITextField *)textField
-{
-    self.usernameList.hidden = false;
-    NSString *usernamePrefix = textField.text;
-    if ([usernamePrefix isEqualToString:@""]) {
-        [self loadFollowingUsers];
-    } else {
-        [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/getUsernamesByPrefix/%@", usernamePrefix] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-            [self updateUsernameListWithMappingResult:mappingResult];
-        } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-            RKLogError(@"Load getUsernamesByPrefix failed with error: %@", error);
-        }];
-    }
-}
-
-- (void) loadFollowingUsers
-{
-    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-    [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/getFollowingUsers/%@/%d",appDelegate.currentUser.userID, 10] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        [self updateUsernameListWithMappingResult:mappingResult];
-    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        RKLogError(@"Load getFollowingUsers failed with error: %@", error);
-    }];
-}
-
-- (void) updateUsernameListWithMappingResult:(RKMappingResult *)mappingResult
-{
-    [self.users removeAllObjects];
-    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-    for (User * user in mappingResult.array) {
-        if (![user.userID isEqualToNumber:appDelegate.currentUser.userID]) {
-            [self.users addObject:user];
-        }
-    }
-    [self.usernameList reloadData];
+    //init fetch controller
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Message"];
+    
+    NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
+    fetchRequest.sortDescriptors = @[descriptor];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"type = 'message' and (participant.userID = %@)", self.participant.userID]];
+    fetchRequest.predicate = predicate;
+    
+    // Setup fetched results
+    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:[RKManagedObjectStore defaultStore].mainQueueManagedObjectContext sectionNameKeyPath:nil cacheName:nil];
+    
+    [self.fetchedResultsController setDelegate:self];
+    
+    [self loadData];
+    [self showConversation];
+    
+    self.inputToolBarView.hidden = false;
+    self.usernameLabel.text = [NSString stringWithFormat:@"@%@", self.participant.username];
+    [self.userAvatar sd_setImageWithURL:[ImageUtil imageURLOfAvatar:self.participant.userID] placeholderImage:[UIImage imageNamed:@"avatar.jpg"] options:SDWebImageHandleCookies];
 }
 
 - (void) loadData {
@@ -194,66 +122,8 @@ static CGFloat PADDING = 5;
 #pragma mark - Table view data source
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (tableView.tag == USER_LIST_TAG) {
-        return self.users.count;
-    } else {
-        id sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
-        return [sectionInfo numberOfObjects];
-    }
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    if (tableView.tag == USER_LIST_TAG) {
-        return 1;
-    } else {
-        return [super numberOfSectionsInTableView:tableView];
-    }
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (tableView.tag == USER_LIST_TAG) {
-        return USER_TABLE_VIEW_CELL_HEIGHT;
-    } else {
-        return [super tableView:tableView heightForRowAtIndexPath:indexPath];
-    }
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (tableView.tag == USER_LIST_TAG) {
-        UserTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:USER_TABLE_CELL_REUSE_ID forIndexPath:indexPath];
-        if (cell) {
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            User *user = [self.users objectAtIndex:indexPath.row];
-            [cell decorateCellWithUser:user];
-            cell.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:0.4];
-        }
-        
-        return cell;
-    } else {
-        return [super tableView:tableView cellForRowAtIndexPath:indexPath];
-    }
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    if (scrollView.tag == USER_LIST_TAG) {
-        [self.usernameTextField endEditing:true];
-    } else {
-        [super scrollViewDidScroll:scrollView];
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (tableView.tag == USER_LIST_TAG) {
-        User *user = [self.users objectAtIndex:indexPath.row];
-        self.participant = user;
-        [self.usernameTextField resignFirstResponder];
-        [self reloadView];
-    }
+    id sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
+    return [sectionInfo numberOfObjects];
 }
 
 #pragma mark - Messages view delegate
@@ -263,10 +133,6 @@ static CGFloat PADDING = 5;
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     RKManagedObjectStore *objectStore = [[RKObjectManager sharedManager] managedObjectStore];
     Message *message = [NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:objectStore.mainQueueManagedObjectContext];
-//    message.id = [NSNumber numberWithInt:-1];
-    if (message.objectID.isTemporaryID) {
-        NSLog(@"temp id");
-    }
     
     message.sender_id = appDelegate.currentUser.userID;
     message.participant = self.participant;
@@ -277,12 +143,11 @@ static CGFloat PADDING = 5;
     [self createMessageOnServer:message];
 }
 
-- (void)avatarTappedForIndexPath:(NSIndexPath *)indexPath
+- (void)avatarTapped:(UITapGestureRecognizer *)recognizer
 {
-    Message *message = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    UserViewController *controller = (UserViewController *)[[AppDelegate getMainStoryboard] instantiateViewControllerWithIdentifier:@"UserViewController"];
-//    [controller setUser_id:message.sender_id];
-    [self.navigationController pushViewController:controller animated:YES];
+    UserViewController* viewController = [[UserViewController alloc] initWithNibName:nil bundle:nil];
+    viewController.userID = self.participant.userID;
+    [self presentViewController:viewController animated:YES completion:nil];
 }
 
 - (void) createMessageOnServer:(Message *) message {
@@ -390,7 +255,7 @@ static CGFloat PADDING = 5;
 
 - (JSAvatarStyle)avatarStyle
 {
-    return JSAvatarStyleCircle;
+    return JSAvatarStyleNone;
 }
 
 //  Optional delegate method
@@ -415,12 +280,12 @@ static CGFloat PADDING = 5;
 - (UIImage *)avatarImageForIncomingMessage
 {
     
-    return self.participant_avatar;
+    return nil;
 }
 
 - (UIImage *)avatarImageForOutgoingMessage
 {
-    return self.current_user_avatar;
+    return nil;
 }
 
 @end

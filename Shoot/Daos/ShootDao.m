@@ -20,7 +20,6 @@
                                                       @"content" : @"content",
                                                       @"want_count" : @"want_count",
                                                       @"like_count" : @"like_count",
-                                                      @"is_feed" : @"is_feed",
                                                       @"score" : @"score",
                                                       @"if_cur_user_want_it" : @"if_cur_user_want_it",
                                                       @"if_cur_user_like_it" : @"if_cur_user_like_it",
@@ -36,7 +35,7 @@
     
     responseMapping.identificationAttributes = @[ @"shootID" ];
     
-    [responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"user" toKeyPath:@"user" withMapping:[[UserDao new] getResponseMapping]]];
+    [responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"user" toKeyPath:@"user" withMapping:[[UserDao sharedManager] getResponseMapping]]];
     return responseMapping;
 }
 

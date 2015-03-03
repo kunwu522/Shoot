@@ -11,8 +11,11 @@
 #import "BlurView.h"
 #import "MenuTableViewCell.h"
 #import "ImageUtil.h"
+#import "AppDelegate.h"
 
-@interface MenuViewController ()
+@interface MenuViewController () <NotificationDelegate>
+
+@property (nonatomic) NSInteger badgeCount;
 
 @end
 
@@ -31,6 +34,15 @@ static NSString * TABEL_CELL_REUSE_ID = @"menuItem";
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    appDelegate.notificationDelegate = self;
+    [appDelegate updateBadgeCount];
+}
+
+- (void) updateBadgeCount:(NSInteger) badgeCount
+{
+    self.badgeCount = badgeCount;
+    [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -72,6 +84,15 @@ static NSString * TABEL_CELL_REUSE_ID = @"menuItem";
         cell.icon.image = [ImageUtil colorImage:[UIImage imageNamed:@"profile-icon"] color:[UIColor whiteColor]];
     } else {
         
+    }
+    if (self.badgeCount > 0 && indexPath.row == 3) {
+        cell.counterLabel.text = [NSString stringWithFormat:@"%ld", self.badgeCount];
+        CGSize sizeToMakeLabel = [cell.counterLabel.text sizeWithAttributes:@{NSFontAttributeName:cell.counterLabel.font}];
+        
+        cell.counterLabel.frame = CGRectMake(cell.counterLabel.frame.origin.x, cell.counterLabel.frame.origin.y, sizeToMakeLabel.width + 8, cell.counterLabel.frame.size.height);
+        cell.counterLabel.hidden = false;
+    } else {
+        cell.counterLabel.hidden = true;
     }
     return cell;
 }

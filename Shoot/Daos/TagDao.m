@@ -16,19 +16,13 @@
     RKEntityMapping * responseMapping = [RKEntityMapping mappingForEntityForName:NSStringFromClass([Tag class]) inManagedObjectStore:[RKObjectManager sharedManager].managedObjectStore];
     
     [responseMapping addAttributeMappingsFromDictionary:@{
-                                                               @"id" : @"id",
+                                                               @"id" : @"tagID",
                                                                @"time" : @"time",
                                                                @"tag" : @"tag",
                                                                @"deleted" : @"shouldBeDeleted",
                                                                @"have_count" : @"have_count",
                                                                @"want_count" : @"want_count"
                                                                }];
-    NSDictionary *parentObjectMapping = @{
-                                          @"id" : @"tagID",
-                                          @"time" : @"time",
-                                          @"deleted" : @"shouldBeDeleted"
-                                          };
-    [responseMapping addAttributeMappingsFromDictionary:parentObjectMapping];
     
     responseMapping.identificationAttributes = @[ @"tagID" ];
     return responseMapping;

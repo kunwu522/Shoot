@@ -15,6 +15,8 @@
 #import "TagDao.h"
 #import "UserTagShootDao.h"
 #import "MessageDao.h"
+#import "UserTagShoot.h"
+#import "Shoot.h"
 
 #define IS_OS_6_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.0)
 #define IS_OS_8_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
@@ -53,7 +55,6 @@ NSString * _deviceToken;
     } else {
         NSLog(@"%@", self.currentUser.userID);
     }
-    
     
 //    [[UIApplication sharedApplication] setStatusBarStyle:[AppDelegate getUIStatusBarStyle]];
 //    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
@@ -269,11 +270,11 @@ NSString * _deviceToken;
     RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
     manager.managedObjectStore = managedObjectStore;
     
-    [[UserTagShootDao new] registerRestKitMapping];
-    [[UserDao new] registerRestKitMapping];
-    [[ShootDao new] registerRestKitMapping];
-    [[TagDao new] registerRestKitMapping];
-    [[MessageDao new] registerRestKitMapping];
+    [[UserDao sharedManager] registerRestKitMapping];
+    [[ShootDao sharedManager] registerRestKitMapping];
+    [[TagDao sharedManager] registerRestKitMapping];
+    [[MessageDao sharedManager] registerRestKitMapping];
+    [[UserTagShootDao sharedManager] registerRestKitMapping];
     
     /**
      Complete Core Data stack initialization

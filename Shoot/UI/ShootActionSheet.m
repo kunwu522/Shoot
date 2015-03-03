@@ -33,7 +33,7 @@
     _buttons = [[NSMutableArray alloc]init];
     
     _background = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([UIScreen mainScreen].bounds), CGRectGetHeight([UIScreen mainScreen].bounds))];
-    _background.backgroundColor = [UIColor whiteColor];
+    _background.backgroundColor = [UIColor darkGrayColor];
     _background.alpha = 0.0;
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(cancelActoinSheet)];

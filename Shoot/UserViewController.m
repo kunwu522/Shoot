@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Shoot. All rights reserved.
 //
 
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "UserViewController.h"
 #import "SWRevealViewController.h"
 #import "ImageUtil.h"
@@ -16,15 +17,20 @@
 #import "MapView.h"
 #import "MapAnnotation.h"
 #import "UIViewHelper.h"
+#import "UserDao.h"
+#import "ShootImageView.h"
+#import "AppDelegate.h"
+#import "ShootActionSheet.h"
+#import "UserListView.h"
 
 @interface UserViewController () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, MNCalendarViewDelegate>
 
 @property (nonatomic, retain) UITableView *tableView;
 @property (retain, nonatomic) UIImageView * header;
-@property (retain, nonatomic) UIImageView * userAvatar;
-@property (retain, nonatomic) UILabel *followersCount;
+@property (retain, nonatomic) ShootImageView * userAvatar;
+@property (retain, nonatomic) UIButton *followersCount;
 @property (retain, nonatomic) UILabel *followers;
-@property (retain, nonatomic) UILabel *followingCount;
+@property (retain, nonatomic) UIButton *followingCount;
 @property (retain, nonatomic) UILabel *followings;
 @property (retain, nonatomic) UILabel *username;
 @property (retain, nonatomic) UIButton * follow;
@@ -41,6 +47,7 @@
 @property (retain, nonatomic) MNCalendarView *calendarView;
 @property (retain, nonatomic) UIView * sectionHeaderView;
 @property (nonatomic) NSInteger imageViewStatus;
+@property (retain, nonatomic) UserListView *userListView;
 
 @end
 
@@ -67,8 +74,15 @@ static CGFloat WANTS_BUTTON_HEIGHT = 30;
 static CGFloat VIEW_BUTTON_HEIGHT = 35;
 static CGFloat BUTTON_SIZE = 15;
 
+static NSString * PHOTO_LIBARARY = @"Photo Library";
+static NSString * TAKE_PHOTO = @"Take Photo";
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    if (!self.userID) {
+        self.userID = appDelegate.currentUser.userID;
+    }
     
     self.imageViewStatus = GRID_VIEW_TAG;
     
@@ -106,6 +120,153 @@ static CGFloat BUTTON_SIZE = 15;
     [self initSectionHeaderView];
     
     [self.tableView reloadData];
+    
+    [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/query/%@", self.userID] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        [self updateUserAvatar];
+        [self updateView];
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        RKLogError(@"Load failed with error: %@", error);
+        UIAlertView *av = [[UIAlertView alloc] initWithTitle:nil message:@"Failed to load user profile. Please try again later." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [av show];
+    }];
+    
+    [self updateUserAvatar];
+    [self updateView];
+    
+    self.userListView = [[UserListView alloc] initWithFrame:self.view.bounds];
+    [self.view addSubview:self.userListView];
+    self.userListView.hidden = true;
+}
+
+- (void)updateUserAvatar
+{
+    [self.userAvatar setImageURL:[ImageUtil imageURLOfAvatar:self.userID] isAvatar:YES];
+}
+
+- (void)updateView
+{
+    self.user = [[UserDao sharedManager] findUserByIdLocally:self.userID];
+    [self.followersCount setTitle:[NSString stringWithFormat:@"%@", self.user.follower_count] forState:UIControlStateNormal];
+    [self.followingCount setTitle:[NSString stringWithFormat:@"%@", self.user.following_count] forState:UIControlStateNormal];
+    self.username.text = self.user.username;
+    [self.wants setTitle:[NSString stringWithFormat:@" %@ wants", self.user.want_count] forState:UIControlStateNormal];
+    [self.haves setTitle:[NSString stringWithFormat:@" %@ haves", self.user.have_count] forState:UIControlStateNormal];
+    
+    if ([self.user.relationship_with_currentUser intValue] == 0) {
+        [self makeEditProfileButton];
+        [self makeCameraButton];
+    } else if ([self.user.relationship_with_currentUser intValue] < 3){
+        [self makeFollowButton];
+        [self makeMessageButton];
+    } else {
+        [self makeFollowingButton];
+        [self makeMessageButton];
+    }
+}
+
+- (void)makeMessageButton
+{
+    [self.message setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"message-filled"] atSize:CGSizeMake(self.username.frame.size.height* 0.7, self.username.frame.size.height * 0.7)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
+    [self.message setBackgroundColor:[ColorDefinition greenColor]];
+}
+
+- (void)makeCameraButton
+{
+    [self.message setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"camera-filled"] atSize:CGSizeMake(self.username.frame.size.height* 0.6, self.username.frame.size.height * 0.6)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
+    [self.message setBackgroundColor:[ColorDefinition lightRed]];
+    [self.message removeTarget:nil action:NULL forControlEvents:UIControlEventAllEvents];
+    [self.message addTarget:self action:@selector(takePhoto:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)makeEditProfileButton
+{
+    [self.follow setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"setting-icon"] atSize:CGSizeMake(self.username.frame.size.height * 0.6, self.username.frame.size.height * 0.6)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
+    [self.follow setBackgroundColor:[UIColor grayColor]];
+}
+
+- (void)makeFollowButton
+{
+    [self.follow setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"follow"] atSize:CGSizeMake(self.username.frame.size.height * 0.7, self.username.frame.size.height * 0.7)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
+    [self.follow setBackgroundColor:[ColorDefinition blueColor]];
+    [self.follow removeTarget:nil action:NULL forControlEvents:UIControlEventAllEvents];
+    [self.follow addTarget:self action:@selector(follow:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)makeFollowingButton
+{
+    [self.follow setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"followed"] atSize:CGSizeMake(self.username.frame.size.height * 0.7, self.username.frame.size.height * 0.7)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
+    [self.follow setBackgroundColor:[ColorDefinition blueColor]];
+    [self.follow removeTarget:nil action:NULL forControlEvents:UIControlEventAllEvents];
+    [self.follow addTarget:self action:@selector(unfollow:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)takePhoto:(id)sender
+{
+//    ShootActionSheet *as;
+//    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+//        as = [[ShootActionSheet alloc]initWithTitle:nil
+//                                           delegate:self
+//                                  cancelButtonTitle:@"Cancel"
+//                             destructiveButtonTitle:nil
+//                                  otherButtonTitles:PHOTO_LIBARARY, nil];
+//    } else {
+//        as = [[ShootActionSheet alloc]initWithTitle:nil
+//                                           delegate:self
+//                                  cancelButtonTitle:@"Cancel"
+//                             destructiveButtonTitle:nil
+//                                  otherButtonTitles:TAKE_PHOTO, PHOTO_LIBARARY, nil];
+//    }
+//    [as showInView:self.view];
+}
+
+- (void)follow:(id)sender
+{
+    self.follow.enabled = false;
+    [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/follow/%@", self.userID] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        self.follow.enabled = true;
+        [self updateView];
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        self.follow.enabled = true;
+        RKLogError(@"Follow failed with error: %@", error);
+    }];
+}
+
+- (void)unfollow:(id)sender
+{
+    self.follow.enabled = false;
+    [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/unfollow/%@", self.userID] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        self.follow.enabled = true;
+        [self updateView];
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        RKLogError(@"Unfollow failed with error: %@", error);
+        self.follow.enabled = true;
+    }];
+}
+
+- (void) showFollowers:(id)sender
+{
+    if ([self.user.follower_count integerValue] > 0) {
+        self.userListView.urlPathToPullUsers = [NSString stringWithFormat:@"user/getFollowers/%@/%d", self.userID, 10];
+        [self.userListView reload];
+        self.userListView.alpha = 0.0;
+        self.userListView.hidden = false;
+        [UIView animateWithDuration:0.3 animations:^{
+            self.userListView.alpha = 1.0;
+        }];
+    }
+}
+
+-(void) showFollowings:(id)sender
+{
+    if ([self.user.following_count integerValue] > 0) {
+        self.userListView.urlPathToPullUsers = [NSString stringWithFormat:@"user/getFollowingUsers/%@/%d", self.userID, 10];
+        [self.userListView reload];
+        self.userListView.alpha = 0.0;
+        self.userListView.hidden = false;
+        [UIView animateWithDuration:0.3 animations:^{
+            self.userListView.alpha = 1.0;
+        }];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -146,7 +307,7 @@ static CGFloat BUTTON_SIZE = 15;
     visualEffectView.frame = self.sectionHeaderView.bounds;
     [self.sectionHeaderView addSubview:visualEffectView];
     
-    self.userAvatar = [[UIImageView alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - AVATAR_SIZE/2.0, - AVATAR_OFFSET, AVATAR_SIZE, AVATAR_SIZE)];
+    self.userAvatar = [[ShootImageView alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - AVATAR_SIZE/2.0, - AVATAR_OFFSET, AVATAR_SIZE, AVATAR_SIZE)];
     CALayer * l = [self.userAvatar layer];
     [l setMasksToBounds:YES];
     [l setBorderColor:[UIColor whiteColor].CGColor];
@@ -154,14 +315,12 @@ static CGFloat BUTTON_SIZE = 15;
     [l setCornerRadius:self.userAvatar.frame.size.width/2.0];
     self.userAvatar.contentMode = UIViewContentModeScaleAspectFill;
     self.userAvatar.clipsToBounds = YES;
-    self.userAvatar.image = [UIImage imageNamed:@"image5.jpg"];
     [self.sectionHeaderView addSubview:self.userAvatar];
     
-    self.followersCount = [[UILabel alloc] initWithFrame:CGRectMake(0, PADDING * 2, (self.view.frame.size.width - AVATAR_SIZE)/2.0, FOLLOWER_LABEL_HEIGHT)];
-    self.followersCount.text = @"2,423,763";
-    self.followersCount.textColor = [UIColor darkGrayColor];
-    self.followersCount.font = [UIFont fontWithName:@"ArialRoundedMTBold" size:14];
-    self.followersCount.textAlignment = NSTextAlignmentCenter;
+    self.followersCount = [[UIButton alloc] initWithFrame:CGRectMake(0, PADDING * 2, (self.view.frame.size.width - AVATAR_SIZE)/2.0, FOLLOWER_LABEL_HEIGHT)];
+    [self.followersCount setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+    self.followersCount.titleLabel.font = [UIFont fontWithName:@"ArialRoundedMTBold" size:14];
+    [self.followersCount addTarget:self action:@selector(showFollowers:) forControlEvents:UIControlEventTouchUpInside];
     [self.sectionHeaderView addSubview:self.followersCount];
     
     self.followers = [[UILabel alloc] initWithFrame:CGRectMake(0, self.followersCount.frame.origin.y + self.followersCount.frame.size.height, (self.view.frame.size.width - AVATAR_SIZE)/2.0, FOLLOWER_LABEL_HEIGHT)];
@@ -171,11 +330,10 @@ static CGFloat BUTTON_SIZE = 15;
     self.followers.textAlignment = NSTextAlignmentCenter;
     [self.sectionHeaderView addSubview:self.followers];
     
-    self.followingCount = [[UILabel alloc] initWithFrame:CGRectMake(self.userAvatar.frame.origin.x + self.userAvatar.frame.size.width, PADDING * 2, (self.view.frame.size.width - AVATAR_SIZE)/2.0, FOLLOWER_LABEL_HEIGHT)];
-    self.followingCount.text = @"321";
-    self.followingCount.textColor = [UIColor darkGrayColor];
-    self.followingCount.font = [UIFont fontWithName:@"ArialRoundedMTBold" size:14];
-    self.followingCount.textAlignment = NSTextAlignmentCenter;
+    self.followingCount = [[UIButton alloc] initWithFrame:CGRectMake(self.userAvatar.frame.origin.x + self.userAvatar.frame.size.width, PADDING * 2, (self.view.frame.size.width - AVATAR_SIZE)/2.0, FOLLOWER_LABEL_HEIGHT)];
+    [self.followingCount setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+    self.followingCount.titleLabel.font = [UIFont fontWithName:@"ArialRoundedMTBold" size:14];
+    [self.followingCount addTarget:self action:@selector(showFollowings:) forControlEvents:UIControlEventTouchUpInside];
     [self.sectionHeaderView addSubview:self.followingCount];
     
     self.followings = [[UILabel alloc] initWithFrame:CGRectMake(self.userAvatar.frame.origin.x + self.userAvatar.frame.size.width, self.followersCount.frame.origin.y + self.followersCount.frame.size.height, (self.view.frame.size.width - AVATAR_SIZE)/2.0, FOLLOWER_LABEL_HEIGHT)];
@@ -189,33 +347,27 @@ static CGFloat BUTTON_SIZE = 15;
     
     self.username = [[UILabel alloc] initWithFrame:CGRectMake(PADDING * 2 + followButtonWidth, self.userAvatar.frame.origin.y + self.userAvatar.frame.size.height, self.view.frame.size.width - PADDING * 4 - followButtonWidth * 2, USERNAME_HEIGHT)];
     self.username.textAlignment = NSTextAlignmentCenter;
-    self.username.text = @"USERNAME";
     self.username.textColor = [UIColor darkGrayColor];
     self.username.font = [UIFont fontWithName:@"ArialRoundedMTBold" size:14];
     [self.sectionHeaderView addSubview:self.username];
     
     self.follow = [[UIButton alloc] initWithFrame:CGRectMake(self.username.frame.origin.x + self.username.frame.size.width + PADDING + (followButtonWidth - self.username.frame.size.height)/2.0, self.username.frame.origin.y, self.username.frame.size.height, self.username.frame.size.height)];
-    [self.follow setBackgroundColor:[ColorDefinition blueColor]];
-    [self.follow setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"follow"] atSize:CGSizeMake(self.username.frame.size.height * 0.6, self.username.frame.size.height * 0.6)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
     self.follow.layer.cornerRadius = self.follow.frame.size.height/2.0;
     [self.sectionHeaderView addSubview:self.follow];
     
     self.message = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + (followButtonWidth - self.username.frame.size.height)/2.0, self.username.frame.origin.y, self.username.frame.size.height, self.username.frame.size.height)];
     [self.message setBackgroundColor:[ColorDefinition greenColor]];
-    [self.message setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"message"] atSize:CGSizeMake(self.username.frame.size.height* 0.6, self.username.frame.size.height * 0.5)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
     self.message.layer.cornerRadius = self.message.frame.size.height/2.0;
     [self.sectionHeaderView addSubview:self.message];
     
     self.wants = [[UIButton alloc] initWithFrame:CGRectMake(PADDING, self.username.frame.origin.y + self.username.frame.size.height + PADDING * 2, (self.sectionHeaderView.frame.size.width - PADDING * 2)/2.0, WANTS_BUTTON_HEIGHT)];
     [self.wants setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor darkGrayColor]] forState:UIControlStateNormal];
-    [self.wants setTitle:@" 10 wants" forState:UIControlStateNormal];
     self.wants.titleLabel.font = [UIFont boldSystemFontOfSize:12];
     [self.wants setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
     [self.sectionHeaderView addSubview:self.wants];
     
     self.haves = [[UIButton alloc] initWithFrame:CGRectMake(self.wants.frame.size.width + self.wants.frame.origin.x, self.wants.frame.origin.y, (self.sectionHeaderView.frame.size.width - PADDING * 2)/2.0, 30)];
     [self.haves setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"have-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor grayColor]] forState:UIControlStateNormal];
-    [self.haves setTitle:@" 15 haves" forState:UIControlStateNormal];
     self.haves.titleLabel.font = [UIFont boldSystemFontOfSize:12];
     [self.haves setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
     [self.sectionHeaderView addSubview:self.haves];

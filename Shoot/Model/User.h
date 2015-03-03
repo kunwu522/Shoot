@@ -23,7 +23,10 @@
 @property (nonatomic, retain) NSString * password;
 @property (nonatomic, retain) NSNumber * follower_count;
 @property (nonatomic, retain) NSNumber * following_count;
+@property (nonatomic, retain) NSNumber * have_count;
+@property (nonatomic, retain) NSNumber * want_count;
 @property (nonatomic, retain) NSNumber * has_avatar;
+@property (nonatomic, retain) NSNumber * has_bg_image;
 @property (nonatomic, retain) NSNumber * relationship_with_currentUser;
 @property (nonatomic, retain) NSString * user_type;
 @property (nonatomic, retain) NSString * username;

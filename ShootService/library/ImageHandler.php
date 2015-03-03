@@ -40,7 +40,7 @@
 	 * 
 	 */
 	
-	function saveImageForWeedsToServer($image, $user_id, $shoot_id) {
+	function saveImageForShootToServer($image, $user_id, $shoot_id) {
 		$destinationPath = get_shoot_image_filepath($user_id, $shoot_id);
 		return saveImageUnderPath($image, $destinationPath);
 	}

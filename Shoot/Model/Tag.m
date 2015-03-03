@@ -12,6 +12,7 @@
 
 @dynamic tagID;
 @dynamic time;
+@dynamic shouldBeDeleted;
 @dynamic have_count;
 @dynamic tag;
 @dynamic want_count;

@@ -11,12 +11,13 @@
 
 @implementation UserTagShoot
 
-@dynamic shoot_id;
-@dynamic user_id;
-@dynamic tag_id;
+@dynamic shootID;
+@dynamic userID;
+@dynamic tagID;
 @dynamic latitude;
 @dynamic longtitude;
 @dynamic shouldBeDeleted;
+@dynamic is_feed;
 @dynamic time;
 @dynamic type;
 @dynamic shoot;

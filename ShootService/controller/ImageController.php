@@ -9,7 +9,7 @@ class ImageController extends Controller
 {
 	private $UPLOAD_BASE_PATH = './upload/';
 	
-	public function upload($weed_id)
+	public function upload($shoot_id)
 	{
 		$user_id = $this->getCurrentUser();
 		
@@ -18,8 +18,8 @@ class ImageController extends Controller
 		error_log('Image size: ' . $_FILES['image']['size']);
 		error_log('Image tmp name: ' . $_FILES['image']['tmp_name']);
 
-		if (!saveImageForWeedsToServer($_FILES['image'], $user_id, $weed_id)) {
-			throw new DependencyFailureException('Failed to upload image for weed ' . $weed_id);
+		if (!saveImageForShootToServer($_FILES['image'], $user_id, $weed_id)) {
+			throw new DependencyFailureException('Failed to upload image for shoot ' . $shoot_id);
 		}
 	}
 	
@@ -67,14 +67,13 @@ class ImageController extends Controller
 		$type = array_shift($url_arr);
 		if ($type == 'shoot') {
 			$user_id = array_shift($url_arr);
-			$weed_id = array_shift($url_arr);
-			$count = array_shift($url_arr);
+			$shoot_id = array_shift($url_arr);
 			$quality = array_shift($url_arr);
-			if (!$user_id || !$weed_id || ($count == null)) {
+			if (!$user_id || !$shoot_id) {
 				error_log('Invalid url, url: ' . $image_url);
 				return null;
 			}
-			$filename = $this->get_weed_image_filename($user_id, $weed_id, $count);
+			$filename = $this->get_shoot_image_filename($user_id, $shoot_id);
 		} else if ($type == 'message') {
 			$user_id = array_shift($url_arr);
 			$message_id = array_shift($url_arr);
@@ -104,9 +103,9 @@ class ImageController extends Controller
 		return $image;
 	}
 	
-	private function get_weed_image_filename($user_id, $shoot_id, $count)
+	private function get_shoot_image_filename($user_id, $shoot_id)
 	{
-		return $this->UPLOAD_BASE_PATH . $user_id . '/shoot/' . $shoot_id . '/' . $count . '.jpeg';
+		return $this->UPLOAD_BASE_PATH . $user_id . '/shoot/' . $shoot_id . '/1.jpeg';
 	}
 	
 	private function get_message_image_filename($user_id, $message_id)

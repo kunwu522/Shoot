@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "User.h"
 
 @interface UserViewController : UIViewController
+
+@property (nonatomic, retain) NSNumber * userID;
+@property (nonatomic, retain) User * user;
 
 @end

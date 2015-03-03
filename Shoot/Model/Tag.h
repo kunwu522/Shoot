@@ -15,6 +15,7 @@
 
 @property (nonatomic, retain) NSNumber * tagID;
 @property (nonatomic, retain) NSDate * time;
+@property (nonatomic, retain) NSNumber * shouldBeDeleted;
 @property (nonatomic, retain) NSNumber * have_count;
 @property (nonatomic, retain) NSString * tag;
 @property (nonatomic, retain) NSNumber * want_count;
