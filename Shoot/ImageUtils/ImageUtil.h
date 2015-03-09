@@ -27,6 +27,8 @@
 
 + (NSURL *)imageURLOfAvatar: (NSNumber *)userId;
 
++ (NSURL *)imageURLOfBg:(NSNumber *)userId;
+
 + (NSURL *)imageURLOfShoot: (Shoot *)shoot;
 
 + (NSURL *)imageURLOfMessage:(Message *)message;

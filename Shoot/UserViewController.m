@@ -67,7 +67,7 @@ static const NSInteger CALENDAR_VIEW_TAG = 103;
 static CGFloat PADDING = 5;
 static CGFloat AVATAR_SIZE = 85;
 static CGFloat AVATAR_OFFSET = 30;
-static CGFloat HEADER_HEIGHT = 120;
+static CGFloat HEADER_HEIGHT = 140;
 static CGFloat USERNAME_HEIGHT = 30;
 static CGFloat FOLLOWER_LABEL_HEIGHT = 18;
 static CGFloat WANTS_BUTTON_HEIGHT = 30;
@@ -81,7 +81,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [super viewDidLoad];
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
     if (!self.userID) {
-        self.userID = appDelegate.currentUser.userID;
+        self.userID = appDelegate.currentUserID;
     }
     
     self.imageViewStatus = GRID_VIEW_TAG;
@@ -90,11 +90,11 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     if ( revealViewController )
     {
         [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
+    } else {
+        UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget: self action:@selector(doDoubleTap)];
+        doubleTap.numberOfTapsRequired = 2;
+        [self.view addGestureRecognizer:doubleTap];
     }
-    
-    UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget: self action:@selector(doDoubleTap)];
-    doubleTap.numberOfTapsRequired = 2;
-    [self.view addGestureRecognizer:doubleTap];
     
     self.view.backgroundColor = [UIColor whiteColor];
     self.tableView = [[UITableView alloc] initWithFrame:self.view.frame];
@@ -141,26 +141,35 @@ static NSString * TAKE_PHOTO = @"Take Photo";
 - (void)updateUserAvatar
 {
     [self.userAvatar setImageURL:[ImageUtil imageURLOfAvatar:self.userID] isAvatar:YES];
+    [self updateUserBg];
 }
+
+- (void)updateUserBg
+{
+    [self.header  sd_setImageWithURL:[ImageUtil imageURLOfBg:self.userID] placeholderImage:[UIImage imageNamed:@"image4.jpg"] options:(SDWebImageHandleCookies | SDWebImageRefreshCached)];
+}
+
 
 - (void)updateView
 {
     self.user = [[UserDao sharedManager] findUserByIdLocally:self.userID];
-    [self.followersCount setTitle:[NSString stringWithFormat:@"%@", self.user.follower_count] forState:UIControlStateNormal];
-    [self.followingCount setTitle:[NSString stringWithFormat:@"%@", self.user.following_count] forState:UIControlStateNormal];
-    self.username.text = self.user.username;
-    [self.wants setTitle:[NSString stringWithFormat:@" %@ wants", self.user.want_count] forState:UIControlStateNormal];
-    [self.haves setTitle:[NSString stringWithFormat:@" %@ haves", self.user.have_count] forState:UIControlStateNormal];
-    
-    if ([self.user.relationship_with_currentUser intValue] == 0) {
-        [self makeEditProfileButton];
-        [self makeCameraButton];
-    } else if ([self.user.relationship_with_currentUser intValue] < 3){
-        [self makeFollowButton];
-        [self makeMessageButton];
-    } else {
-        [self makeFollowingButton];
-        [self makeMessageButton];
+    if (self.user) {
+        [self.followersCount setTitle:[NSString stringWithFormat:@"%@", [UIViewHelper getCountString: self.user.follower_count]] forState:UIControlStateNormal];
+        [self.followingCount setTitle:[NSString stringWithFormat:@"%@", [UIViewHelper getCountString: self.user.following_count]] forState:UIControlStateNormal];
+        self.username.text = self.user.username;
+        [self.wants setTitle:[NSString stringWithFormat:@" %@ wants", self.user.want_count] forState:UIControlStateNormal];
+        [self.haves setTitle:[NSString stringWithFormat:@" %@ haves", self.user.have_count] forState:UIControlStateNormal];
+        
+        if ([self.user.relationship_with_currentUser intValue] == 0) {
+            [self makeEditProfileButton];
+            [self makeCameraButton];
+        } else if ([self.user.relationship_with_currentUser intValue] < 3){
+            [self makeFollowButton];
+            [self makeMessageButton];
+        } else {
+            [self makeFollowingButton];
+            [self makeMessageButton];
+        }
     }
 }
 
@@ -321,6 +330,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [self.followersCount setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
     self.followersCount.titleLabel.font = [UIFont fontWithName:@"ArialRoundedMTBold" size:14];
     [self.followersCount addTarget:self action:@selector(showFollowers:) forControlEvents:UIControlEventTouchUpInside];
+    [self.followersCount setTitle:@"0" forState:UIControlStateNormal];
     [self.sectionHeaderView addSubview:self.followersCount];
     
     self.followers = [[UILabel alloc] initWithFrame:CGRectMake(0, self.followersCount.frame.origin.y + self.followersCount.frame.size.height, (self.view.frame.size.width - AVATAR_SIZE)/2.0, FOLLOWER_LABEL_HEIGHT)];
@@ -334,6 +344,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [self.followingCount setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
     self.followingCount.titleLabel.font = [UIFont fontWithName:@"ArialRoundedMTBold" size:14];
     [self.followingCount addTarget:self action:@selector(showFollowings:) forControlEvents:UIControlEventTouchUpInside];
+    [self.followingCount setTitle:@"0" forState:UIControlStateNormal];
     [self.sectionHeaderView addSubview:self.followingCount];
     
     self.followings = [[UILabel alloc] initWithFrame:CGRectMake(self.userAvatar.frame.origin.x + self.userAvatar.frame.size.width, self.followersCount.frame.origin.y + self.followersCount.frame.size.height, (self.view.frame.size.width - AVATAR_SIZE)/2.0, FOLLOWER_LABEL_HEIGHT)];
@@ -348,6 +359,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     self.username = [[UILabel alloc] initWithFrame:CGRectMake(PADDING * 2 + followButtonWidth, self.userAvatar.frame.origin.y + self.userAvatar.frame.size.height, self.view.frame.size.width - PADDING * 4 - followButtonWidth * 2, USERNAME_HEIGHT)];
     self.username.textAlignment = NSTextAlignmentCenter;
     self.username.textColor = [UIColor darkGrayColor];
+    self.username.text = @"";
     self.username.font = [UIFont fontWithName:@"ArialRoundedMTBold" size:14];
     [self.sectionHeaderView addSubview:self.username];
     
@@ -356,7 +368,6 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [self.sectionHeaderView addSubview:self.follow];
     
     self.message = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + (followButtonWidth - self.username.frame.size.height)/2.0, self.username.frame.origin.y, self.username.frame.size.height, self.username.frame.size.height)];
-    [self.message setBackgroundColor:[ColorDefinition greenColor]];
     self.message.layer.cornerRadius = self.message.frame.size.height/2.0;
     [self.sectionHeaderView addSubview:self.message];
     
@@ -562,7 +573,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
 
 - (NSInteger) getImagesCount
 {
-    return 20;
+    return 2;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cv cellForItemAtIndexPath:(NSIndexPath *)indexPath {

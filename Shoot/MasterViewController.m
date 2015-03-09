@@ -17,10 +17,10 @@
 #import <RestKit/RestKit.h>
 #import "UserTagShoot.h"
 
-@interface MasterViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface MasterViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (retain, nonatomic) UITableView * tableView;
-
+@property (nonatomic,retain) UIRefreshControl *refreshControl;
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
 @end
@@ -28,6 +28,8 @@
 @implementation MasterViewController
 
 static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
+static CGFloat ADD_BUTTON_SIZE = 40;
+static CGFloat ADD_BUTTON_PADDING = 20;
 
 - (void)awakeFromNib {
     [super awakeFromNib];
@@ -41,22 +43,31 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
     {
         [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
     }
-    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    
+    [self initFetchController];
+    
     self.tableView = [[UITableView alloc] initWithFrame:self.view.frame];
     [self.view addSubview:self.tableView];
+    [self.tableView setContentInset:UIEdgeInsetsMake(self.tableView.contentInset.top, self.tableView.contentInset.left, ADD_BUTTON_SIZE + ADD_BUTTON_PADDING * 2, self.tableView.contentInset.right)];
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     [self.tableView setSeparatorColor:[UIColor clearColor]];
     self.tableView.showsHorizontalScrollIndicator = false;
     self.tableView.showsVerticalScrollIndicator = false;
     [self.tableView registerClass:[ShootTableViewCell class] forCellReuseIdentifier:TABEL_CELL_REUSE_ID];
-    [self.tableView reloadData];
     
-    UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - 20, self.view.frame.size.height - 60, 40, 40)];
+    CGFloat customRefreshControlHeight = 50.0f;
+    CGFloat customRefreshControlWidth = 100.0;
+    CGRect customRefreshControlFrame = CGRectMake(0.0f, -customRefreshControlHeight, customRefreshControlWidth, customRefreshControlHeight);
+    self.refreshControl = [[UIRefreshControl alloc] initWithFrame:customRefreshControlFrame];
+    [self.refreshControl addTarget:self action:@selector(refreshView:) forControlEvents:UIControlEventValueChanged];
+    [self.tableView addSubview:self.refreshControl];
+    [self.tableView sendSubviewToBack:self.refreshControl];
+    
+    UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake((self.view.frame.size.width - ADD_BUTTON_SIZE)/2.0, self.view.frame.size.height - ADD_BUTTON_PADDING - ADD_BUTTON_SIZE, ADD_BUTTON_SIZE, ADD_BUTTON_SIZE)];
     [self.view addSubview:addButton];
     [addButton setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"camera-filled"] color:[UIColor whiteColor]] atSize:CGSizeMake(20, 20)] forState:UIControlStateNormal];
     addButton.backgroundColor = [ColorDefinition lightRed];
-    addButton.alpha = 0.5;
     [addButton.layer setBorderColor:[UIColor whiteColor].CGColor];
     addButton.layer.cornerRadius = addButton.frame.size.width/2.0;
     addButton.layer.borderWidth = 2;
@@ -65,14 +76,14 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
     addButton.layer.shadowColor = [UIColor whiteColor].CGColor;
     addButton.layer.shadowOpacity = 1.0;
     
-//    [[RKObjectManager sharedManager] getObjectsAtPath:@"shoot/query"  parameters:nil success:^
-//     (RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-//         for (UserTagShoot *userTagShoot in mappingResult.array) {
-//             NSLog(@"%@", userTagShoot.shoot.user_tags);
-//         }
-//     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-//         RKLogError(@"Failed to call shoot/query due to error: %@", error);
-//     }];
+    [self loadData];
+    [self.refreshControl beginRefreshing];
+    [self refreshView:self.refreshControl];
+}
+
+-(void)refreshView:(UIRefreshControl *)refresh {
+    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Refreshing..."];
+    [self fetchData];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -80,13 +91,57 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
     // Dispose of any resources that can be recreated.
 }
 
+- (void) initFetchController
+{
+    NSString *sectionNameKeyPath = @"shootAndUser";
+    
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"UserTagShoot"];
+    NSSortDescriptor *timeSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO];
+    fetchRequest.sortDescriptors = @[timeSortDescriptor];
+
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"is_feed == 1"];
+    fetchRequest.predicate = predicate;
+    // Setup fetched results
+    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:[RKManagedObjectStore defaultStore].mainQueueManagedObjectContext sectionNameKeyPath:sectionNameKeyPath cacheName:nil];
+    
+    [self.fetchedResultsController setDelegate:self];
+}
+
+- (void) fetchData {
+    @synchronized(self) {
+        [[RKObjectManager sharedManager] getObjectsAtPath:@"shoot/query"  parameters:nil success:^
+         (RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+             [self loadData];
+             [self.refreshControl endRefreshing];
+         } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+             RKLogError(@"Failed to call shoot/query due to error: %@", error);
+             [self.refreshControl endRefreshing];
+         }];
+    }
+}
+
+- (void) loadData {
+    @synchronized(self) {
+        NSError *error = nil;
+        BOOL fetchSuccessful = [self.fetchedResultsController performFetch:&error];
+        if (! fetchSuccessful) {
+            NSLog(@"Fetch Error: %@",error);
+        }
+        [self.tableView reloadData];
+    }
+}
+
 #pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
-//        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        NSArray *userTagShoots = [[[self.fetchedResultsController sections] objectAtIndex:indexPath.section] objects];
+        UserTagShoot *userTagShoot = [userTagShoots objectAtIndex:0];
         DetailViewController *controller = (DetailViewController *)[segue destinationViewController];
-        [controller setDetailItem:@"Some string"];
+//        [controller setDetailItem:@"Some string"];
+        controller.shootID = userTagShoot.shootID;
         controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
     }
@@ -95,11 +150,11 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
 #pragma mark - Table View
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return [[self.fetchedResultsController sections] count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 5;
+    return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -120,9 +175,9 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
 }
 
 - (void)configureCell:(ShootTableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    UIImage * image = [UIImage imageNamed:[NSString stringWithFormat:@"image%ld.jpg", indexPath.row + 1]];
-    [cell decorate:image parentController:self];
-    [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    NSArray *userTagShoots = [[[self.fetchedResultsController sections] objectAtIndex:indexPath.section] objects];
+    UserTagShoot *userTagShoot = [userTagShoots objectAtIndex:0];
+    [cell decorateWith:userTagShoot.shoot user:userTagShoot.user userTagShoots:userTagShoots parentController:self];
 }
 
 #pragma mark - Fetched results controller
@@ -186,31 +241,31 @@ static NSString * TABEL_CELL_REUSE_ID = @"ShootTableViewCell";
     }
 }
 
-- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject
-       atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type
-      newIndexPath:(NSIndexPath *)newIndexPath
-{
-    UITableView *tableView = self.tableView;
-    
-    switch(type) {
-        case NSFetchedResultsChangeInsert:
-            [tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        case NSFetchedResultsChangeDelete:
-            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        case NSFetchedResultsChangeUpdate:
-            [self configureCell:(ShootTableViewCell *)[tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
-            break;
-            
-        case NSFetchedResultsChangeMove:
-            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            [tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-    }
-}
+//- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject
+//       atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type
+//      newIndexPath:(NSIndexPath *)newIndexPath
+//{
+//    UITableView *tableView = self.tableView;
+//    
+//    switch(type) {
+//        case NSFetchedResultsChangeInsert:
+//            [tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+//            break;
+//            
+//        case NSFetchedResultsChangeDelete:
+//            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+//            break;
+//            
+//        case NSFetchedResultsChangeUpdate:
+//            [self configureCell:(ShootTableViewCell *)[tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
+//            break;
+//            
+//        case NSFetchedResultsChangeMove:
+//            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+//            [tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+//            break;
+//    }
+//}
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {

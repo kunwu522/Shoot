@@ -130,7 +130,7 @@ static const NSString * UPDATE_PASSWORD_URL = @"user/updatePassword/:password";
 
 - (User *) findUserByIdLocally:(NSNumber *)id {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"User"];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"userID == %ld", [id longValue]]];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"userID == %@", id]];
     fetchRequest.predicate = predicate;
     [fetchRequest setFetchLimit:1];
     NSError *error = nil;

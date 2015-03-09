@@ -17,6 +17,7 @@ class User
 	private $haveCount;
 	private $has_avatar;
 	private $user_type;
+	private $has_bg;
 	
 	public static $TYPE_USER = 'User';
 	
@@ -116,5 +117,12 @@ class User
 		$this->user_type = $user_type;
 	}
 	
+	public function get_has_bg() {
+		return $this->has_bg;
+	}
+	
+	public function set_has_bg($has_bg) {
+		$this->has_bg = $has_bg;
+	}
 }
 ?>

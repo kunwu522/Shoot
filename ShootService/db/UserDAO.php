@@ -45,6 +45,13 @@ class UserDAO extends BaseDAO
 		$this->db_conn->query($query);
 	}
 	
+	public function update_has_bg($user_id, $has_bg) {
+		$query = 'UPDATE user SET has_bg_image = ' 
+				. ($has_bg ? '1' : '0') . ' WHERE id = ' . $user_id;
+
+		$this->db_conn->query($query);
+	}
+	
 	public function recommend_users($user_id, $count) {
 		$query = "SELECT user.id, user.username as username, user.user_type as user_type, COUNT(fl.follower_uid) AS ifollow, COUNT(flwer.follower_uid) AS follower_count FROM user LEFT JOIN follow AS flwer ON user.id = flwer.followee_uid LEFT JOIN follow AS fl ON user.id = fl.followee_uid AND fl.follower_uid = $user_id GROUP BY user.id HAVING ifollow = 0 AND user.id <> $user_id ORDER BY follower_count DESC";
 		if ($count) {
@@ -158,6 +165,7 @@ class UserDAO extends BaseDAO
 			$user->set_time($user_array['time']);
 			$user->set_deleted($user_array['deleted']);
 			$user->set_has_avatar($user_array['has_avatar']);
+			$user->has_bg_image($user_array['has_bg_image']);
 			return $user;
 		} else {
 			return null;

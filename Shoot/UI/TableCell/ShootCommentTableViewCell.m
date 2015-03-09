@@ -8,45 +8,71 @@
 
 #import "ShootCommentTableViewCell.h"
 #import "ImageUtil.h"
+#import "UIViewHelper.h"
+#import "ColorDefinition.h"
+#import "AppDelegate.h"
+#import "ShootImageView.h"
+
+@interface ShootCommentTableViewCell ()
+
+@property (nonatomic, retain) ShootImageView *anonymous;
+@property (nonatomic, retain) UILabel *comment;
+@property (nonatomic, retain) UIButton *commentLike;
+
+@end
 
 @implementation ShootCommentTableViewCell
 
 static const CGFloat PADDING = 10;
 static const CGFloat AVATAR_SIZE = 25;
+static const CGFloat LIKE_BUTTON_WIDTH = 60;
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+- (id)initWithFrame:(CGRect)frame
 {
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    self = [super initWithFrame:frame];
     if (self) {
-        UIImageView *anonymous1 = [[UIImageView alloc] initWithFrame:CGRectMake(PADDING, PADDING, AVATAR_SIZE, AVATAR_SIZE)];
-        anonymous1.image = [UIImage imageNamed:@"avatar.jpg"];
-        anonymous1.layer.cornerRadius = anonymous1.frame.size.width/2.0;
-        CALayer *l = [anonymous1 layer];
+        self.anonymous = [[ShootImageView alloc] initWithFrame:CGRectMake(PADDING, PADDING, AVATAR_SIZE, AVATAR_SIZE)];
+        self.anonymous.image = [UIImage imageNamed:@"avatar.jpg"];
+        self.anonymous.layer.cornerRadius = self.anonymous.frame.size.width/2.0;
+        CALayer *l = [self.anonymous layer];
         [l setMasksToBounds:YES];
-        [l setCornerRadius:anonymous1.frame.size.width/2.0];
-        [self addSubview:anonymous1];
+        [l setCornerRadius:self.anonymous.frame.size.width/2.0];
+        [self addSubview:self.anonymous];
         
-        CGFloat comment1X = anonymous1.frame.size.width + anonymous1.frame.origin.x + PADDING;
+        CGFloat commentX = self.anonymous.frame.size.width + self.anonymous.frame.origin.x + PADDING;
         
-        UILabel *comment1 = [[UILabel alloc] initWithFrame:CGRectMake(comment1X, anonymous1.frame.origin.y, self.frame.size.width - PADDING - 55 - comment1X, 25)];
-        comment1.text = @"Some anonymous comment. Another anonymous comment.";
-        comment1.font = [UIFont systemFontOfSize:12];
-        comment1.textColor = [UIColor darkGrayColor];
-        comment1.textAlignment = NSTextAlignmentLeft;
-        [self addSubview:comment1];
+        self.comment = [[UILabel alloc] initWithFrame:CGRectMake(commentX, self.anonymous.frame.origin.y, self.frame.size.width - PADDING - LIKE_BUTTON_WIDTH - commentX, 25)];
         
-        UIButton *comment1Like = [[UIButton alloc] initWithFrame:CGRectMake(comment1.frame.origin.x + comment1.frame.size.width, comment1.frame.origin.y, 55, comment1.frame.size.height)];
-        [comment1Like setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor grayColor]] forState:UIControlStateNormal];
-        [comment1Like setTitle:@"131K" forState:UIControlStateNormal];
-        [comment1Like setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        comment1Like.titleLabel.font = [UIFont boldSystemFontOfSize:9];
-        [comment1Like setContentHorizontalAlignment:UIControlContentHorizontalAlignmentRight];
-        CGSize size = [[comment1Like titleForState:UIControlStateNormal] sizeWithAttributes:@{NSFontAttributeName:comment1Like.titleLabel.font}];
-        [comment1Like setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, -size.width)];
-        [comment1Like setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, 0, comment1Like.imageView.image.size.width + 3)];
-        [self addSubview:comment1Like];
+        self.comment.font = [UIFont systemFontOfSize:12];
+        self.comment.textColor = [UIColor darkGrayColor];
+        self.comment.textAlignment = NSTextAlignmentLeft;
+        [self addSubview:self.comment];
+        
+        self.commentLike = [[UIButton alloc] initWithFrame:CGRectMake(self.comment.frame.origin.x + self.comment.frame.size.width, self.comment.frame.origin.y, LIKE_BUTTON_WIDTH, self.comment.frame.size.height)];
+        [self.commentLike setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        self.commentLike.titleLabel.font = [UIFont boldSystemFontOfSize:9];
+        [self.commentLike setContentHorizontalAlignment:UIControlContentHorizontalAlignmentRight];
+        self.commentLike.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+        [self addSubview:self.commentLike];
     }
     return self;
+}
+
+- (void) decorateWithComment:(Comment *)commentObj
+{
+    self.comment.text = commentObj.content;
+    [self.commentLike setTitle:[NSString stringWithFormat:@" %@", [UIViewHelper getCountString:commentObj.like_count]] forState:UIControlStateNormal];
+    if ([commentObj.if_cur_user_like_it integerValue] == 0) {
+        [self.commentLike setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor grayColor]] forState:UIControlStateNormal];
+    } else {
+        [self.commentLike setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(15, 15)] color:[ColorDefinition lightRed]] forState:UIControlStateNormal];
+    }
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    if ([appDelegate.currentUserID isEqualToNumber:commentObj.user.userID]) {
+        [self.anonymous setImageURL:[ImageUtil imageURLOfAvatar:appDelegate.currentUserID] isAvatar:YES];
+    } else {
+        [self.anonymous setImage:[UIImage imageNamed:@"avatar.jpg"]];
+    }
 }
 
 + (CGFloat) height

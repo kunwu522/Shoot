@@ -135,6 +135,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define REAR_VIEW_REVEAL_WIDTH 150
+
 @class SWRevealViewController;
 @protocol SWRevealViewControllerDelegate;
 

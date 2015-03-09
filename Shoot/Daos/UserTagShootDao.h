@@ -10,4 +10,6 @@
 
 @interface UserTagShootDao : Dao
 
+- (NSArray *) findUserTagShootsLocallyByuserId:(NSNumber *)userID shootID:(NSNumber *)shootID;
+
 @end

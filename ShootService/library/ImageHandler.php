@@ -23,6 +23,11 @@
 		return saveImageUnderPath($image, $destinationPath);
 	}
 	
+	function saveBgToServer($image, $user_id) {
+		$destinationPath = get_user_bg_filepath($user_id);
+		return saveImageUnderPath($image, $destinationPath);
+	}
+	
 	/**
 	 * Save Weeds image to server
 	 * 
@@ -118,6 +123,10 @@
 	
 	function get_user_profile_filepath($user_id) {
 		return UPLOAD_BASE_PATH . $user_id . '/avatar/';
+	}
+	
+	function get_user_bg_filepath($user_id) {
+		return UPLOAD_BASE_PATH . $user_id . '/bg/';
 	}
 	
 	function get_user_profile_filename($user_id) {

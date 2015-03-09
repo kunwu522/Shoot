@@ -195,7 +195,7 @@ class UserController extends Controller
 		$data = $this->parse_body_request();
 		$invalidReasons = $this->check_para($data);
 		if (!empty($invalidReasons)) {
-			throw new InvalidRequestException("Inputs are not valid due to $invalidReasons");
+			throw new InvalidRequestException("Inputs are not valid due to ". implode(",", $invalidReasons));
 		}
 		$user = $this->convert_data_to_user($data);
 		
@@ -205,7 +205,7 @@ class UserController extends Controller
 		
 		//Hash password
 		$password = $user->get_password();
-		$pasword_hash = crypt($password);
+		$password_hash = crypt($password);
 		$user->set_password($password_hash);
 		
 		$result = $this->user_dao->create($user);
@@ -213,7 +213,7 @@ class UserController extends Controller
 		$userPropertyMap = array('id'=>$user->get_id(), 'username'=>$user->get_username(), 'password'=>$user->get_password());
 		$this->update_cookie($userPropertyMap);	
 		
-		return json_encode($user);
+		return json_encode($userPropertyMap);
 	}
 	
 	public function forgotPassword($token_id)
@@ -294,6 +294,7 @@ class UserController extends Controller
 		$user['password'] = $password;
 		$user['username'] = $username;
 		$this->update_cookie($user);
+		return json_encode($user);
 	}
 	
 	public function updatePassword($user_id, $parameters)
@@ -336,6 +337,7 @@ class UserController extends Controller
 		$user['password'] = $password_hash;
 		$user['username'] = $cookie_username;
 		$this->update_cookie($user);
+		return json_encode($user);
 	}
 	
 	public function update() {
@@ -366,6 +368,21 @@ class UserController extends Controller
 		}
 		
 		$this->user_dao->update_has_avatar($user_id);
+	}
+	
+	public function uploadBg() {
+		$user_id = $this->getCurrentUser();
+		
+		error_log('Image name: ' . $_FILES['bg']['name']);
+		error_log('Image type: ' . $_FILES['bg']['type']);
+		error_log('Image size: ' . $_FILES['bg']['size']);
+		error_log('Image tmp name: ' . $_FILES['bg']['tmp_name']);
+		
+		if (!saveBgToServer($_FILES['bg'], $user_id)) {
+			throw new DependencyFailureException('Failed to store bg.');
+		}
+		
+		$this->user_dao->update_has_bg($user_id);
 	}
 	
 	public function hasUsername($username) {
@@ -404,6 +421,7 @@ class UserController extends Controller
 		else
 			$user->set_deleted($data->deleted);
 		$user->set_has_avatar($data->has_avatar);
+		$user->set_has_bg($data->has_bg);
 		return $user;
 	}
 	

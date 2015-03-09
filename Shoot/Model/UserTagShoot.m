@@ -14,8 +14,9 @@
 @dynamic shootID;
 @dynamic userID;
 @dynamic tagID;
+@dynamic shootAndUser;
 @dynamic latitude;
-@dynamic longtitude;
+@dynamic longitude;
 @dynamic shouldBeDeleted;
 @dynamic is_feed;
 @dynamic time;
@@ -23,5 +24,16 @@
 @dynamic shoot;
 @dynamic tag;
 @dynamic user;
+
+- (NSString *) shootAndUser {
+    
+    [self willAccessValueForKey:@"shootAndUser"];
+    
+    NSString *shootAndUser = [NSString stringWithFormat:@"%@-%@", self.shootID, self.userID];
+    
+    [self didAccessValueForKey:@"shootAndUser"];
+    
+    return shootAndUser;
+}
 
 @end

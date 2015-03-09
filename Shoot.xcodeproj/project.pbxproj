@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		0E009E591A7C2C0B0088A5CB /* cancel-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E009E581A7C2C0B0088A5CB /* cancel-icon.png */; };
+		0E0F42931AAC33F400AB096B /* GeoDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E0F42921AAC33F400AB096B /* GeoDao.m */; };
+		0E0F429C1AAD5A2300AB096B /* Comment.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E0F429B1AAD5A2300AB096B /* Comment.m */; };
+		0E0F429F1AAD5A6F00AB096B /* Shoot.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E0F429E1AAD5A6F00AB096B /* Shoot.m */; };
+		0E0F42A21AAD5E5800AB096B /* CommentDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E0F42A11AAD5E5800AB096B /* CommentDao.m */; };
 		0E1422CF1A57AEA100783F0F /* image4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0E1422CE1A57AEA100783F0F /* image4.jpg */; };
 		0E1422D11A57AFED00783F0F /* image5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0E1422D01A57AFED00783F0F /* image5.jpg */; };
 		0E1422D31A57B41100783F0F /* like-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E1422D21A57B41100783F0F /* like-icon.png */; };
@@ -21,6 +25,10 @@
 		0E16A7FE1A92A69A0096B41D /* UserTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E16A7FD1A92A69A0096B41D /* UserTableViewCell.m */; };
 		0E16A8031A92A70C0096B41D /* FollowButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E16A8001A92A70C0096B41D /* FollowButton.m */; };
 		0E16A8041A92A70C0096B41D /* UserIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E16A8021A92A70C0096B41D /* UserIcon.m */; };
+		0E3CCA861AA598F800AF6048 /* WelcomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3CCA851AA598F800AF6048 /* WelcomeViewController.m */; };
+		0E3CCA911AA59B9900AF6048 /* SignUpSubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3CCA8E1AA59B9900AF6048 /* SignUpSubViewController.m */; };
+		0E3CCA921AA59B9900AF6048 /* SignupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3CCA901AA59B9900AF6048 /* SignupViewController.m */; };
+		0E3CCA941AA59D2100AF6048 /* icon_white.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E3CCA931AA59D2100AF6048 /* icon_white.png */; };
 		0E572E591A6897A800BC040D /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E572E501A6896AD00BC040D /* libRestKit.a */; };
 		0E572E5B1A6897E600BC040D /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E572E5A1A6897E600BC040D /* CFNetwork.framework */; };
 		0E572E5D1A6897F000BC040D /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E572E5C1A6897F000BC040D /* CoreData.framework */; };
@@ -131,7 +139,6 @@
 		0EFD5B261A8D532B00658FC0 /* Tag.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EFD5B251A8D532B00658FC0 /* Tag.m */; };
 		0EFD5B2C1A8D9BE400658FC0 /* UserTagShootDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EFD5B2B1A8D9BE400658FC0 /* UserTagShootDao.m */; };
 		0EFD5B2F1A8DA5A600658FC0 /* TagDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EFD5B2E1A8DA5A600658FC0 /* TagDao.m */; };
-		0EFD5B321A8DA7AD00658FC0 /* Shoot.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EFD5B311A8DA7AD00658FC0 /* Shoot.m */; };
 		0EFD5B351A8DA8E900658FC0 /* MessageImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EFD5B341A8DA8E900658FC0 /* MessageImage.m */; };
 /* End PBXBuildFile section */
 
@@ -210,6 +217,14 @@
 
 /* Begin PBXFileReference section */
 		0E009E581A7C2C0B0088A5CB /* cancel-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cancel-icon.png"; path = "Images/cancel-icon.png"; sourceTree = "<group>"; };
+		0E0F42911AAC33F400AB096B /* GeoDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeoDao.h; path = Daos/GeoDao.h; sourceTree = "<group>"; };
+		0E0F42921AAC33F400AB096B /* GeoDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GeoDao.m; path = Daos/GeoDao.m; sourceTree = "<group>"; };
+		0E0F429A1AAD5A2300AB096B /* Comment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Comment.h; path = Model/Comment.h; sourceTree = "<group>"; };
+		0E0F429B1AAD5A2300AB096B /* Comment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Comment.m; path = Model/Comment.m; sourceTree = "<group>"; };
+		0E0F429D1AAD5A6F00AB096B /* Shoot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Shoot.h; path = Model/Shoot.h; sourceTree = "<group>"; };
+		0E0F429E1AAD5A6F00AB096B /* Shoot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Shoot.m; path = Model/Shoot.m; sourceTree = "<group>"; };
+		0E0F42A01AAD5E5800AB096B /* CommentDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommentDao.h; path = Daos/CommentDao.h; sourceTree = "<group>"; };
+		0E0F42A11AAD5E5800AB096B /* CommentDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CommentDao.m; path = Daos/CommentDao.m; sourceTree = "<group>"; };
 		0E1422CE1A57AEA100783F0F /* image4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = image4.jpg; path = Images/image4.jpg; sourceTree = "<group>"; };
 		0E1422D01A57AFED00783F0F /* image5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = image5.jpg; path = Images/image5.jpg; sourceTree = "<group>"; };
 		0E1422D21A57B41100783F0F /* like-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "like-icon.png"; path = "Images/like-icon.png"; sourceTree = "<group>"; };
@@ -228,6 +243,13 @@
 		0E16A8001A92A70C0096B41D /* FollowButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FollowButton.m; path = UI/FollowButton.m; sourceTree = "<group>"; };
 		0E16A8011A92A70C0096B41D /* UserIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserIcon.h; path = UI/UserIcon.h; sourceTree = "<group>"; };
 		0E16A8021A92A70C0096B41D /* UserIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserIcon.m; path = UI/UserIcon.m; sourceTree = "<group>"; };
+		0E3CCA841AA598F800AF6048 /* WelcomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeViewController.h; sourceTree = "<group>"; };
+		0E3CCA851AA598F800AF6048 /* WelcomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeViewController.m; sourceTree = "<group>"; };
+		0E3CCA8D1AA59B9900AF6048 /* SignUpSubViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignUpSubViewController.h; sourceTree = "<group>"; };
+		0E3CCA8E1AA59B9900AF6048 /* SignUpSubViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignUpSubViewController.m; sourceTree = "<group>"; };
+		0E3CCA8F1AA59B9900AF6048 /* SignupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignupViewController.h; sourceTree = "<group>"; };
+		0E3CCA901AA59B9900AF6048 /* SignupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignupViewController.m; sourceTree = "<group>"; };
+		0E3CCA931AA59D2100AF6048 /* icon_white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon_white.png; path = Images/icon_white.png; sourceTree = "<group>"; };
 		0E572E481A6896AC00BC040D /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = RestKit/RestKit.xcodeproj; sourceTree = "<group>"; };
 		0E572E5A1A6897E600BC040D /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		0E572E5C1A6897F000BC040D /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -399,8 +421,6 @@
 		0EFD5B2B1A8D9BE400658FC0 /* UserTagShootDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserTagShootDao.m; path = Daos/UserTagShootDao.m; sourceTree = "<group>"; };
 		0EFD5B2D1A8DA5A600658FC0 /* TagDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TagDao.h; path = Daos/TagDao.h; sourceTree = "<group>"; };
 		0EFD5B2E1A8DA5A600658FC0 /* TagDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TagDao.m; path = Daos/TagDao.m; sourceTree = "<group>"; };
-		0EFD5B301A8DA7AD00658FC0 /* Shoot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Shoot.h; path = Model/Shoot.h; sourceTree = "<group>"; };
-		0EFD5B311A8DA7AD00658FC0 /* Shoot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Shoot.m; path = Model/Shoot.m; sourceTree = "<group>"; };
 		0EFD5B331A8DA8E900658FC0 /* MessageImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MessageImage.h; path = Model/MessageImage.h; sourceTree = "<group>"; };
 		0EFD5B341A8DA8E900658FC0 /* MessageImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MessageImage.m; path = Model/MessageImage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -572,14 +592,16 @@
 				0EFD5B251A8D532B00658FC0 /* Tag.m */,
 				0EFD5B1B1A8D532A00658FC0 /* UserTagShoot.h */,
 				0EFD5B1C1A8D532A00658FC0 /* UserTagShoot.m */,
-				0EFD5B301A8DA7AD00658FC0 /* Shoot.h */,
-				0EFD5B311A8DA7AD00658FC0 /* Shoot.m */,
 				0EFD5B331A8DA8E900658FC0 /* MessageImage.h */,
 				0EFD5B341A8DA8E900658FC0 /* MessageImage.m */,
 				0E16A7F51A913EE10096B41D /* User.h */,
 				0E16A7F61A913EE10096B41D /* User.m */,
 				0E16A7F81A919BBB0096B41D /* Message.h */,
 				0E16A7F91A919BBB0096B41D /* Message.m */,
+				0E0F429A1AAD5A2300AB096B /* Comment.h */,
+				0E0F429B1AAD5A2300AB096B /* Comment.m */,
+				0E0F429D1AAD5A6F00AB096B /* Shoot.h */,
+				0E0F429E1AAD5A6F00AB096B /* Shoot.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -625,6 +647,10 @@
 				0EFD5B2B1A8D9BE400658FC0 /* UserTagShootDao.m */,
 				0EFD5B2D1A8DA5A600658FC0 /* TagDao.h */,
 				0EFD5B2E1A8DA5A600658FC0 /* TagDao.m */,
+				0E0F42911AAC33F400AB096B /* GeoDao.h */,
+				0E0F42921AAC33F400AB096B /* GeoDao.m */,
+				0E0F42A01AAD5E5800AB096B /* CommentDao.h */,
+				0E0F42A11AAD5E5800AB096B /* CommentDao.m */,
 			);
 			name = Daos;
 			sourceTree = "<group>";
@@ -690,6 +716,12 @@
 				0E5C93001A63AF1C008AE026 /* NotificationViewController.m */,
 				0E90D4F31A9B245400B6F60C /* CropImageViewController.h */,
 				0E90D4F41A9B245400B6F60C /* CropImageViewController.m */,
+				0E3CCA841AA598F800AF6048 /* WelcomeViewController.h */,
+				0E3CCA851AA598F800AF6048 /* WelcomeViewController.m */,
+				0E3CCA8D1AA59B9900AF6048 /* SignUpSubViewController.h */,
+				0E3CCA8E1AA59B9900AF6048 /* SignUpSubViewController.m */,
+				0E3CCA8F1AA59B9900AF6048 /* SignupViewController.h */,
+				0E3CCA901AA59B9900AF6048 /* SignupViewController.m */,
 			);
 			path = Shoot;
 			sourceTree = "<group>";
@@ -798,6 +830,7 @@
 				0EB82CE91A39EFE900BFBE17 /* image3.jpg */,
 				0E1422CE1A57AEA100783F0F /* image4.jpg */,
 				0E1422D01A57AFED00783F0F /* image5.jpg */,
+				0E3CCA931AA59D2100AF6048 /* icon_white.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -1002,6 +1035,7 @@
 				0EB82CC61A37F84D00BFBE17 /* LaunchScreen.xib in Resources */,
 				0E90D4F71A9B25C800B6F60C /* camera-filled.png in Resources */,
 				0E5C93491A64B5F3008AE026 /* bubble-square-outgoing@2x.png in Resources */,
+				0E3CCA941AA59D2100AF6048 /* icon_white.png in Resources */,
 				0EB82CC31A37F84D00BFBE17 /* Images.xcassets in Resources */,
 				0E5C92EA1A60E801008AE026 /* message.png in Resources */,
 			);
@@ -1038,9 +1072,13 @@
 				0EFD5B1D1A8D532A00658FC0 /* UserTagShoot.m in Sources */,
 				0E572EC51A6F70BF00BC040D /* MNCalendarViewWeekdayCell.m in Sources */,
 				0E16A7F71A913EE10096B41D /* User.m in Sources */,
+				0E3CCA861AA598F800AF6048 /* WelcomeViewController.m in Sources */,
+				0E0F42931AAC33F400AB096B /* GeoDao.m in Sources */,
 				0E5C933B1A64B5F3008AE026 /* JSMessageSoundEffect.m in Sources */,
 				0EB82CDF1A37FD5A00BFBE17 /* ShootTableViewCell.m in Sources */,
+				0E0F429F1AAD5A6F00AB096B /* Shoot.m in Sources */,
 				0E5C92F31A621CE2008AE026 /* MenuViewController.m in Sources */,
+				0E0F42A21AAD5E5800AB096B /* CommentDao.m in Sources */,
 				0E5C930B1A63C951008AE026 /* UIViewHelper.m in Sources */,
 				0EB2F2CE1A80490100BC02A2 /* ShootDetailedTableViewCell.m in Sources */,
 				0E5C934F1A64B5F3008AE026 /* UIButton+JSMessagesView.m in Sources */,
@@ -1064,7 +1102,6 @@
 				0ECE670A1AA2534100A03641 /* UserListView.m in Sources */,
 				0E572EC71A6F70BF00BC040D /* NSDate+MNAdditions.m in Sources */,
 				0E572EC41A6F70BF00BC040D /* MNCalendarViewLayout.m in Sources */,
-				0EFD5B321A8DA7AD00658FC0 /* Shoot.m in Sources */,
 				0EA873961A8CA378009172F9 /* Dao.m in Sources */,
 				0E5D46961A7977C900CEA8D6 /* MapAnnotationView.m in Sources */,
 				0E572EC21A6F70BF00BC040D /* MNCalendarViewCell.m in Sources */,
@@ -1074,6 +1111,7 @@
 				0E7CD7141A5721CF00A27A2F /* ImageUtil.m in Sources */,
 				0E572EC31A6F70BF00BC040D /* MNCalendarViewDayCell.m in Sources */,
 				0EFD5B261A8D532B00658FC0 /* Tag.m in Sources */,
+				0E3CCA921AA59B9900AF6048 /* SignupViewController.m in Sources */,
 				0EB82CB21A37F84D00BFBE17 /* main.m in Sources */,
 				0E5C92EE1A621318008AE026 /* SWRevealViewController.m in Sources */,
 				0E5D469C1A7B01C100CEA8D6 /* MapView.m in Sources */,
@@ -1081,9 +1119,11 @@
 				0E5C933D1A64B5F3008AE026 /* NSString+JSMessagesView.m in Sources */,
 				0EA873901A8C8608009172F9 /* MessageDao.m in Sources */,
 				0E5D46931A78CD3800CEA8D6 /* MapAnnotation.m in Sources */,
+				0E0F429C1AAD5A2300AB096B /* Comment.m in Sources */,
 				0EFD5B351A8DA8E900658FC0 /* MessageImage.m in Sources */,
 				0E5C93501A64B5F3008AE026 /* UIColor+JSMessagesView.m in Sources */,
 				0E572EC01A6F70BF00BC040D /* MNCalendarHeaderView.m in Sources */,
+				0E3CCA911AA59B9900AF6048 /* SignUpSubViewController.m in Sources */,
 				0E16A7FA1A919BBB0096B41D /* Message.m in Sources */,
 				0E16A8041A92A70C0096B41D /* UserIcon.m in Sources */,
 			);

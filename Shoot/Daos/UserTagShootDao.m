@@ -25,11 +25,11 @@ static const NSString * QUERY_BY_ID_URL = @"shoot/queryById/:id";
     
     [responseMapping addAttributeMappingsFromDictionary:@{
                                                                @"latitude" : @"latitude",
-                                                               @"longtitude" : @"longtitude",
+                                                               @"longitude" : @"longitude",
                                                                @"deleted" : @"shouldBeDeleted",
                                                                @"is_feed" : @"is_feed",
-                                                               @"user.userID" : @"userID",
-                                                               @"shoot.shootID" : @"shootID",
+                                                               @"user.id" : @"userID",
+                                                               @"shoot.id" : @"shootID",
                                                                @"tag.id" : @"tagID",
                                                                @"time" : @"time",
                                                                @"type" : @"type"
@@ -60,6 +60,17 @@ static const NSString * QUERY_BY_ID_URL = @"shoot/queryById/:id";
          [RKResponseDescriptor responseDescriptorWithMapping:responseMapping method:RKRequestMethodGET pathPattern:url keyPath:SHOOTS_KEY_PATH_URL statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
 
     }
+}
+
+- (NSArray *) findUserTagShootsLocallyByuserId:(NSNumber *)userID shootID:(NSNumber *)shootID {
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"UserTagShoot"];
+    NSSortDescriptor *timeSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO];
+    fetchRequest.sortDescriptors = @[timeSortDescriptor];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"userID == %@ && shootID == %@", userID, shootID]];
+    fetchRequest.predicate = predicate;
+    NSError *error = nil;
+    NSArray *results = [[RKObjectManager sharedManager].managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+    return results;
 }
 
 @end

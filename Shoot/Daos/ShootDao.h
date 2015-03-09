@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "Dao.h"
+#import "Shoot.h"
 
 @interface ShootDao : Dao
+
+- (Shoot *) findUserByIdLocally:(NSNumber *)id;
 
 @end

@@ -17,6 +17,7 @@
 #import "MessageDao.h"
 #import "UserTagShoot.h"
 #import "Shoot.h"
+#import "CommentDao.h"
 
 #define IS_OS_6_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.0)
 #define IS_OS_8_OR_LATER    ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
@@ -41,20 +42,20 @@ NSString * _deviceToken;
     [self setupRestKit];
     [self populateCurrentUserFromCookie];
     
-    if (!self.currentUser || !self.currentUser.userID) {
-        User *user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:[RKObjectManager sharedManager].managedObjectStore.mainQueueManagedObjectContext];
-        user.username = @"lv";
-        user.userID = [NSNumber numberWithInt:1];
-        user.password = @"Lvlv1234";
-        NSDictionary *param = @{@"cookie" : @NO};
-        [[RKObjectManager sharedManager] postObject:user path:@"user/login" parameters:param success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-            self.currentUser = [mappingResult firstObject];
-        } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-            NSLog(@"Failure login: %@", error.localizedDescription);
-        }];
-    } else {
-        NSLog(@"%@", self.currentUser.userID);
-    }
+//    if (!self.currentUser || !self.currentUser.userID) {
+//        User *user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:[RKObjectManager sharedManager].managedObjectStore.mainQueueManagedObjectContext];
+//        user.username = @"lv";
+//        user.userID = [NSNumber numberWithInt:1];
+//        user.password = @"Lvlv1234";
+//        NSDictionary *param = @{@"cookie" : @NO};
+//        [[RKObjectManager sharedManager] postObject:user path:@"user/login" parameters:param success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+//            self.currentUser = [mappingResult firstObject];
+//        } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+//            NSLog(@"Failure login: %@", error.localizedDescription);
+//        }];
+//    } else {
+//        NSLog(@"%@", self.currentUser.userID);
+//    }
     
 //    [[UIApplication sharedApplication] setStatusBarStyle:[AppDelegate getUIStatusBarStyle]];
 //    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
@@ -69,10 +70,6 @@ NSString * _deviceToken;
     [[UIApplication sharedApplication] registerForRemoteNotifications];
     
     self.badgeCount = [UIApplication sharedApplication].applicationIconBadgeNumber;
-    
-    
-
-    
     return YES;
 }
 
@@ -81,20 +78,22 @@ NSString * _deviceToken;
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void) setCurrentUser:(User *)currentUser
+- (void) setCurrentUserID:(NSNumber *)userID username:(NSString *)username password:(NSString *)password
 {
     bool userSwitched = true;
-    if (_currentUser && currentUser) {
-        if ([_currentUser.userID isEqualToNumber:currentUser.userID]) {
+    if (_currentUserID && userID) {
+        if ([_currentUserID isEqualToNumber:userID]) {
             userSwitched = false;
         }
-    } else if (!_currentUser && !currentUser) {
+    } else if (!_currentUserID && !userID) {
         userSwitched = false;
     }
     if (userSwitched) {
-        NSLog(@"user switched from %@ to %@", _currentUser.userID, currentUser.userID);
+        NSLog(@"user switched from %@ to %@", _currentUserID, userID);
     }
-    _currentUser = currentUser;
+    _currentUserID = userID;
+    _currentUsername = username;
+    _currentUserPassword = password;
     if (userSwitched) {
         [self resetPersistentStores];
         [self setupRestKit];
@@ -122,7 +121,7 @@ NSString * _deviceToken;
 
 - (void) logoutLocally:(UIViewController *) sender {
     [self clearLoginCookies];
-    _currentUser = nil;
+    [self setCurrentUserID:nil username:nil password:nil];
     UIViewController *controller = [[AppDelegate getMainStoryboard] instantiateViewControllerWithIdentifier:@"WelcomeViewController"];
     [sender presentViewController:controller animated:YES completion:nil];
 }
@@ -146,12 +145,9 @@ NSString * _deviceToken;
     
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     f.numberStyle = NSNumberFormatterDecimalStyle;
-    User * user = [[UserDao new] findUserByIdLocally:[f numberFromString:userIdCookie.value]];
-    if (user && user.userID) {
-        self.currentUser = user;
-        [self registerDeviceToken];
-    }
-    
+    [self setCurrentUserID:[f numberFromString:userIdCookie.value] username:usernameCookie.value password:passwordCookie.value];
+
+    [self registerDeviceToken];
 }
 
 - (NSHTTPCookie *) findCookieByName:(NSString *)name isExpiredBy:(NSDate *) time
@@ -275,6 +271,7 @@ NSString * _deviceToken;
     [[TagDao sharedManager] registerRestKitMapping];
     [[MessageDao sharedManager] registerRestKitMapping];
     [[UserTagShootDao sharedManager] registerRestKitMapping];
+    [[CommentDao sharedManager] registerRestKitMapping];
     
     /**
      Complete Core Data stack initialization
@@ -284,7 +281,7 @@ NSString * _deviceToken;
     }
     
     
-    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@Shoot.sqlite", (self.currentUser.userID == nil?@"":self.currentUser.userID)]];
+    NSString *storePath = [RKApplicationDataDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@Shoot.sqlite", (self.currentUserID == nil?@"":self.currentUserID)]];
     
     NSError *error;
     

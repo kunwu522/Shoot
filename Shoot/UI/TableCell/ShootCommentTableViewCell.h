@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Comment.h"
 
 @interface ShootCommentTableViewCell : UITableViewCell
 
+- (void) decorateWithComment:(Comment *)commentObj;
 + (CGFloat) height;
 
 @end

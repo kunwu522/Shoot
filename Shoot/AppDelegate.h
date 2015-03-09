@@ -22,7 +22,9 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
-@property (nonatomic, retain) User * currentUser;
+@property (nonatomic, readonly) NSNumber * currentUserID;
+@property (nonatomic, readonly) NSString * currentUsername;
+@property (nonatomic, readonly) NSString * currentUserPassword;
 @property NSInteger badgeCount;
 @property (nonatomic, weak) id<NotificationDelegate> notificationDelegate;
 

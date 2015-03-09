@@ -11,7 +11,7 @@
 
 @class DetailViewController;
 
-@interface MasterViewController : UIViewController <NSFetchedResultsControllerDelegate>
+@interface MasterViewController : UIViewController
 
 @end
 

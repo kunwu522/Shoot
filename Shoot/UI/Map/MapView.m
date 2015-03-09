@@ -177,8 +177,8 @@ static NSString * IMAGE_CELL_REUSE_ID = @"ImageCell";
 {
     MapAnnotation *annotationView = (MapAnnotation *)view;
     CGFloat targetLatitudeDelta = self.mapView.region.span.latitudeDelta * 0.5;
-    CGFloat targetLongtitudeDelta = self.mapView.region.span.longitudeDelta * 0.5;
-    [self.mapView setRegion:MKCoordinateRegionMake(annotationView.coordinate, MKCoordinateSpanMake(targetLatitudeDelta, targetLongtitudeDelta)) animated:true];
+    CGFloat targetLongitudeDelta = self.mapView.region.span.longitudeDelta * 0.5;
+    [self.mapView setRegion:MKCoordinateRegionMake(annotationView.coordinate, MKCoordinateSpanMake(targetLatitudeDelta, targetLongitudeDelta)) animated:true];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section {

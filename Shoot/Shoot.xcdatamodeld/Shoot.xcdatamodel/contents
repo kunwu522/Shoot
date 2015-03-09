@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14D87h" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Comment" representedClassName="Comment" syncable="YES">
+        <attribute name="commentID" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="if_cur_user_like_it" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="like_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="shouldBeDeleted" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="x" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="y" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="shoot" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Shoot" inverseName="comments" inverseEntity="Shoot" syncable="YES"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="comments" inverseEntity="User" syncable="YES"/>
+    </entity>
     <entity name="Message" representedClassName="Message" syncable="YES">
         <attribute name="is_read" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
@@ -20,15 +34,19 @@
     </entity>
     <entity name="Shoot" representedClassName="Shoot" syncable="YES">
         <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="have_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="if_cur_user_have_it" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="if_cur_user_like_it" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="if_cur_user_want_it" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="like_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="score" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="shootID" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="shouldBeDeleted" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="want_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="comments" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Comment" inverseName="shoot" inverseEntity="Comment" syncable="YES"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="shoots" inverseEntity="User" syncable="YES"/>
         <relationship name="user_tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UserTagShoot" inverseName="shoot" inverseEntity="UserTagShoot" syncable="YES"/>
     </entity>
@@ -56,6 +74,7 @@
         <attribute name="userID" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="want_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="comments" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Comment" inverseName="user" inverseEntity="Comment" syncable="YES"/>
         <relationship name="followers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="followings" inverseEntity="User" syncable="YES"/>
         <relationship name="followings" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="followers" inverseEntity="User" syncable="YES"/>
         <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Message" inverseName="participant" inverseEntity="Message" syncable="YES"/>
@@ -64,8 +83,9 @@
     </entity>
     <entity name="UserTagShoot" representedClassName="UserTagShoot" syncable="YES">
         <attribute name="is_feed" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="latitude" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="longtitude" optional="YES" attributeType="Decimal" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="shootAndUser" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
         <attribute name="shootID" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="shouldBeDeleted" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="tagID" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
@@ -79,9 +99,10 @@
     <elements>
         <element name="Message" positionX="-297" positionY="-81" width="128" height="193"/>
         <element name="MessageImage" positionX="-126" positionY="-85" width="128" height="103"/>
-        <element name="Shoot" positionX="-765" positionY="153" width="128" height="223"/>
+        <element name="Shoot" positionX="-765" positionY="153" width="128" height="283"/>
         <element name="Tag" positionX="-45" positionY="288" width="128" height="148"/>
-        <element name="User" positionX="70" positionY="-24" width="128" height="330"/>
-        <element name="UserTagShoot" positionX="304" positionY="152" width="128" height="223"/>
+        <element name="User" positionX="70" positionY="-24" width="128" height="343"/>
+        <element name="UserTagShoot" positionX="304" positionY="152" width="128" height="238"/>
+        <element name="Comment" positionX="-558" positionY="63" width="128" height="223"/>
     </elements>
 </model>

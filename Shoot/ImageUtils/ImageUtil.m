@@ -230,6 +230,11 @@
     return [NSURL URLWithString:[NSString stringWithFormat:@"%@/avatar_%@", [ImageUtil getBaseUrl], userId]];
 }
 
++ (NSURL *)imageURLOfBg:(NSNumber *)userId
+{
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@/bg_%@", [ImageUtil getBaseUrl], userId]];
+}
+
 + (NSURL *)imageURLOfShoot:(Shoot *)shoot
 {
     return [NSURL URLWithString:[NSString stringWithFormat:@"%@/shoot_%@_%@", [ImageUtil getBaseUrl], shoot.user.userID, shoot.shootID]];

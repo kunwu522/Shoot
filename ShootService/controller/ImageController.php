@@ -41,7 +41,7 @@ class ImageController extends Controller
 		}
 		
 		$type = strstr($image_id, '_', true);
-		if ($type == "avatar") {
+		if ($type == "avatar" || $type == "bg") {
 			header('Cache-Control: no-transform, max-age=86400');
 		}
 		header('Content-Type: image/jpeg');
@@ -83,13 +83,20 @@ class ImageController extends Controller
 				return null;
 			}
 			$filename = $this->get_message_image_filename($user_id, $message_id);
-		} elseif ($type == 'avatar') {
+		} else if ($type == 'avatar') {
 			$user_id = array_shift($url_arr);
 			if (!user_id) {
 				error_log('Invalid url, url: ' . $image_url);
 				return null;
 			}
 			$filename = $this->get_avatar_filename($user_id);
+		} elseif ($type == 'bg') {
+			$user_id = array_shift($url_arr);
+			if (!user_id) {
+				error_log('Invalid url, url: ' . $image_url);
+				return null;
+			}
+			$filename = $this->get_bg_filename($user_id);
 		} else {
 			error_log('Invalid image type, type: ' . $type);
 			return null;
@@ -116,6 +123,11 @@ class ImageController extends Controller
 	private function get_avatar_filename($user_id)
 	{
 		return $this->UPLOAD_BASE_PATH . $user_id . '/avatar/avatar.jpeg';
+	}
+	
+	private function get_bg_filename($user_id)
+	{
+		return $this->UPLOAD_BASE_PATH . $user_id . '/bg/bg.jpeg';
 	}
 }
 ?>

@@ -29,7 +29,6 @@
 @implementation ConversationViewController
 
 static NSString * USER_TABLE_CELL_REUSE_ID = @"UserTableCell";
-static CGFloat USERNAME_TEXT_FIELD_HEIGHT = 25;
 static CGFloat PADDING = 5;
 static CGFloat AVATAR_SIZE = 50;
 static CGFloat HEADER_HEIGHT = 30;
@@ -134,7 +133,7 @@ static CGFloat HEADER_HEIGHT = 30;
     RKManagedObjectStore *objectStore = [[RKObjectManager sharedManager] managedObjectStore];
     Message *message = [NSEntityDescription insertNewObjectForEntityForName:@"Message" inManagedObjectContext:objectStore.mainQueueManagedObjectContext];
     
-    message.sender_id = appDelegate.currentUser.userID;
+    message.sender_id = appDelegate.currentUserID;
     message.participant = self.participant;
     message.time = [NSDate date];
     message.type = MESSAGE_TYPE;
@@ -217,7 +216,7 @@ static CGFloat HEADER_HEIGHT = 30;
 {
     Message *message = [self.fetchedResultsController objectAtIndexPath:indexPath];
     AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-    if ([appDelegate.currentUser.userID isEqualToNumber:message.sender_id]) {
+    if ([appDelegate.currentUserID isEqualToNumber:message.sender_id]) {
         return JSBubbleMessageTypeOutgoing;
     } else {
         if ([message.is_read intValue] == 0) {

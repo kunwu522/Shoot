@@ -66,9 +66,13 @@
         timeString = [NSString stringWithFormat:@"%dh", (int)timeDifference/3600];
     } else if (timeDifference < 2592000) {
         timeString = [NSString stringWithFormat:@"%dd", (int)timeDifference/86400];
+    } else if (timeDifference < 2592000 * 365) {
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"MMM. dd"];
+        timeString = [dateFormatter stringFromDate:time];
     } else {
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"MMM. dd yyyy"];
+        [dateFormatter setDateFormat:@"MM/dd/yyyy"];
         timeString = [dateFormatter stringFromDate:time];
     }
     return timeString;

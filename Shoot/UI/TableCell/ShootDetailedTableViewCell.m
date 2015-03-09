@@ -10,6 +10,11 @@
 #import "ColorDefinition.h"
 #import "ImageUtil.h"
 #import "ShootImageView.h"
+#import "Shoot.h"
+#import "User.h"
+#import <SDWebImage/UIImageView+WebCache.h>
+#import "UIViewHelper.h"
+#import "GeoDao.h"
 
 @interface ShootDetailedTableViewCell ()
 @property (retain, nonatomic) ShootImageView *userAvatar;
@@ -18,18 +23,29 @@
 @property (retain, nonatomic) UIImageView *imageDisplayView;
 @property (retain, nonatomic) UIButton * timeLabel;
 @property (retain, nonatomic) UIButton * location;
+@property (nonatomic, retain) UIButton * like;
+@property (nonatomic, retain) UIButton * have;
+@property (nonatomic, retain) UIButton * want;
+@property (nonatomic, retain) UIButton * likeCount;
+@property (nonatomic, retain) UIButton * haveCount;
+@property (nonatomic, retain) UIButton * wantCount;
+@property (nonatomic, retain) UIButton * comment;
+@property (nonatomic, retain) UIButton * otherUserPosts;
+
+@property (nonatomic) NSInteger selectedButton;
 
 @end
 
 @implementation ShootDetailedTableViewCell
 
 static const CGFloat PADDING = 10;
-static const CGFloat AVATAR_SIZE = 30;
+static const CGFloat AVATAR_SIZE = 35;
 static const CGFloat BUTTON_ICON_SIZE = 15;
 static const CGFloat BUTTON_SIZE = 25;
 static const CGFloat BUTTON_FONT_SIZE = 11;
 static const CGFloat IMAGE_TITLE_HEIGHT = 30;
 static const CGFloat COMMENT_BUTTON_HEIGHT = 30;
+static const CGFloat TIME_LABEL_WIDTH = 60;
 
 - (void)awakeFromNib {
     // Initialization code
@@ -40,7 +56,6 @@ static const CGFloat COMMENT_BUTTON_HEIGHT = 30;
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         self.userAvatar = [[ShootImageView alloc] initWithFrame:CGRectMake(PADDING, PADDING, AVATAR_SIZE, AVATAR_SIZE)];
-        self.userAvatar.image = [UIImage imageNamed:@"image5.jpg"];
         self.userAvatar.contentMode = UIViewContentModeScaleAspectFill;
         self.userAvatar.clipsToBounds = YES;
         CALayer * l = [self.userAvatar layer];
@@ -48,17 +63,17 @@ static const CGFloat COMMENT_BUTTON_HEIGHT = 30;
         [l setCornerRadius:self.userAvatar.frame.size.width/2.0];
         [self addSubview:self.userAvatar];
         
-        self.timeLabel = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width - PADDING - 40, self.userAvatar.frame.origin.y, 40, AVATAR_SIZE/2.0)];
+        self.timeLabel = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width - PADDING - TIME_LABEL_WIDTH, self.userAvatar.frame.origin.y, TIME_LABEL_WIDTH, AVATAR_SIZE/2.0)];
         [self.timeLabel setTitle:@" 1d" forState:UIControlStateNormal];
         [self.timeLabel setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"time"] atSize:CGSizeMake(10, 10)] color:[UIColor darkGrayColor]] forState:UIControlStateNormal];
         [self.timeLabel setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
-        self.timeLabel.titleLabel.font = [UIFont boldSystemFontOfSize:10.0];
-        self.timeLabel.titleLabel.textAlignment = NSTextAlignmentRight;
+        self.timeLabel.titleLabel.font = [UIFont boldSystemFontOfSize:9.0];
+        self.timeLabel.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
         [self addSubview:self.timeLabel];
         
         CGFloat userNameX = self.userAvatar.frame.origin.x + self.userAvatar.frame.size.width + PADDING;
         self.username = [[UILabel alloc] initWithFrame:CGRectMake(userNameX, self.userAvatar.frame.origin.y, self.timeLabel.frame.origin.x - userNameX - PADDING, self.userAvatar.frame.size.height/2.0)];
-        self.username.font = [UIFont boldSystemFontOfSize:11];
+        self.username.font = [UIFont boldSystemFontOfSize:12];
         self.username.text = @"USERNAME";
         self.username.textColor = [UIColor darkGrayColor];
         [self addSubview:self.username];
@@ -72,9 +87,8 @@ static const CGFloat COMMENT_BUTTON_HEIGHT = 30;
         [self.location setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
         [self addSubview:self.location];
         
-        self.imageTitle = [[UILabel alloc] initWithFrame:CGRectMake(PADDING * 2, self.userAvatar.frame.origin.y + self.userAvatar.frame.size.height, self.frame.size.width - PADDING * 4, IMAGE_TITLE_HEIGHT)];
+        self.imageTitle = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, self.userAvatar.frame.origin.y + self.userAvatar.frame.size.height, self.frame.size.width - PADDING * 4, IMAGE_TITLE_HEIGHT)];
         self.imageTitle.font = [UIFont boldSystemFontOfSize:12];
-        self.imageTitle.text = @"#SHOOT NAME PLACEHOLDER#";
         self.imageTitle.textColor = [ColorDefinition darkRed];
         [self addSubview:self.imageTitle];
         
@@ -82,65 +96,73 @@ static const CGFloat COMMENT_BUTTON_HEIGHT = 30;
         self.imageDisplayView = [[UIImageView alloc] initWithFrame:CGRectMake(PADDING/2.0, self.imageTitle.frame.origin.y + self.imageTitle.frame.size.height, imageViewSize, imageViewSize)];
         self.imageDisplayView.contentMode = UIViewContentModeScaleAspectFill;
         self.imageDisplayView.clipsToBounds = YES;
-        self.imageDisplayView.image = [UIImage imageNamed:@"image3.jpg"];
         [self addSubview:self.imageDisplayView];
         
         CGFloat buttonWidth = (self.frame.size.width - PADDING * 2)/3.0;
+        CGFloat countLabelWidth = buttonWidth - BUTTON_SIZE - PADDING * 2;
         
-        UIButton * like = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth/2.0 - BUTTON_SIZE, self.imageDisplayView.frame.origin.y + self.imageDisplayView.frame.size.height + PADDING, BUTTON_SIZE, BUTTON_SIZE)];
-        [like setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"like-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
-        like.backgroundColor = [ColorDefinition blueColor];
-        like.layer.cornerRadius = like.frame.size.width/2.0;
-        [self addSubview:like];
+        self.like = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth/2.0 - BUTTON_SIZE/2.0, self.imageDisplayView.frame.origin.y + self.imageDisplayView.frame.size.height + PADDING, BUTTON_SIZE, BUTTON_SIZE)];
+        [self.like setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"like-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
+        self.like.backgroundColor = [ColorDefinition blueColor];
+        self.like.layer.cornerRadius = self.like.frame.size.width/2.0;
+        [self addSubview:self.like];
         
-        UIButton *likeCount = [[UIButton alloc] initWithFrame:CGRectMake(like.frame.origin.x + like.frame.size.width + PADDING, like.frame.origin.y, buttonWidth/2.0 - PADDING * 2, BUTTON_SIZE)];
-        [likeCount setTitle:@"13M" forState:UIControlStateNormal];
-        [likeCount setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [likeCount.titleLabel setTextAlignment:NSTextAlignmentLeft];
-        likeCount.titleLabel.font = [UIFont boldSystemFontOfSize:BUTTON_FONT_SIZE];
-        [self addSubview:likeCount];
+        self.likeCount = [[UIButton alloc] initWithFrame:CGRectMake(self.like.frame.origin.x + self.like.frame.size.width + PADDING, self.like.frame.origin.y, countLabelWidth, BUTTON_SIZE)];
+        [self.likeCount setTitle:@"0" forState:UIControlStateNormal];
+        [self.likeCount setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        self.likeCount.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        self.likeCount.titleLabel.font = [UIFont boldSystemFontOfSize:BUTTON_FONT_SIZE];
+        [self addSubview:self.likeCount];
         
-        UIButton * want = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth * 1.5 - BUTTON_SIZE, like.frame.origin.y, like.frame.size.width, like.frame.size.height)];
-        [want setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
-        [want setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        want.backgroundColor = [ColorDefinition lightRed];
-        want.layer.cornerRadius = want.frame.size.width/2.0;
-        want.titleLabel.font = [UIFont boldSystemFontOfSize:BUTTON_FONT_SIZE];
-        [self addSubview:want];
+        self.want = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth * 1.5 - BUTTON_SIZE/2.0, self.like.frame.origin.y, self.like.frame.size.width, self.like.frame.size.height)];
+        [self.want setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
+        [self.want setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        self.want.backgroundColor = [ColorDefinition lightRed];
+        self.want.layer.cornerRadius = self.want.frame.size.width/2.0;
+        self.want.titleLabel.font = [UIFont boldSystemFontOfSize:BUTTON_FONT_SIZE];
+        [self addSubview:self.want];
         
-        UIButton *wantCount = [[UIButton alloc] initWithFrame:CGRectMake(want.frame.origin.x + want.frame.size.width + PADDING, want.frame.origin.y, buttonWidth/2.0 - PADDING * 2, BUTTON_SIZE)];
-        [wantCount setTitle:@"105K" forState:UIControlStateNormal];
-        [wantCount setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [wantCount.titleLabel setTextAlignment:NSTextAlignmentLeft];
-        wantCount.titleLabel.font = [UIFont boldSystemFontOfSize:BUTTON_FONT_SIZE];
-        [self addSubview:wantCount];
+        self.wantCount = [[UIButton alloc] initWithFrame:CGRectMake(self.want.frame.origin.x + self.want.frame.size.width + PADDING, self.want.frame.origin.y, countLabelWidth, BUTTON_SIZE)];
+        [self.wantCount setTitle:@"0" forState:UIControlStateNormal];
+        [self.wantCount setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        self.wantCount.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        self.wantCount.titleLabel.font = [UIFont boldSystemFontOfSize:BUTTON_FONT_SIZE];
+        [self addSubview:self.wantCount];
         
-        UIButton * have = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth * 2.5 - BUTTON_SIZE, like.frame.origin.y, like.frame.size.width, like.frame.size.height)];
-        [have setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"have-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
-        [have setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        have.backgroundColor = [ColorDefinition greenColor];
-        have.layer.cornerRadius = have.frame.size.width/2.0;
-        have.titleLabel.font = [UIFont boldSystemFontOfSize:BUTTON_FONT_SIZE];
-        [self addSubview:have];
+        self.have = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth * 2.5 - BUTTON_SIZE/2.0, self.like.frame.origin.y, self.like.frame.size.width, self.like.frame.size.height)];
+        [self.have setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"have-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
+        [self.have setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        self.have.backgroundColor = [ColorDefinition greenColor];
+        self.have.layer.cornerRadius = self.have.frame.size.width/2.0;
+        self.have.titleLabel.font = [UIFont boldSystemFontOfSize:BUTTON_FONT_SIZE];
+        [self addSubview:self.have];
         
-        UIButton *haveCount = [[UIButton alloc] initWithFrame:CGRectMake(have.frame.origin.x + have.frame.size.width + PADDING, have.frame.origin.y, buttonWidth/2.0 - PADDING * 2, BUTTON_SIZE)];
-        [haveCount setTitle:@"35K" forState:UIControlStateNormal];
-        [haveCount setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [haveCount.titleLabel setTextAlignment:NSTextAlignmentLeft];
-        haveCount.titleLabel.font = [UIFont boldSystemFontOfSize:BUTTON_FONT_SIZE];
-        [self addSubview:haveCount];
+        [self setSelectionStyle:UITableViewCellSelectionStyleNone];
         
-        self.comment = [[UIButton alloc] initWithFrame:CGRectMake(PADDING, like.frame.origin.y + like.frame.size.height + PADDING, (self.frame.size.width - PADDING * 2)/2.0, COMMENT_BUTTON_HEIGHT)];
+        self.haveCount = [[UIButton alloc] initWithFrame:CGRectMake(self.have.frame.origin.x + self.have.frame.size.width + PADDING, self.have.frame.origin.y, buttonWidth/2.0 - BUTTON_SIZE/2.0 - PADDING, BUTTON_SIZE)];
+        [self.haveCount setTitle:@"0" forState:UIControlStateNormal];
+        [self.haveCount setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        self.haveCount.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        self.haveCount.titleLabel.font = [UIFont boldSystemFontOfSize:BUTTON_FONT_SIZE];
+        [self addSubview:self.haveCount];
+        
+        self.comment = [[UIButton alloc] initWithFrame:CGRectMake(PADDING, self.like.frame.origin.y + self.like.frame.size.height + PADDING, (self.frame.size.width - PADDING * 2)/2.0, COMMENT_BUTTON_HEIGHT)];
+        self.comment.tag = SHOOT_DETAIL_CELL_COMMENTS_BUTTON_TAG;
         [self.comment setTitle:@"Comments" forState:UIControlStateNormal];
+        [self.comment addTarget:self action:@selector(commentViewChanged:)forControlEvents:UIControlEventTouchDown];
         self.comment.titleLabel.font = [UIFont boldSystemFontOfSize:11];
         [self.comment setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
         [self addSubview:self.comment];
         
         self.otherUserPosts = [[UIButton alloc] initWithFrame:CGRectMake(self.comment.frame.size.width + self.comment.frame.origin.x, self.comment.frame.origin.y, (self.frame.size.width - PADDING * 2)/2.0, COMMENT_BUTTON_HEIGHT)];
+        self.otherUserPosts.tag = SHOOT_DETAIL_CELL_OTHER_USER_POSTS_BUTTON_TAG;
         [self.otherUserPosts setTitle:@"Posts from others" forState:UIControlStateNormal];
+        [self.otherUserPosts addTarget:self action:@selector(commentViewChanged:)forControlEvents:UIControlEventTouchDown];
         self.otherUserPosts.titleLabel.font = [UIFont boldSystemFontOfSize:11];
         [self.otherUserPosts setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         [self addSubview:self.otherUserPosts];
+        
+        self.selectedButton = SHOOT_DETAIL_CELL_COMMENTS_BUTTON_TAG;
         
         UILabel * topLine = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, self.comment.frame.origin.y, self.frame.size.width - PADDING * 2, 0.3)];
         topLine.backgroundColor = [UIColor grayColor];
@@ -156,6 +178,26 @@ static const CGFloat COMMENT_BUTTON_HEIGHT = 30;
     }
     return self;
 }
+
+- (void) decorateWith:(Shoot *)shoot
+{
+    [self.userAvatar sd_setImageWithURL:[ImageUtil imageURLOfAvatar:shoot.user.userID] placeholderImage:[UIImage imageNamed:@"avatar.jpg"] options:SDWebImageHandleCookies];
+    self.username.text = shoot.user.username;
+    CLLocation *coordinate = [[CLLocation alloc] initWithLatitude:[shoot.latitude doubleValue] longitude:[shoot.longitude doubleValue]];
+    [[GeoDao sharedManager].geocoder reverseGeocodeLocation:coordinate completionHandler:^(NSArray *placemarks, NSError *error) {
+        if ([placemarks count] > 0) {
+            CLPlacemark *placemark = placemarks[0];
+            [self.location setTitle:placemark.name forState:UIControlStateNormal];
+        }
+    }];
+    self.imageTitle.text = shoot.content;
+    [self.timeLabel setTitle:[NSString stringWithFormat:@" %@", [UIViewHelper formatTime:shoot.time]] forState:UIControlStateNormal];
+    [self.imageDisplayView sd_setImageWithURL:[ImageUtil imageURLOfShoot:shoot] placeholderImage:[UIImage imageNamed:@"Oops"] options:SDWebImageHandleCookies];
+    [self.likeCount setTitle:[NSString stringWithFormat:@"%@", [UIViewHelper getCountString:shoot.like_count]] forState:UIControlStateNormal];
+    [self.wantCount setTitle:[NSString stringWithFormat:@"%@", [UIViewHelper getCountString:shoot.want_count]] forState:UIControlStateNormal];
+    [self.haveCount setTitle:[NSString stringWithFormat:@"%@", [UIViewHelper getCountString:shoot.have_count]] forState:UIControlStateNormal];
+}
+
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
@@ -176,6 +218,18 @@ static const CGFloat COMMENT_BUTTON_HEIGHT = 30;
 + (CGFloat) heightWithoutImageView
 {
     return BUTTON_SIZE + PADDING + COMMENT_BUTTON_HEIGHT + PADDING;
+}
+
+- (void) commentViewChanged:(UIButton *)sender
+{
+    UIButton *curSelectedButton = (UIButton *)[self viewWithTag:self.selectedButton];
+    UIButton *newSelectedButton = (UIButton *)[self viewWithTag:sender.tag];
+    [curSelectedButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+    [newSelectedButton setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+    if ([self.delegate respondsToSelector:@selector(viewSwitchedFrom:to:)]) {
+        [self.delegate viewSwitchedFrom:self.selectedButton to:sender.tag];
+    }
+    self.selectedButton = sender.tag;
 }
 
 @end

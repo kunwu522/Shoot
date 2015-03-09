@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Shoot.h"
+#import "User.h"
+#import "UserTagShoot.h"
 
 @interface ShootTableViewCell : UITableViewCell
-@property (nonatomic, weak) UIViewController * parentController;
-- (void) decorate:(UIImage *) image parentController:(UIViewController *)parentController;
+- (void) decorateWith:(Shoot *)shoot user:(User *)user userTagShoots:(NSArray *)userTagShoots parentController:(UIViewController *) parentController;
 + (CGFloat) height;
 @end

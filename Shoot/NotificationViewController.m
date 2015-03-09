@@ -40,6 +40,8 @@
 
 @implementation NotificationViewController
 
+static CGFloat ADD_BUTTON_SIZE = 40;
+static CGFloat ADD_BUTTON_PADDING = 20;
 static double DOT_RADIUS = 4;
 static double DOT_PAD = 20.0;
 
@@ -76,6 +78,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
     self.tableView.showsVerticalScrollIndicator = false;
     [self.view addSubview:self.tableView];
     self.tableView.tableFooterView = [[UIView alloc] init];
+    [self.tableView setContentInset:UIEdgeInsetsMake(self.tableView.contentInset.top, self.tableView.contentInset.left, ADD_BUTTON_SIZE + ADD_BUTTON_PADDING * 2, self.tableView.contentInset.right)];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView setSeparatorColor:[UIColor clearColor]];
@@ -95,7 +98,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
     self.viewStatus = MESSAGE_VIEW_TAG;
     [self viewSwitched:self.notificationView];
     
-    UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0 - 20, self.view.frame.size.height - 60, 40, 40)];
+    UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake((self.view.frame.size.width - ADD_BUTTON_SIZE)/2.0, self.view.frame.size.height - ADD_BUTTON_PADDING - ADD_BUTTON_SIZE, ADD_BUTTON_SIZE, ADD_BUTTON_SIZE)];
     [self.view addSubview:addButton];
     [addButton setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"compose"] color:[UIColor whiteColor]] atSize:CGSizeMake(20, 20)] forState:UIControlStateNormal];
     [addButton addTarget:self action:@selector(startNewConversation:)forControlEvents:UIControlEventTouchDown];
@@ -116,7 +119,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
         self.userListView = [[UserListView alloc] initWithFrame:self.view.bounds];
         self.userListView.urlPathToPullUsers = @"user/getUsernamesByPrefix";
         AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-        self.userListView.urlPathToPullUsersWhenSearchStringIsEmpty = [NSString stringWithFormat:@"user/getFollowingUsers/%@/%d",appDelegate.currentUser.userID, 10];
+        self.userListView.urlPathToPullUsersWhenSearchStringIsEmpty = [NSString stringWithFormat:@"user/getFollowingUsers/%@/%d",appDelegate.currentUserID, 10];
         self.userListView.hidden = true;
         self.userListView.delegate = self;
         [self.view addSubview:self.userListView];
@@ -136,7 +139,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    [self fetachData];
+    [self fetchData];
 }
 
 - (NSFetchedResultsController *) createNSFetchedResultsController:(NSString *) type sectionNameKeyPath:(NSString *)sectionNameKeyPath
@@ -202,10 +205,10 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
 
 -(void)refreshView:(UIRefreshControl *)refresh {
     refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Refreshing..."];
-    [self fetachData];
+    [self fetchData];
 }
 
-- (void)fetachData
+- (void)fetchData
 {
     // Load the object model via RestKit
     [[RKObjectManager sharedManager] getObjectsAtPath:@"message/query" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
@@ -363,6 +366,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
         }
         if (message.related_shoot) {
             DetailViewController * viewController = [[DetailViewController alloc] initWithNibName:nil bundle:nil];
+            viewController.shootID = message.related_shoot.shootID;
             [self presentViewController:viewController animated:YES completion:nil];
         } else {
             UserViewController * viewController = [[UserViewController alloc] initWithNibName:nil bundle:nil];

@@ -12,7 +12,7 @@
 
 #define USER_TYPE_USER @"User"
 
-@class Message, Shoot, User, UserTagShoot;
+@class Message, Shoot, User, UserTagShoot, Comment;
 
 @interface User : NSManagedObject
 
@@ -35,6 +35,7 @@
 @property (nonatomic, retain) NSSet *messages;
 @property (nonatomic, retain) NSSet *shoot_tags;
 @property (nonatomic, retain) NSSet *shoots;
+@property (nonatomic, retain) NSSet *comments;
 
 + (NSString *) getFormatedAddressWithPlaceMark:(CLPlacemark *)placeMark;
 /*
@@ -75,5 +76,10 @@
 - (void)removeShootsObject:(Shoot *)value;
 - (void)addShoots:(NSSet *)values;
 - (void)removeShoots:(NSSet *)values;
+
+- (void)addCommentsObject:(Shoot *)value;
+- (void)removeCommentsObject:(Shoot *)value;
+- (void)addComments:(NSSet *)values;
+- (void)removeComments:(NSSet *)values;
 
 @end

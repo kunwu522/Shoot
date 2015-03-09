@@ -13,13 +13,22 @@
 #import "ShootCommentTableViewCell.h"
 #import "ImageCollectionViewCell.h"
 #import "UIViewHelper.h"
+#import <RestKit/RestKit.h>
+#import "UserTagShootDao.h"
+#import "ShootDao.h"
+#import "UserDao.h"
 
-@interface DetailViewController () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
+@interface DetailViewController () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate, ShootDetailedTableViewCellDelegate>
 
+@property (retain, nonatomic) UIRefreshControl *refreshControl;
 @property (retain, nonatomic) UITableView *tableView;
 @property (retain, nonatomic) UITableViewCell *commentCell;
 @property (retain, nonatomic) UITableView *commentTableView;
 @property (retain, nonatomic) UICollectionView *imageCollectionView;
+@property (strong, nonatomic) NSFetchedResultsController *commentFetchedResultsController;
+
+@property (retain, nonatomic) Shoot * shoot;
+@property (retain, nonatomic) NSArray * userTagShoots;
 
 @end
 
@@ -41,6 +50,8 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     doubleTap.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:doubleTap];
     
+    [self initFetchController];
+    
     self.tableView = [[UITableView alloc] initWithFrame:self.view.frame];
     [self.view addSubview:self.tableView];
     self.tableView.dataSource = self;
@@ -51,8 +62,71 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     [self.tableView registerClass:[ShootDetailedTableViewCell class] forCellReuseIdentifier:DETAILED_TABEL_CELL_REUSE_ID];
     self.tableView.tableFooterView = [[UIView alloc] init];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:COMMENT_TABEL_CELL_REUSE_ID];
-    [self.tableView reloadData];
     
+    CGFloat customRefreshControlHeight = 50.0f;
+    CGFloat customRefreshControlWidth = 100.0;
+    CGRect customRefreshControlFrame = CGRectMake(0.0f, -customRefreshControlHeight, customRefreshControlWidth, customRefreshControlHeight);
+    self.refreshControl = [[UIRefreshControl alloc] initWithFrame:customRefreshControlFrame];
+    [self.refreshControl addTarget:self action:@selector(refreshView:) forControlEvents:UIControlEventValueChanged];
+    [self.tableView addSubview:self.refreshControl];
+    [self.tableView sendSubviewToBack:self.refreshControl];
+    
+    [self loadData];
+    [self refreshView:self.refreshControl];
+}
+
+- (void) initFetchController
+{
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Comment"];
+    NSSortDescriptor *timeSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO];
+    fetchRequest.sortDescriptors = @[timeSortDescriptor];
+    
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"shoot.shootID == %@", self.shootID];
+    fetchRequest.predicate = predicate;
+    // Setup fetched results
+    self.commentFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:[RKManagedObjectStore defaultStore].mainQueueManagedObjectContext sectionNameKeyPath:nil cacheName:nil];
+    
+    [self.commentFetchedResultsController setDelegate:self];
+}
+
+-(void)refreshView:(UIRefreshControl *)refresh {
+    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Refreshing..."];
+    [self fetchData];
+}
+
+- (void) fetchData {
+    @synchronized(self) {
+        [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"shoot/queryShootById/%@", self.shootID]  parameters:nil success:^
+         (RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+             [self loadData];
+             [self.refreshControl endRefreshing];
+         } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+             RKLogError(@"Failed to call shoot/queryById due to error: %@", error);
+             [self.refreshControl endRefreshing];
+         }];
+        [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"comment/query/%@", self.shootID]  parameters:nil success:^
+         (RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+             [self loadComments];
+         } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+             RKLogError(@"Failed to call shoot/comments/:id due to error: %@", error);
+         }];
+    }
+}
+
+- (void) loadData {
+    self.shoot = [[ShootDao sharedManager] findUserByIdLocally:self.shootID];
+    [self.tableView reloadData];
+}
+
+- (void) loadComments
+{
+    NSError *error = nil;
+    BOOL fetchSuccessful = [self.commentFetchedResultsController performFetch:&error];
+    if (! fetchSuccessful) {
+        NSLog(@"Fetch Error: %@",error);
+    }
+    [self.commentTableView reloadData];
 }
 
 #pragma mark - Table View
@@ -61,7 +135,8 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     if (tableView == self.tableView) {
         return 2;
     } else if (tableView == self.commentTableView) {
-        return 20;
+        id sectionInfo = [[self.commentFetchedResultsController sections] objectAtIndex:section];
+        return [sectionInfo numberOfObjects];
     }
     return 0;
 }
@@ -71,9 +146,9 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     if (tableView == self.tableView) {
         if (indexPath.row == DETAILED_TABLE_CELL_ROW_INDEX) {
             ShootDetailedTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:DETAILED_TABEL_CELL_REUSE_ID forIndexPath:indexPath];
-            [cell.comment addTarget:self action:@selector(commentViewChanged:)forControlEvents:UIControlEventTouchDown];
-            [cell.otherUserPosts addTarget:self action:@selector(commentViewChanged:)forControlEvents:UIControlEventTouchDown];
+            cell.delegate = self;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            [cell decorateWith:self.shoot];
             return cell;
         } else if(indexPath.row == COMMENTS_TABLE_CELL_ROW_INDEX) {
             if (self.commentCell == nil) {
@@ -85,6 +160,8 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
         }
     } else if (tableView == self.commentTableView) {
         ShootCommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:COMMENT_TABEL_CELL_REUSE_ID forIndexPath:indexPath];
+        Comment *comment = [self.commentFetchedResultsController objectAtIndexPath:indexPath];
+        [cell decorateWithComment:comment];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
@@ -100,7 +177,7 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
             if (self.commentTableView.hidden) {
                 return MIN([self getImageCollectionViewHeight], self.view.frame.size.height - [ShootDetailedTableViewCell heightWithoutImageView]);
             } else {
-                return self.view.frame.size.height - [ShootDetailedTableViewCell minimalHeight];
+                return MIN([self getCommentsViewHeight], self.view.frame.size.height - [ShootDetailedTableViewCell minimalHeight]);
             }
         }
     } else if (tableView == self.commentTableView) {
@@ -112,6 +189,9 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
 - (void) initCommentCell
 {
     self.commentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.commentCell.frame.size.width, self.commentCell.frame.size.height)];
+    self.commentTableView.layer.borderWidth = 1;
+    [UIViewHelper applySameSizeConstraintToView:self.commentTableView superView:self.commentCell];
+    
     [self.commentCell addSubview:self.commentTableView];
     self.commentTableView.dataSource = self;
     self.commentTableView.delegate = self;
@@ -121,7 +201,7 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     [self.commentTableView registerClass:[ShootCommentTableViewCell class] forCellReuseIdentifier:COMMENT_TABEL_CELL_REUSE_ID];
     self.commentTableView.tableFooterView = [[UIView alloc] init];
 
-    [self.commentTableView reloadData];
+    [self loadComments];
     
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
     layout.minimumLineSpacing = PADDING;
@@ -129,6 +209,7 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
     layout.scrollDirection = UICollectionViewScrollDirectionVertical;
     self.imageCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, self.commentCell.frame.size.height) collectionViewLayout:layout];
+    [UIViewHelper applySameSizeConstraintToView:self.imageCollectionView superView:self.commentCell];
     [self.imageCollectionView setContentInset:UIEdgeInsetsMake(0.f, 0.f, 0.f, 0.f)];
     self.imageCollectionView.dataSource = self;
     self.imageCollectionView.delegate = self;
@@ -170,7 +251,7 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
 
 - (NSInteger) getImagesCount
 {
-    return 20;
+    return 2;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cv cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -194,11 +275,17 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     return (PADDING + [self getCollectionViewCellHeight]) * rowCount + PADDING;
 }
 
+- (CGFloat) getCommentsViewHeight
+{
+    id sectionInfo = [[self.commentFetchedResultsController sections] objectAtIndex:0];
+    return [ShootCommentTableViewCell height] * [sectionInfo numberOfObjects];
+}
+
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
     return UIEdgeInsetsMake(PADDING, PADDING, PADDING, PADDING);
 }
 
-- (void) commentViewChanged:(UIButton *)sender
+- (void) viewSwitchedFrom:(NSInteger)oldView to:(NSInteger)newView
 {
     if (self.commentTableView.hidden) {
         self.commentTableView.hidden = false;

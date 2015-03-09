@@ -16,8 +16,9 @@
 @property (nonatomic, retain) NSNumber * userID;
 @property (nonatomic, retain) NSNumber * tagID;
 @property (nonatomic, retain) NSNumber * shootID;
+@property (nonatomic, readonly) NSString * shootAndUser;
 @property (nonatomic, retain) NSDecimalNumber * latitude;
-@property (nonatomic, retain) NSDecimalNumber * longtitude;
+@property (nonatomic, retain) NSDecimalNumber * longitude;
 @property (nonatomic, retain) NSNumber * shouldBeDeleted;
 @property (nonatomic, retain) NSNumber * is_feed;
 @property (nonatomic, retain) NSDate * time;

@@ -72,7 +72,7 @@ class ShootController extends Controller
 		$shoot = $this->parse_request_body($parameters, false);
 		$currentUser_id = $this->getCurrentUser();
 		$currentUsername = $this->getCurrentUsername();
-		$this->shoot_dao->setUserTagsShoot($currentUser_id, $shoot->get_id(), $shoot->get_tags(), ShootDAO::$TYPE_WANT, $shoot->get_latitude(), $shoot->get_longtitude());
+		$this->shoot_dao->setUserTagsShoot($currentUser_id, $shoot->get_id(), $shoot->get_tags(), ShootDAO::$TYPE_WANT, $shoot->get_latitude(), $shoot->get_longitude());
 		//do not notify the owner of the shoot for now
 		// $shoot = $this->shoot_dao->find_shoot_by_id($shoot_id)[0];
 // 		if ($shoot['user_id'] != $currentUser_id) {
@@ -92,6 +92,11 @@ class ShootController extends Controller
 	{		
 		$currentUser_id = $this->getCurrentUser();
 		$this->shoot_dao->setUserUntagShoot($currentUser_id, $shoot_id, $tag_id);
+	}
+	
+	public function queryShootById($shoot_id) 
+	{
+		return json_encode($this->shoot_dao->find_shoot_by_id($shoot_id));
 	}
 	
 	public function like($shoot_id) 
@@ -135,7 +140,7 @@ class ShootController extends Controller
 		$shoot->set_id($parameters["id"]);
 		$shoot->set_deleted(0);		
 		$shoot->set_latitude($parameters["latitude"]);
-		$shoot->set_longtitude($parameters["longtitude"]);
+		$shoot->set_longitude($parameters["longitude"]);
 		
 		$tags = array();
 		if (isset($parameters["tags"])) {
@@ -166,9 +171,9 @@ class ShootController extends Controller
 			return 'Input error, latitude is null';
 		}
 		
-		$longtitude = trim($data['longtitude']);
-		if ($longtitude == '') {
-			return 'Input error, longtitude is null';
+		$longitude = trim($data['longitude']);
+		if ($longitude == '') {
+			return 'Input error, longitude is null';
 		}
 		
 		$tags = $data['tags'];

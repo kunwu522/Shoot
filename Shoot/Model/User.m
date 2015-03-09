@@ -34,6 +34,7 @@
 @dynamic messages;
 @dynamic shoot_tags;
 @dynamic shoots;
+@dynamic comments;
 
 - (NSString *)title {
     return self.username;
@@ -44,10 +45,6 @@
     if (!username) {
         return @"Username can not be empty.";
     }
-    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-    //    if ([username isEqualToString:appDelegate.currentUser.username]) {
-    //        return @"New username should be non-empty and different from previous username.";
-    //    }
     NSString *regex = @"[A-Za-z0-9]{1,16}";
     NSPredicate *usernameTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
     if ([usernameTest evaluateWithObject:username]) {

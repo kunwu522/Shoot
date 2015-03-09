@@ -7,10 +7,11 @@
 //
 
 #import "ShootDao.h"
-#import "Shoot.h"
 #import "UserDao.h"
 
 @implementation ShootDao
+
+static const NSString * QUERY_SHOOT_BY_ID_URL = @"shoot/queryShootById/:id";
 
 - (RKEntityMapping *) createResponseMapping
 {
@@ -19,7 +20,10 @@
     [responseMapping addAttributeMappingsFromDictionary:@{
                                                       @"content" : @"content",
                                                       @"want_count" : @"want_count",
+                                                      @"have_count" : @"have_count",
                                                       @"like_count" : @"like_count",
+                                                      @"latitude" : @"latitude",
+                                                      @"longitude" : @"longitude",
                                                       @"score" : @"score",
                                                       @"if_cur_user_want_it" : @"if_cur_user_want_it",
                                                       @"if_cur_user_like_it" : @"if_cur_user_like_it",
@@ -37,6 +41,36 @@
     
     [responseMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"user" toKeyPath:@"user" withMapping:[[UserDao sharedManager] getResponseMapping]]];
     return responseMapping;
+}
+
+- (void) registerRestKitMapping
+{
+    [super registerRestKitMapping];
+    RKObjectManager * manager = [RKObjectManager sharedManager];
+    RKEntityMapping * shootMapping = [self getResponseMapping];
+    
+    //register url with "users" as GET response key path
+    for(NSString *url in @[
+                           QUERY_SHOOT_BY_ID_URL
+                           ]){
+        
+        [manager addResponseDescriptor:
+         [RKResponseDescriptor responseDescriptorWithMapping:shootMapping method:RKRequestMethodGET pathPattern:url keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
+        
+    }
+}
+
+- (Shoot *) findUserByIdLocally:(NSNumber *)id {
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Shoot"];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"shootID == %@", id]];
+    fetchRequest.predicate = predicate;
+    [fetchRequest setFetchLimit:1];
+    NSError *error = nil;
+    NSArray *results = [[RKObjectManager sharedManager].managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+    if(results == nil || [results count] == 0)
+        return nil;
+    else
+        return  [results objectAtIndex:0];
 }
 
 @end
