@@ -131,6 +131,7 @@
 		0EB82CEC1A39EFE900BFBE17 /* image3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0EB82CE91A39EFE900BFBE17 /* image3.jpg */; };
 		0EB82CF01A39F0F000BFBE17 /* avatar.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0EB82CEF1A39F0F000BFBE17 /* avatar.jpg */; };
 		0EB82CF31A39FD9200BFBE17 /* BlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EB82CF21A39FD9200BFBE17 /* BlurView.m */; };
+		0EBE32791AAFB32F003AD2A3 /* UICollectionViewLeftAlignedLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBE32781AAFB32F003AD2A3 /* UICollectionViewLeftAlignedLayout.m */; };
 		0ECE66FD1AA1734800A03641 /* followed.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ECE66FC1AA1734800A03641 /* followed.png */; };
 		0ECE67051AA1735200A03641 /* setting-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ECE67041AA1735200A03641 /* setting-icon.png */; };
 		0ECE67071AA1BDC500A03641 /* message-filled.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ECE67061AA1BDC500A03641 /* message-filled.png */; };
@@ -408,6 +409,8 @@
 		0EB82CEF1A39F0F000BFBE17 /* avatar.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = avatar.jpg; path = Images/avatar.jpg; sourceTree = "<group>"; };
 		0EB82CF11A39FD9200BFBE17 /* BlurView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlurView.h; path = UI/BlurView.h; sourceTree = "<group>"; };
 		0EB82CF21A39FD9200BFBE17 /* BlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BlurView.m; path = UI/BlurView.m; sourceTree = "<group>"; };
+		0EBE32771AAFB32F003AD2A3 /* UICollectionViewLeftAlignedLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UICollectionViewLeftAlignedLayout.h; path = UI/TableCell/UICollectionViewLeftAlignedLayout.h; sourceTree = "<group>"; };
+		0EBE32781AAFB32F003AD2A3 /* UICollectionViewLeftAlignedLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UICollectionViewLeftAlignedLayout.m; path = UI/TableCell/UICollectionViewLeftAlignedLayout.m; sourceTree = "<group>"; };
 		0ECE66FC1AA1734800A03641 /* followed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = followed.png; path = Images/followed.png; sourceTree = "<group>"; };
 		0ECE67041AA1735200A03641 /* setting-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "setting-icon.png"; path = "Images/setting-icon.png"; sourceTree = "<group>"; };
 		0ECE67061AA1BDC500A03641 /* message-filled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "message-filled.png"; path = "Images/message-filled.png"; sourceTree = "<group>"; };
@@ -797,6 +800,8 @@
 				0E572E941A6E533B00BC040D /* ImageDetailedCollectionViewCell.m */,
 				0E16A7FC1A92A69A0096B41D /* UserTableViewCell.h */,
 				0E16A7FD1A92A69A0096B41D /* UserTableViewCell.m */,
+				0EBE32771AAFB32F003AD2A3 /* UICollectionViewLeftAlignedLayout.h */,
+				0EBE32781AAFB32F003AD2A3 /* UICollectionViewLeftAlignedLayout.m */,
 			);
 			name = TableCell;
 			sourceTree = "<group>";
@@ -1071,6 +1076,7 @@
 				0EB2F2D11A80799700BC02A2 /* ShootCommentTableViewCell.m in Sources */,
 				0EFD5B1D1A8D532A00658FC0 /* UserTagShoot.m in Sources */,
 				0E572EC51A6F70BF00BC040D /* MNCalendarViewWeekdayCell.m in Sources */,
+				0EBE32791AAFB32F003AD2A3 /* UICollectionViewLeftAlignedLayout.m in Sources */,
 				0E16A7F71A913EE10096B41D /* User.m in Sources */,
 				0E3CCA861AA598F800AF6048 /* WelcomeViewController.m in Sources */,
 				0E0F42931AAC33F400AB096B /* GeoDao.m in Sources */,

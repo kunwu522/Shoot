@@ -503,6 +503,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [self.imageCollectionView reloadData];
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
+    [self adjustAvatarSize];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -535,22 +536,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
 - (void) scrollViewDidScroll:(UIScrollView *)scrollView
 {
     if (scrollView == self.tableView) {
-        CGFloat yPos = -scrollView.contentOffset.y;
-        if (yPos > 0) {
-            CGRect imgRect = self.header.frame;
-            imgRect.size.height = HEADER_HEIGHT+yPos;
-            self.header.frame = imgRect;
-        }
-        if (-yPos < HEADER_HEIGHT - AVATAR_OFFSET - PADDING) {
-            yPos = - HEADER_HEIGHT + AVATAR_OFFSET + PADDING;
-        } else if (-yPos > HEADER_HEIGHT) {
-            yPos = - HEADER_HEIGHT;
-        }
-        
-        CGFloat newAvatarSize = AVATAR_SIZE - (-yPos - HEADER_HEIGHT + AVATAR_OFFSET + PADDING);
-        [self.userAvatar setFrame:CGRectMake(self.userAvatar.center.x - newAvatarSize/2.0, -AVATAR_OFFSET + (-yPos - HEADER_HEIGHT + AVATAR_OFFSET + PADDING), newAvatarSize, newAvatarSize)];
-        CALayer * l = [self.userAvatar layer];
-        [l setCornerRadius:self.userAvatar.frame.size.width/2.0];
+        [self adjustAvatarSize];
     } else if(scrollView == self.imageCollectionView || scrollView == self.calendarView.collectionView){
         CGFloat yPos = scrollView.contentOffset.y;
         if (yPos > 0 && self.tableView.contentOffset.y < HEADER_HEIGHT + [UserViewController sectionHeaderViewHeight]) {
@@ -561,6 +547,27 @@ static NSString * TAKE_PHOTO = @"Take Photo";
             [self.tableView setContentOffset:CGPointMake(self.tableView.contentOffset.x, MAX(self.tableView.contentOffset.y + yPos, 0))];
         }
     }
+}
+
+- (void) adjustAvatarSize
+{
+    UIScrollView *scrollView = self.tableView;
+    CGFloat yPos = -scrollView.contentOffset.y;
+    if (yPos > 0) {
+        CGRect imgRect = self.header.frame;
+        imgRect.size.height = HEADER_HEIGHT+yPos;
+        self.header.frame = imgRect;
+    }
+    if (-yPos < HEADER_HEIGHT - AVATAR_OFFSET - PADDING) {
+        yPos = - HEADER_HEIGHT + AVATAR_OFFSET + PADDING;
+    } else if (-yPos > HEADER_HEIGHT) {
+        yPos = - HEADER_HEIGHT;
+    }
+    
+    CGFloat newAvatarSize = AVATAR_SIZE - (-yPos - HEADER_HEIGHT + AVATAR_OFFSET + PADDING);
+    [self.userAvatar setFrame:CGRectMake(self.userAvatar.center.x - newAvatarSize/2.0, -AVATAR_OFFSET + (-yPos - HEADER_HEIGHT + AVATAR_OFFSET + PADDING), newAvatarSize, newAvatarSize)];
+    CALayer * l = [self.userAvatar layer];
+    [l setCornerRadius:self.userAvatar.frame.size.width/2.0];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section {

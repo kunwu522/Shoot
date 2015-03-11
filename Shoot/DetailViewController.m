@@ -22,6 +22,7 @@
 
 @property (retain, nonatomic) UIRefreshControl *refreshControl;
 @property (retain, nonatomic) UITableView *tableView;
+@property (weak, nonatomic) ShootDetailedTableViewCell *shootDetailedTableViewCell;
 @property (retain, nonatomic) UITableViewCell *commentCell;
 @property (retain, nonatomic) UITableView *commentTableView;
 @property (retain, nonatomic) UICollectionView *imageCollectionView;
@@ -72,7 +73,7 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     [self.tableView sendSubviewToBack:self.refreshControl];
     
     [self loadData];
-    [self refreshView:self.refreshControl];
+    [self fetchData];
 }
 
 - (void) initFetchController
@@ -145,11 +146,11 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
 {
     if (tableView == self.tableView) {
         if (indexPath.row == DETAILED_TABLE_CELL_ROW_INDEX) {
-            ShootDetailedTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:DETAILED_TABEL_CELL_REUSE_ID forIndexPath:indexPath];
-            cell.delegate = self;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            [cell decorateWith:self.shoot];
-            return cell;
+            self.shootDetailedTableViewCell = [tableView dequeueReusableCellWithIdentifier:DETAILED_TABEL_CELL_REUSE_ID forIndexPath:indexPath];
+            self.shootDetailedTableViewCell.delegate = self;
+            self.shootDetailedTableViewCell.selectionStyle = UITableViewCellSelectionStyleNone;
+            [self.shootDetailedTableViewCell decorateWith:self.shoot];
+            return self.shootDetailedTableViewCell;
         } else if(indexPath.row == COMMENTS_TABLE_CELL_ROW_INDEX) {
             if (self.commentCell == nil) {
                 self.commentCell = [tableView dequeueReusableCellWithIdentifier:COMMENT_TABEL_CELL_REUSE_ID forIndexPath:indexPath];
@@ -177,7 +178,7 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
             if (self.commentTableView.hidden) {
                 return MIN([self getImageCollectionViewHeight], self.view.frame.size.height - [ShootDetailedTableViewCell heightWithoutImageView]);
             } else {
-                return MIN([self getCommentsViewHeight], self.view.frame.size.height - [ShootDetailedTableViewCell minimalHeight]);
+                return MIN([self getCommentTableViewHeight], self.view.frame.size.height - [ShootDetailedTableViewCell minimalHeight]);
             }
         }
     } else if (tableView == self.commentTableView) {
@@ -186,10 +187,18 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     return 0;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView == self.commentTableView) {
+        Comment *comment = [self.commentFetchedResultsController objectAtIndexPath:indexPath];
+        [self.shootDetailedTableViewCell markImageAtX:[comment.x doubleValue] y:[comment.y doubleValue]];
+    }
+}
+
 - (void) initCommentCell
 {
     self.commentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.commentCell.frame.size.width, self.commentCell.frame.size.height)];
-    self.commentTableView.layer.borderWidth = 1;
+    
     [UIViewHelper applySameSizeConstraintToView:self.commentTableView superView:self.commentCell];
     
     [self.commentCell addSubview:self.commentTableView];
@@ -198,6 +207,7 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     [self.commentTableView setSeparatorColor:[UIColor clearColor]];
     self.commentTableView.showsHorizontalScrollIndicator = false;
     self.commentTableView.showsVerticalScrollIndicator = false;
+    self.commentTableView.alwaysBounceVertical = NO;
     [self.commentTableView registerClass:[ShootCommentTableViewCell class] forCellReuseIdentifier:COMMENT_TABEL_CELL_REUSE_ID];
     self.commentTableView.tableFooterView = [[UIView alloc] init];
 
@@ -209,7 +219,6 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
     layout.scrollDirection = UICollectionViewScrollDirectionVertical;
     self.imageCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, self.commentCell.frame.size.height) collectionViewLayout:layout];
-    [UIViewHelper applySameSizeConstraintToView:self.imageCollectionView superView:self.commentCell];
     [self.imageCollectionView setContentInset:UIEdgeInsetsMake(0.f, 0.f, 0.f, 0.f)];
     self.imageCollectionView.dataSource = self;
     self.imageCollectionView.delegate = self;
@@ -251,7 +260,7 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
 
 - (NSInteger) getImagesCount
 {
-    return 2;
+    return 20;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cv cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -275,7 +284,7 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     return (PADDING + [self getCollectionViewCellHeight]) * rowCount + PADDING;
 }
 
-- (CGFloat) getCommentsViewHeight
+- (CGFloat) getCommentTableViewHeight
 {
     id sectionInfo = [[self.commentFetchedResultsController sections] objectAtIndex:0];
     return [ShootCommentTableViewCell height] * [sectionInfo numberOfObjects];
@@ -287,13 +296,25 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
 
 - (void) viewSwitchedFrom:(NSInteger)oldView to:(NSInteger)newView
 {
-    if (self.commentTableView.hidden) {
-        self.commentTableView.hidden = false;
-        self.imageCollectionView.hidden = true;
-    } else {
+    if (oldView == newView) {
+        return;
+    }
+    NSInteger commentView = SHOOT_DETAIL_CELL_COMMENTS_BUTTON_TAG;
+    NSInteger imageColView = SHOOT_DETAIL_CELL_OTHER_USER_POSTS_BUTTON_TAG;
+    if (oldView == commentView) {
         self.commentTableView.hidden = true;
+    }
+    if (newView == commentView) {
+        self.commentTableView.hidden = false;
+    }
+    
+    if (oldView == imageColView) {
+        self.imageCollectionView.hidden = true;
+    }
+    if (newView == imageColView) {
         self.imageCollectionView.hidden = false;
     }
+    
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
 }

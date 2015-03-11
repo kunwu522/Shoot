@@ -22,6 +22,8 @@
 @property (nonatomic, weak)id<ShootDetailedTableViewCellDelegate> delegate;
 
 - (void) decorateWith:(Shoot *)shoot;
+- (void) markImageAtX:(CGFloat)x y:(CGFloat)y;
+- (void) hideMarker;
 
 + (CGFloat) height;
 + (CGFloat) minimalHeight;

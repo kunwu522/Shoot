@@ -31,6 +31,7 @@
 @property (nonatomic, retain) UIButton * wantCount;
 @property (nonatomic, retain) UIButton * comment;
 @property (nonatomic, retain) UIButton * otherUserPosts;
+@property (retain, nonatomic) UIImageView * marker;
 
 @property (nonatomic) NSInteger selectedButton;
 
@@ -46,6 +47,7 @@ static const CGFloat BUTTON_FONT_SIZE = 11;
 static const CGFloat IMAGE_TITLE_HEIGHT = 30;
 static const CGFloat COMMENT_BUTTON_HEIGHT = 30;
 static const CGFloat TIME_LABEL_WIDTH = 60;
+static const CGFloat MARKER_SIZE = 60;
 
 - (void)awakeFromNib {
     // Initialization code
@@ -97,6 +99,10 @@ static const CGFloat TIME_LABEL_WIDTH = 60;
         self.imageDisplayView.contentMode = UIViewContentModeScaleAspectFill;
         self.imageDisplayView.clipsToBounds = YES;
         [self addSubview:self.imageDisplayView];
+        UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedOnImage)];
+        [singleTap setNumberOfTapsRequired:1];
+        [self.imageDisplayView addGestureRecognizer:singleTap];
+        [self.imageDisplayView setUserInteractionEnabled:TRUE];
         
         CGFloat buttonWidth = (self.frame.size.width - PADDING * 2)/3.0;
         CGFloat countLabelWidth = buttonWidth - BUTTON_SIZE - PADDING * 2;
@@ -175,6 +181,16 @@ static const CGFloat TIME_LABEL_WIDTH = 60;
         UILabel * bottomLine = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, self.comment.frame.origin.y + self.comment.frame.size.height, self.frame.size.width - PADDING * 2, 0.3)];
         bottomLine.backgroundColor = [UIColor grayColor];
         [self addSubview:bottomLine];
+        
+        self.marker = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, MARKER_SIZE, MARKER_SIZE)];
+        self.marker.backgroundColor = [UIColor clearColor];
+        self.marker.layer.borderWidth = 2;
+        self.marker.layer.borderColor = [ColorDefinition lightRed].CGColor;
+        self.marker.layer.cornerRadius = MARKER_SIZE/2.0;
+        self.marker.hidden = true;
+        self.marker.clipsToBounds = YES;
+        
+        [self addSubview:self.marker];
     }
     return self;
 }
@@ -230,6 +246,30 @@ static const CGFloat TIME_LABEL_WIDTH = 60;
         [self.delegate viewSwitchedFrom:self.selectedButton to:sender.tag];
     }
     self.selectedButton = sender.tag;
+}
+
+- (void) markImageAtX:(CGFloat)x y:(CGFloat)y
+{
+    [self.marker setCenter:CGPointMake(self.imageDisplayView.frame.origin.x + self.imageDisplayView.frame.size.width * x, self.imageDisplayView.frame.origin.y + self.imageDisplayView.frame.size.height * y)];
+    self.marker.hidden = false;
+    
+    CGFloat internalX = self.imageDisplayView.image.size.width * x;
+    CGFloat internalY = self.imageDisplayView.image.size.height * y;
+    
+    CGFloat size = MARKER_SIZE/self.imageDisplayView.frame.size.width * self.imageDisplayView.image.size.width / 1.5;
+    
+    CGImageRef subImage = CGImageCreateWithImageInRect(self.imageDisplayView.image.CGImage, CGRectMake(internalX - size/2.0, internalY - size/2.0, size, size));
+    self.marker.image = [UIImage imageWithCGImage:subImage];
+}
+
+- (void)tappedOnImage
+{
+    [self hideMarker];
+}
+
+- (void) hideMarker
+{
+    self.marker.hidden = true;
 }
 
 @end

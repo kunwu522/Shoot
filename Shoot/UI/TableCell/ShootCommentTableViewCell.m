@@ -27,9 +27,9 @@ static const CGFloat PADDING = 10;
 static const CGFloat AVATAR_SIZE = 25;
 static const CGFloat LIKE_BUTTON_WIDTH = 60;
 
-- (id)initWithFrame:(CGRect)frame
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         self.anonymous = [[ShootImageView alloc] initWithFrame:CGRectMake(PADDING, PADDING, AVATAR_SIZE, AVATAR_SIZE)];
         self.anonymous.image = [UIImage imageNamed:@"avatar.jpg"];
