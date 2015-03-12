@@ -26,8 +26,8 @@ DerivedData
 # Pods/
 
 # User Upload Image
-*.jpeg
-*.jpg
+ShootService/upload/*.jpeg
+ShootService/upload/*.jpg
 
 .project
 .settings
