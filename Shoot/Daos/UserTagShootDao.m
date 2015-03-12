@@ -14,10 +14,11 @@
 
 @implementation UserTagShootDao
 
-static NSString * SHOOTS_KEY_PATH_URL = @"shoots";
+static NSString * USER_TAG_SHOOTS_KEY_PATH_URL = @"user_tag_shoots";
 static const NSString * QUERY_URL = @"shoot/query";
 static const NSString * QUERY_BY_USER_URL = @"shoot/query/:id";
-static const NSString * QUERY_BY_ID_URL = @"shoot/queryById/:id";
+static const NSString * TAGS_FOR_SHOOT_URL = @"shoot/userTagsForShoot/:id";
+static const NSString * TAGS_FOR_SHOOT_AND_TYPE_URL = @"shoot/userTagsForShoot/:id/:type";
 
 - (RKEntityMapping *) createResponseMapping
 {
@@ -53,11 +54,12 @@ static const NSString * QUERY_BY_ID_URL = @"shoot/queryById/:id";
     for(NSString *url in @[
                            QUERY_URL,
                            QUERY_BY_USER_URL,
-                           QUERY_BY_ID_URL
+                           TAGS_FOR_SHOOT_URL,
+                           TAGS_FOR_SHOOT_AND_TYPE_URL
                            ]){
         
         [manager addResponseDescriptor:
-         [RKResponseDescriptor responseDescriptorWithMapping:responseMapping method:RKRequestMethodGET pathPattern:url keyPath:SHOOTS_KEY_PATH_URL statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
+         [RKResponseDescriptor responseDescriptorWithMapping:responseMapping method:RKRequestMethodGET pathPattern:url keyPath:USER_TAG_SHOOTS_KEY_PATH_URL statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
 
     }
 }

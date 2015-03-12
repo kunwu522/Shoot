@@ -31,8 +31,6 @@ class CommentDAO extends BaseDAO
 					 'y' => $comment['y'],
 					 'time' => $comment['time'],
 					 'like_count' => $comment['like_count'],
-					 'latitude' => $comment['latitude'],
-					 'longitude' => $comment['longitude'],
 					 'if_cur_user_like_it' => $comment['if_cur_user_like_it'] == $currentUser_id,
 					 'deleted' => $comment['deleted']
 				     );

@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14D87h" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6751" systemVersion="14D87h" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Comment" representedClassName="Comment" syncable="YES">
         <attribute name="commentID" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="if_cur_user_like_it" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="like_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="shouldBeDeleted" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="x" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
@@ -97,12 +95,12 @@
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="shoot_tags" inverseEntity="User" syncable="YES"/>
     </entity>
     <elements>
+        <element name="Comment" positionX="-558" positionY="63" width="128" height="195"/>
         <element name="Message" positionX="-297" positionY="-81" width="128" height="193"/>
         <element name="MessageImage" positionX="-126" positionY="-85" width="128" height="103"/>
         <element name="Shoot" positionX="-765" positionY="153" width="128" height="283"/>
         <element name="Tag" positionX="-45" positionY="288" width="128" height="148"/>
         <element name="User" positionX="70" positionY="-24" width="128" height="343"/>
         <element name="UserTagShoot" positionX="304" positionY="152" width="128" height="238"/>
-        <element name="Comment" positionX="-558" positionY="63" width="128" height="223"/>
     </elements>
 </model>

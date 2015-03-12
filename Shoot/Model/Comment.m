@@ -18,8 +18,6 @@
 @dynamic x;
 @dynamic y;
 @dynamic like_count;
-@dynamic longitude;
-@dynamic latitude;
 @dynamic shouldBeDeleted;
 @dynamic if_cur_user_like_it;
 @dynamic shoot;

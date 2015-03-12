@@ -10,11 +10,12 @@
 #import "Shoot.h"
 
 #define SHOOT_DETAIL_CELL_COMMENTS_BUTTON_TAG 101;
-#define SHOOT_DETAIL_CELL_OTHER_USER_POSTS_BUTTON_TAG 102;
+#define SHOOT_DETAIL_CELL_TAGS_BUTTON_TAG 102;
 
 @protocol ShootDetailedTableViewCellDelegate <NSObject>
 @required
 - (void) viewSwitchedFrom:(NSInteger)oldView to:(NSInteger)newView;
+- (void) longPressedOnImageAtX:(CGFloat)x y:(CGFloat)y;
 @end
 
 @interface ShootDetailedTableViewCell : UITableViewCell

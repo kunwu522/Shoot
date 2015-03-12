@@ -30,7 +30,7 @@
 @property (nonatomic, retain) UIButton * haveCount;
 @property (nonatomic, retain) UIButton * wantCount;
 @property (nonatomic, retain) UIButton * comment;
-@property (nonatomic, retain) UIButton * otherUserPosts;
+@property (nonatomic, retain) UIButton * tags;
 @property (retain, nonatomic) UIImageView * marker;
 
 @property (nonatomic) NSInteger selectedButton;
@@ -75,23 +75,22 @@ static const CGFloat MARKER_SIZE = 60;
         
         CGFloat userNameX = self.userAvatar.frame.origin.x + self.userAvatar.frame.size.width + PADDING;
         self.username = [[UILabel alloc] initWithFrame:CGRectMake(userNameX, self.userAvatar.frame.origin.y, self.timeLabel.frame.origin.x - userNameX - PADDING, self.userAvatar.frame.size.height/2.0)];
-        self.username.font = [UIFont boldSystemFontOfSize:12];
+        self.username.font = [UIFont boldSystemFontOfSize:14];
         self.username.text = @"USERNAME";
         self.username.textColor = [UIColor darkGrayColor];
         [self addSubview:self.username];
         
         self.location = [[UIButton alloc] initWithFrame:CGRectMake(self.username.frame.origin.x, self.username.frame.origin.y + self.username.frame.size.height, self.frame.size.width - self.username.frame.origin.x - PADDING, self.userAvatar.frame.size.height/2.0)];
-        [self.location setTitle:@" Some place name" forState:UIControlStateNormal];
-        [self.location setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"location-icon"] atSize:CGSizeMake(10, 10)] color:[UIColor darkGrayColor]] forState:UIControlStateNormal];
-        [self.location setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+        [self.location setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"location-icon"] atSize:CGSizeMake(10, 10)] color:[ColorDefinition darkRed]] forState:UIControlStateNormal];
+        [self.location setTitleColor:[ColorDefinition darkRed] forState:UIControlStateNormal];
         self.location.titleLabel.font = [UIFont systemFontOfSize:11.0];
         self.location.titleLabel.textAlignment = NSTextAlignmentRight;
         [self.location setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
         [self addSubview:self.location];
         
         self.imageTitle = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, self.userAvatar.frame.origin.y + self.userAvatar.frame.size.height, self.frame.size.width - PADDING * 4, IMAGE_TITLE_HEIGHT)];
-        self.imageTitle.font = [UIFont boldSystemFontOfSize:12];
-        self.imageTitle.textColor = [ColorDefinition darkRed];
+        self.imageTitle.font = [UIFont systemFontOfSize:12];
+        self.imageTitle.textColor = [UIColor darkGrayColor];
         [self addSubview:self.imageTitle];
         
         CGFloat imageViewSize = self.frame.size.width - PADDING;
@@ -103,6 +102,11 @@ static const CGFloat MARKER_SIZE = 60;
         [singleTap setNumberOfTapsRequired:1];
         [self.imageDisplayView addGestureRecognizer:singleTap];
         [self.imageDisplayView setUserInteractionEnabled:TRUE];
+        UILongPressGestureRecognizer *lpgr  = [[UILongPressGestureRecognizer alloc]
+           initWithTarget:self action:@selector(handleImageLongPress:)];
+        lpgr.minimumPressDuration = 1;
+        lpgr.delegate = self;
+        [self.imageDisplayView addGestureRecognizer:lpgr];
         
         CGFloat buttonWidth = (self.frame.size.width - PADDING * 2)/3.0;
         CGFloat countLabelWidth = buttonWidth - BUTTON_SIZE - PADDING * 2;
@@ -160,13 +164,13 @@ static const CGFloat MARKER_SIZE = 60;
         [self.comment setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
         [self addSubview:self.comment];
         
-        self.otherUserPosts = [[UIButton alloc] initWithFrame:CGRectMake(self.comment.frame.size.width + self.comment.frame.origin.x, self.comment.frame.origin.y, (self.frame.size.width - PADDING * 2)/2.0, COMMENT_BUTTON_HEIGHT)];
-        self.otherUserPosts.tag = SHOOT_DETAIL_CELL_OTHER_USER_POSTS_BUTTON_TAG;
-        [self.otherUserPosts setTitle:@"Posts from others" forState:UIControlStateNormal];
-        [self.otherUserPosts addTarget:self action:@selector(commentViewChanged:)forControlEvents:UIControlEventTouchDown];
-        self.otherUserPosts.titleLabel.font = [UIFont boldSystemFontOfSize:11];
-        [self.otherUserPosts setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [self addSubview:self.otherUserPosts];
+        self.tags = [[UIButton alloc] initWithFrame:CGRectMake(self.comment.frame.size.width + self.comment.frame.origin.x, self.comment.frame.origin.y, (self.frame.size.width - PADDING * 2)/2.0, COMMENT_BUTTON_HEIGHT)];
+        self.tags.tag = SHOOT_DETAIL_CELL_TAGS_BUTTON_TAG;
+        [self.tags setTitle:@"Tags" forState:UIControlStateNormal];
+        [self.tags addTarget:self action:@selector(commentViewChanged:)forControlEvents:UIControlEventTouchDown];
+        self.tags.titleLabel.font = [UIFont boldSystemFontOfSize:11];
+        [self.tags setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        [self addSubview:self.tags];
         
         self.selectedButton = SHOOT_DETAIL_CELL_COMMENTS_BUTTON_TAG;
         
@@ -265,6 +269,17 @@ static const CGFloat MARKER_SIZE = 60;
 - (void)tappedOnImage
 {
     [self hideMarker];
+}
+
+- (void)handleImageLongPress:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    CGPoint touchLocation = [gestureRecognizer locationInView:self.imageDisplayView];
+    CGFloat x = touchLocation.x/self.imageDisplayView.frame.size.width;
+    CGFloat y = touchLocation.y/self.imageDisplayView.frame.size.height;
+    [self markImageAtX:x y:y];
+    if ([self.delegate respondsToSelector:@selector(longPressedOnImageAtX:y:)]) {
+        [self.delegate longPressedOnImageAtX:x y:y];
+    }
 }
 
 - (void) hideMarker

@@ -20,13 +20,13 @@ class ShootController extends Controller
 	public function query($user_id) {
 		$current_user_id = $this->getCurrentUser();
 		$shoots = $this->shoot_dao->query($current_user_id, $user_id, null);
-		return json_encode(array('shoots'=>$shoots));
+		return json_encode(array('user_tag_shoots'=>$shoots));
 	}
 	
 	public function queryByContent($keyword) {
 		$current_user_id = $this->getCurrentUser();
 		$shoots = $this->shoot_dao->query($current_user_id, null, $keyword);
-		return json_encode(array('shoots'=>$shoots));
+		return json_encode(array('user_tag_shoots'=>$shoots));
 	}
 	
 	public function trends() {
@@ -36,12 +36,12 @@ class ShootController extends Controller
 			$relationship = $this->user_dao->getRelationship($current_user_id, $shoot['user_id']);
 			$shoot['relationship_with_currentUser'] = $relationship;
 		}
-		return json_encode(array('shoots'=>$shoots));
+		return json_encode(array('user_tag_shoots'=>$shoots));
 	}
 	
-	public function queryById($user_id, $shoot_id) {
-		$shoot = $this->shoot_dao->queryById($user_id, $shoot_id);
-		return json_encode(array('shoots'=>$shoot));
+	public function userTagsForShoot($shoot_id, $type) {
+		$shoot = $this->shoot_dao->userTagsForShoot($shoot_id, $type);
+		return json_encode(array('user_tag_shoots'=>$shoot));
 	}
 	
 	public function create($parameters) 

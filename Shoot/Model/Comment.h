@@ -19,8 +19,6 @@
 @property (nonatomic, retain) NSNumber * x;
 @property (nonatomic, retain) NSNumber * y;
 @property (nonatomic, retain) NSNumber * like_count;
-@property (nonatomic, retain) NSNumber * longitude;
-@property (nonatomic, retain) NSNumber * latitude;
 @property (nonatomic, retain) NSNumber * shouldBeDeleted;
 @property (nonatomic, retain) NSNumber * if_cur_user_like_it;
 @property (nonatomic, retain) Shoot * shoot;
