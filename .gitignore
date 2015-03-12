@@ -26,7 +26,6 @@ DerivedData
 # Pods/
 
 # User Upload Image
-ShootService/upload/
 ShootService/upload/*
 
 .project
