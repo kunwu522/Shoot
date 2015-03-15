@@ -29,6 +29,7 @@
 		0E3CCA911AA59B9900AF6048 /* SignUpSubViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3CCA8E1AA59B9900AF6048 /* SignUpSubViewController.m */; };
 		0E3CCA921AA59B9900AF6048 /* SignupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E3CCA901AA59B9900AF6048 /* SignupViewController.m */; };
 		0E3CCA941AA59D2100AF6048 /* icon_white.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E3CCA931AA59D2100AF6048 /* icon_white.png */; };
+		0E50653A1AB2A97F00F3AB5F /* arrow-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E5065391AB2A97F00F3AB5F /* arrow-icon.png */; };
 		0E572E591A6897A800BC040D /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E572E501A6896AD00BC040D /* libRestKit.a */; };
 		0E572E5B1A6897E600BC040D /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E572E5A1A6897E600BC040D /* CFNetwork.framework */; };
 		0E572E5D1A6897F000BC040D /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E572E5C1A6897F000BC040D /* CoreData.framework */; };
@@ -104,6 +105,7 @@
 		0E666CA21A9447F300CF279C /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E666CA11A9447F300CF279C /* AddressBook.framework */; };
 		0E666CA41A94481100CF279C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E666CA31A94481100CF279C /* UIKit.framework */; };
 		0E666CA61A94481E00CF279C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E666CA51A94481D00CF279C /* Foundation.framework */; };
+		0E6B9D341AB525BF008CF269 /* ShootControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E6B9D331AB525BF008CF269 /* ShootControl.m */; };
 		0E7CD7141A5721CF00A27A2F /* ImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7111A5721CF00A27A2F /* ImageUtil.m */; };
 		0E7CD7151A5721CF00A27A2F /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7131A5721CF00A27A2F /* UIImage+ImageEffects.m */; };
 		0E90D4F21A9B1D7600B6F60C /* ShootActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E90D4F11A9B1D7600B6F60C /* ShootActionSheet.m */; };
@@ -253,6 +255,7 @@
 		0E3CCA8F1AA59B9900AF6048 /* SignupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignupViewController.h; sourceTree = "<group>"; };
 		0E3CCA901AA59B9900AF6048 /* SignupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignupViewController.m; sourceTree = "<group>"; };
 		0E3CCA931AA59D2100AF6048 /* icon_white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon_white.png; path = Images/icon_white.png; sourceTree = "<group>"; };
+		0E5065391AB2A97F00F3AB5F /* arrow-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "arrow-icon.png"; path = "Images/arrow-icon.png"; sourceTree = "<group>"; };
 		0E572E481A6896AC00BC040D /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = RestKit/RestKit.xcodeproj; sourceTree = "<group>"; };
 		0E572E5A1A6897E600BC040D /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		0E572E5C1A6897F000BC040D /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -364,6 +367,8 @@
 		0E666CA11A9447F300CF279C /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		0E666CA31A94481100CF279C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		0E666CA51A94481D00CF279C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		0E6B9D321AB525BF008CF269 /* ShootControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShootControl.h; path = UI/ShootControl.h; sourceTree = "<group>"; };
+		0E6B9D331AB525BF008CF269 /* ShootControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShootControl.m; path = UI/ShootControl.m; sourceTree = "<group>"; };
 		0E7CD7101A5721CF00A27A2F /* ImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageUtil.h; sourceTree = "<group>"; };
 		0E7CD7111A5721CF00A27A2F /* ImageUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUtil.m; sourceTree = "<group>"; };
 		0E7CD7121A5721CF00A27A2F /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
@@ -782,6 +787,8 @@
 				0EB82CDC1A37FCC100BFBE17 /* TableCell */,
 				0ECE67081AA2534100A03641 /* UserListView.h */,
 				0ECE67091AA2534100A03641 /* UserListView.m */,
+				0E6B9D321AB525BF008CF269 /* ShootControl.h */,
+				0E6B9D331AB525BF008CF269 /* ShootControl.m */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -816,6 +823,7 @@
 		0EB82CE01A38009200BFBE17 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				0E5065391AB2A97F00F3AB5F /* arrow-icon.png */,
 				0EBE32831AB144CE003AD2A3 /* tag.png */,
 				0ECE67061AA1BDC500A03641 /* message-filled.png */,
 				0E65C2441A9BEF550083FD73 /* Oops.png */,
@@ -1010,6 +1018,7 @@
 				0E5C93471A64B5F3008AE026 /* bubble-square-outgoing-image-mask@2x.png in Resources */,
 				0E1422D11A57AFED00783F0F /* image5.jpg in Resources */,
 				0E5C93421A64B5F3008AE026 /* bubble-default-outgoing-selected@2x.png in Resources */,
+				0E50653A1AB2A97F00F3AB5F /* arrow-icon.png in Resources */,
 				0EBE32841AB144CE003AD2A3 /* tag.png in Resources */,
 				0EB82CC11A37F84D00BFBE17 /* Main.storyboard in Resources */,
 				0E5C93481A64B5F3008AE026 /* bubble-square-outgoing-selected@2x.png in Resources */,
@@ -1121,6 +1130,7 @@
 				0EA873961A8CA378009172F9 /* Dao.m in Sources */,
 				0E5D46961A7977C900CEA8D6 /* MapAnnotationView.m in Sources */,
 				0E572EC21A6F70BF00BC040D /* MNCalendarViewCell.m in Sources */,
+				0E6B9D341AB525BF008CF269 /* ShootControl.m in Sources */,
 				0E16A7FE1A92A69A0096B41D /* UserTableViewCell.m in Sources */,
 				0EB82CB81A37F84D00BFBE17 /* Shoot.xcdatamodeld in Sources */,
 				0E5C92F81A622721008AE026 /* MenuTableViewCell.m in Sources */,

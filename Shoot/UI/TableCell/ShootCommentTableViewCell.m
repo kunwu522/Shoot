@@ -54,6 +54,8 @@ static const CGFloat LIKE_BUTTON_WIDTH = 60;
         [self.commentLike setContentHorizontalAlignment:UIControlContentHorizontalAlignmentRight];
         self.commentLike.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
         [self addSubview:self.commentLike];
+        
+        [self setSelectionStyle:UITableViewCellSelectionStyleNone];
     }
     return self;
 }

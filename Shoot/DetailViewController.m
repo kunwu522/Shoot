@@ -19,8 +19,9 @@
 #import "UserDao.h"
 #import "Tag.h"
 #import "UserTagShoot.h"
+#import "AppDelegate.h"
 
-@interface DetailViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, ShootDetailedTableViewCellDelegate>
+@interface DetailViewController () <UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, ShootDetailedTableViewCellDelegate>
 
 @property (retain, nonatomic) UIRefreshControl *refreshControl;
 @property (retain, nonatomic) UITableView *tableView;
@@ -34,6 +35,11 @@
 @property (retain, nonatomic) UIView *inputView;
 @property (retain, nonatomic) UITextField *inputBox;
 @property (retain, nonatomic) UILabel *charCountLabel;
+@property (retain, nonatomic) UIButton *postButton;
+@property (retain, nonatomic) UIProgressView *postCommentProgressBar;
+@property (nonatomic) NSNumber * selectedX;
+@property (nonatomic) NSNumber * selectedY;
+@property (retain, nonatomic) Comment *pendingComment;
 
 @property (retain, nonatomic) Shoot * shoot;
 @property (retain, nonatomic) NSArray * userTagShoots;
@@ -44,7 +50,8 @@
 
 static CGFloat PADDING = 5;
 static CGFloat INPUT_VIEW_HEIGHT = 35;
-static CGFloat CHAR_COUNT_LABEL_WIDTH = 50;
+static CGFloat CHAR_COUNT_LABEL_WIDTH = 20;
+static CGFloat POST_BUTTON_WIDTH = 30;
 static CGFloat COMMENT_TABLE_HEADER_HEIGHT = 20;
 
 static NSString * DETAILED_TABEL_CELL_REUSE_ID = @"ShootDetailedTableViewCell";
@@ -54,8 +61,20 @@ static NSString * TAG_TABEL_CELL_REUSE_ID = @"tagTableViewCell";
 static const NSInteger DETAILED_TABLE_CELL_ROW_INDEX = 0;
 static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
 
+static const NSInteger MAX_CHAR_ALLOWED_FOR_COMMENT = 100;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleWillShowKeyboard:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleWillHideKeyboard:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
     
     UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget: self action:@selector(doDoubleTap)];
     doubleTap.numberOfTapsRequired = 2;
@@ -89,47 +108,41 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     [self.inputView addSubview:visualEffectView];
     self.inputView.hidden = true;
     [self.view addSubview:self.inputView];
-    self.inputBox = [[UITextField alloc] initWithFrame:CGRectMake(PADDING, self.inputView.frame.size.height * 0.15, self.inputView.frame.size.width - PADDING * 3 - CHAR_COUNT_LABEL_WIDTH, self.inputView.frame.size.height * 0.7)];
+    self.inputBox = [[UITextField alloc] initWithFrame:CGRectMake(PADDING, self.inputView.frame.size.height * 0.15, self.inputView.frame.size.width - PADDING * 4 - CHAR_COUNT_LABEL_WIDTH - POST_BUTTON_WIDTH, self.inputView.frame.size.height * 0.7)];
     self.inputBox.backgroundColor = [UIColor whiteColor];
     self.inputBox.borderStyle = UITextBorderStyleRoundedRect;
+    self.inputBox.autocorrectionType = UITextAutocorrectionTypeNo;
+    self.inputBox.returnKeyType = UIReturnKeySend;
+    self.inputBox.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.inputBox.layer.cornerRadius = 5;
     self.inputBox.font = [UIFont systemFontOfSize:12];
+    self.inputBox.delegate = self;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(textUpdated:)
+                                                 name: UITextFieldTextDidChangeNotification
+                                               object:self.inputBox];
+    
     [self.inputView addSubview:self.inputBox];
     self.charCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.inputBox.frame.origin.x + self.inputBox.frame.size.width + PADDING, self.inputBox.frame.origin.y, CHAR_COUNT_LABEL_WIDTH, self.inputBox.frame.size.height)];
     self.charCountLabel.textAlignment = NSTextAlignmentRight;
-    self.charCountLabel.font = [UIFont systemFontOfSize:10];
+    self.charCountLabel.font = [UIFont systemFontOfSize:11];
+    self.charCountLabel.text = [NSString stringWithFormat:@"%ld", MAX_CHAR_ALLOWED_FOR_COMMENT];
+    self.charCountLabel.textColor = [UIColor darkGrayColor];
     [self.inputView addSubview:self.charCountLabel];
+    self.postButton = [[UIButton alloc] initWithFrame:CGRectMake(self.charCountLabel.frame.origin.x + self.charCountLabel.frame.size.width + PADDING, self.charCountLabel.frame.origin.y, POST_BUTTON_WIDTH, self.inputBox.frame.size.height)];
+    CGFloat iconSize = MIN(self.postButton.frame.size.width, self.postButton.frame.size.height);
+    [self.postButton setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"arrow-icon"] atSize:CGSizeMake(iconSize,iconSize)] color:[ColorDefinition lightRed]] forState:UIControlStateNormal];
+    [self.postButton setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"arrow-icon"] atSize:CGSizeMake(iconSize,iconSize)] color:[UIColor lightGrayColor]] forState:UIControlStateDisabled];
+    [self.postButton addTarget:self action:@selector(inputPostButtonPressed:) forControlEvents:UIControlEventTouchDown];
+    self.postButton.enabled = false;
+    [self.inputView addSubview:self.postButton];
+    self.postCommentProgressBar = [[UIProgressView alloc] initWithFrame:CGRectMake(0, 0, self.inputView.frame.size.width, 2)];
+    self.postCommentProgressBar.tintColor = [ColorDefinition lightRed];
+    [self.inputView addSubview:self.postCommentProgressBar];
+    self.postCommentProgressBar.hidden = true;
     
     [self loadData];
     [self fetchData];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    // register for keyboard notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleWillShowKeyboard:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleWillHideKeyboard:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    // unregister for keyboard notifications while not visible.
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIKeyboardWillShowNotification
-                                                  object:nil];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIKeyboardWillHideNotification
-                                                  object:nil];
 }
 
 - (void) initFetchController
@@ -194,7 +207,7 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
 
 - (void) loadShoot {
     self.shoot = [[ShootDao sharedManager] findUserByIdLocally:self.shootID];
-    [self.shootDetailedTableViewCell decorateWith:self.shoot];
+    [self.shootDetailedTableViewCell decorateWith:self.shoot parentController:self];
 }
 
 - (void) loadComments
@@ -245,7 +258,6 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
         if (indexPath.row == DETAILED_TABLE_CELL_ROW_INDEX) {
             self.shootDetailedTableViewCell = [tableView dequeueReusableCellWithIdentifier:DETAILED_TABEL_CELL_REUSE_ID forIndexPath:indexPath];
             self.shootDetailedTableViewCell.delegate = self;
-            self.shootDetailedTableViewCell.selectionStyle = UITableViewCellSelectionStyleNone;
             [self loadShoot];
             return self.shootDetailedTableViewCell;
         } else if(indexPath.row == COMMENTS_TABLE_CELL_ROW_INDEX) {
@@ -260,13 +272,11 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
         ShootCommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:COMMENT_TABEL_CELL_REUSE_ID forIndexPath:indexPath];
         Comment *comment = [self.commentFetchedResultsController objectAtIndexPath:indexPath];
         [cell decorateWithComment:comment];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     } else if (tableView == self.tagTableView) {
         TagTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:TAG_TABEL_CELL_REUSE_ID forIndexPath:indexPath];
         Tag * tag = ((UserTagShoot *)[self.tagFetchedResultsController objectAtIndexPath:indexPath]).tag;
         [cell decorateWithTag:tag];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
     return nil;
@@ -290,6 +300,33 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
         return [TagTableViewCell height];
     }
     return 0;
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView == self.commentTableView) {
+        Comment *comment = [self.commentFetchedResultsController objectAtIndexPath:indexPath];
+        AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+        if ([comment.user.userID isEqual:appDelegate.currentUserID]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView == self.commentTableView) {
+        Comment *comment = [self.commentFetchedResultsController objectAtIndexPath:indexPath];
+        AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+        if ([comment.user.userID isEqual:appDelegate.currentUserID]) {
+            [[RKObjectManager sharedManager] deleteObject:comment path:[NSString stringWithFormat:@"comment/delete/%@", comment.commentID] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+                [self loadComments];
+            } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+                NSLog(@"Failure deleting comment: %@", error.localizedDescription);
+            }];
+        }
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -381,8 +418,16 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
 
 - (void) longPressedOnImageAtX:(CGFloat)x y:(CGFloat)y
 {
-    self.inputView.hidden = false;
+    self.selectedX = [NSNumber numberWithFloat:x];
+    self.selectedY = [NSNumber numberWithFloat:y];
     [self.inputBox becomeFirstResponder];
+}
+
+- (void) imageUnmarked
+{
+    self.selectedX = nil;
+    self.selectedY = nil;
+    [self.inputBox endEditing:YES];
 }
 
 - (void) viewSwitchedFrom:(NSInteger)oldView to:(NSInteger)newView
@@ -420,18 +465,100 @@ static const NSInteger COMMENTS_TABLE_CELL_ROW_INDEX = 1;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void) startPosting
+{
+    RKManagedObjectStore *objectStore = [[RKObjectManager sharedManager] managedObjectStore];
+    self.pendingComment = [NSEntityDescription insertNewObjectForEntityForName:@"Comment" inManagedObjectContext:objectStore.mainQueueManagedObjectContext];
+    self.pendingComment.shoot = self.shoot;
+    self.pendingComment.content = self.inputBox.text;
+    self.pendingComment.x = self.selectedX;
+    self.pendingComment.y = self.selectedY;
+    self.shootDetailedTableViewCell.userInteractionEnabled = false;
+    self.postButton.enabled = false;
+    [self.postCommentProgressBar setProgress:0.0 animated:NO];
+    self.postCommentProgressBar.hidden = false;
+    double delayInSeconds = 0.5;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self.postCommentProgressBar setProgress:0.5 animated:YES];
+    });
+}
+
+- (void) endPosting
+{
+    self.pendingComment = nil;
+    [self.postCommentProgressBar setProgress:1 animated:YES];
+    double delayInSeconds = 1.0;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self.postCommentProgressBar setHidden:YES];
+        self.postButton.enabled = true;
+        self.shootDetailedTableViewCell.userInteractionEnabled = true;
+        [self.inputBox resignFirstResponder];
+    });
+}
+
+- (void) inputPostButtonPressed:(id)sender
+{
+    if (self.inputBox.text.length > 0 && self.inputBox.text.length < MAX_CHAR_ALLOWED_FOR_COMMENT) {
+        
+        [self startPosting];
+        
+        [[RKObjectManager sharedManager] postObject:self.pendingComment path:@"comment/create" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+            [self endPosting];
+            [self loadComments];
+        } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+            NSLog(@"Failure saving message: %@", error.localizedDescription);
+            [[[RKObjectManager sharedManager] managedObjectStore].mainQueueManagedObjectContext deleteObject:self.pendingComment];
+            [self endPosting];
+        }];
+    }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if (textField == self.inputBox) {
+        [self inputPostButtonPressed:self];
+    }
+    return YES;
+}
+
+
 #pragma mark - Keyboard notifications
 - (void)handleWillShowKeyboard:(NSNotification *)notification
 {
+    [self.tableView setContentOffset:CGPointMake(self.tableView.contentOffset.x, [ShootDetailedTableViewCell height] - [ShootDetailedTableViewCell minimalHeight])];
     CGRect keyboardFrameInWindowsCoordinates;
     [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] getValue:&keyboardFrameInWindowsCoordinates];
     CGPoint kbPosition = keyboardFrameInWindowsCoordinates.origin;
     [self.inputView setFrame:CGRectMake(0, kbPosition.y - self.inputView.frame.size.height, self.inputView.frame.size.width, self.inputView.frame.size.height)];
+    self.inputView.alpha = 0.0;
+    self.inputView.hidden = false;
+    [UIView animateWithDuration:0.5 animations:^{
+        self.inputView.alpha = 1.0;
+    }];
 }
 
 - (void)handleWillHideKeyboard:(NSNotification *)notification
 {
-    self.inputBox.hidden = true;
+    self.inputView.hidden = true;
+}
+
+#pragma mark - text field change notification
+- (void)textUpdated:(NSNotification *)notification
+{
+    self.charCountLabel.text = [NSString stringWithFormat:@"%ld", MAX_CHAR_ALLOWED_FOR_COMMENT - self.inputBox.text.length];
+    if (self.inputBox.text.length > MAX_CHAR_ALLOWED_FOR_COMMENT) {
+        self.charCountLabel.textColor = [UIColor redColor];
+        self.postButton.enabled = false;
+    } else {
+        self.charCountLabel.textColor = [UIColor darkGrayColor];
+        if (self.inputBox.text.length <= 0) {
+            self.postButton.enabled = false;
+        } else {
+            self.postButton.enabled = true;
+        }
+    }
+    
 }
 
 @end

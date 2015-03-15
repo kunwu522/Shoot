@@ -52,6 +52,8 @@ static CGFloat BUTTON_ICON_SIZE = 15;
         self.titleLabel.textAlignment = NSTextAlignmentLeft;
         [self addSubview:self.titleLabel];
         
+        [self setSelectionStyle:UITableViewCellSelectionStyleNone];
+        
     }
     return self;
 }

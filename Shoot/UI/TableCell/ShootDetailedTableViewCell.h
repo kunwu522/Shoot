@@ -16,13 +16,14 @@
 @required
 - (void) viewSwitchedFrom:(NSInteger)oldView to:(NSInteger)newView;
 - (void) longPressedOnImageAtX:(CGFloat)x y:(CGFloat)y;
+- (void) imageUnmarked;
 @end
 
 @interface ShootDetailedTableViewCell : UITableViewCell
 
 @property (nonatomic, weak)id<ShootDetailedTableViewCellDelegate> delegate;
 
-- (void) decorateWith:(Shoot *)shoot;
+- (void) decorateWith:(Shoot *)shoot parentController:(UIViewController *)parentController;
 - (void) markImageAtX:(CGFloat)x y:(CGFloat)y;
 - (void) hideMarker;
 

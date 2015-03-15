@@ -58,6 +58,8 @@ const double STORE_TYPE_ICON_SIZE = 15;
         self.followButton = [[FollowButton alloc] initWithFrame:CGRectMake(UI_PADDING*2 + self.usernameLabel.frame.origin.x + self.usernameLabel.frame.size.width, self.userAvatar.center.y - followButtonHeight/2.0, followButtonWidth, followButtonHeight)];
         self.followButton.tintColor = [UIColor whiteColor];
         [self addSubview:self.followButton];
+        
+        [self setSelectionStyle:UITableViewCellSelectionStyleNone];
     }
     return self;
 }
