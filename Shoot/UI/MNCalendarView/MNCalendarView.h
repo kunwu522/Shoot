@@ -36,6 +36,7 @@
 
 - (void)reloadData;
 - (void)registerUICollectionViewClasses; 
+- (void) setHighlightedDates:(NSArray *)highlightedDates;
 
 @end
 

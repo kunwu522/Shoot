@@ -19,7 +19,7 @@
 #import "UserViewController.h"
 #import "UserListView.h"
 
-@interface NotificationViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, NotificationTableViewCellDelegate, UserListViewDelegate>
+@interface NotificationViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, UISearchBarDelegate, NotificationTableViewCellDelegate, UserListViewDelegate>
 
 @property (retain, nonatomic) UITableView * tableView;
 @property (retain, nonatomic) UISearchBar * searchBar;
@@ -66,6 +66,7 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
     self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.searchBar.tintColor = [UIColor darkGrayColor];
     [self.searchBar setImage:[ImageUtil renderImage:[ImageUtil colorImage:[UIImage imageNamed:@"search-icon"] color:[UIColor darkGrayColor]] atSize:CGSizeMake(10, 10)] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
+    self.searchBar.delegate = self;
     [self.view addSubview:self.searchBar];
     
     self.conversations = [[NSMutableArray alloc] init];
@@ -402,7 +403,28 @@ static NSString * TABEL_CELL_REUSE_ID = @"TableCell";
 
 - (void) showUser:(id) sender
 {
-//    [self performSegueWithIdentifier:@"showUser" sender:sender];
+    CGPoint buttonPosition = [sender convertPoint:CGPointZero toView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:buttonPosition];
+    Message *message;
+    if (self.viewStatus == MESSAGE_VIEW_TAG)
+        message = [self.conversations objectAtIndex:indexPath.section];
+    else
+        message = [[self getNSFetchedResultsController] objectAtIndexPath:indexPath];
+    
+    UserViewController* viewController = [[UserViewController alloc] initWithNibName:nil bundle:nil];
+    viewController.userID = message.participant.userID;
+    [self presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [self.searchBar endEditing:YES];
+}
+
+#pragma mark search bar delegate
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    
 }
 
 /*

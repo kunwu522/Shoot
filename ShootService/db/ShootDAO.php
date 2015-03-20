@@ -128,10 +128,41 @@ class ShootDAO extends BaseDAO
 	public function find_shoot_by_id($id) {
 		$condition = "shoot.id = $id";
 		$shoots = $this->getShootsWithCondition($condition);
-		if(count($shoots) > 0)
+		if(count($shoots) > 0) {
 			return $shoots[0];
-		else
+		} else {
 			return null;
+		}
+	}
+	
+	public function if_user_like_shoot($user_id, $shoot_id) {
+		$query = "SELECT time FROM like_shoot WHERE user_id = $user_id AND shoot_id = $shoot_id";
+		$result = $this->db_conn->query($query);
+		if(mysql_num_rows($result)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public function if_user_want_shoot($user_id, $shoot_id) {
+		$query = "SELECT time FROM user_tag_shoot WHERE user_id = $user_id AND shoot_id = $shoot_id AND deleted = 0 AND type = 0";
+		$result = $this->db_conn->query($query);
+		if(mysql_num_rows($result)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public function if_user_have_shoot($user_id, $shoot_id) {
+		$query = "SELECT time FROM user_tag_shoot WHERE user_id = $user_id AND shoot_id = $shoot_id AND deleted = 0 AND type = 1";
+		$result = $this->db_conn->query($query);
+		if(mysql_num_rows($result)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private function getShootsWithCondition($condition) {

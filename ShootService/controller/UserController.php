@@ -26,6 +26,8 @@ class UserController extends Controller
 		$user = $this->user_dao->find_by_id($id, $currentUser_id);
 		if($user)
 			return json_encode($user);
+		else
+			throw new InvalidRequestException('No user could be found for the given id');
 	}
 	
 	public function registerDevice($device_id) {

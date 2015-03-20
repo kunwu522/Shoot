@@ -7,9 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MapKit/MapKit.h>
 
 @interface MapView : UIView
 
--(void) setAnnotations:(NSArray *) annotations;
+- (MKCoordinateRegion) getRegion;
+- (void) setRegion:(MKCoordinateRegion)mapRegion;
+- (void) setAnnotations:(NSArray *) annotations;
 
 @end

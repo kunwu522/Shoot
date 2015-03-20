@@ -29,7 +29,7 @@ static double TIME_LABEL_WIDTH = 70;
         [l setMasksToBounds:YES];
         [l setCornerRadius:self.userAvatar.frame.size.width/2.0];
         self.userAvatar.userInteractionEnabled = YES;
-//        [self.userAvatar addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userAvatarTapped)]];
+        [self.userAvatar addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userAvatarTapped:)]];
         [self addSubview:self.userAvatar];
         
         self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.userAvatar.frame.origin.x + self.userAvatar.frame.size.width + PADDING, self.userAvatar.frame.origin.y, self.frame.size.width - PADDING * 4 - AVATAR_SIZE - TIME_LABEL_WIDTH, self.userAvatar.frame.size.height/2.0)];
@@ -37,7 +37,7 @@ static double TIME_LABEL_WIDTH = 70;
         [self.usernameLabel setTextColor:[UIColor blackColor]];
         [self.usernameLabel setFont:[UIFont boldSystemFontOfSize:12]];
         self.usernameLabel.userInteractionEnabled = true;
-//        [self.usernameLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userAvatarTapped)]];
+        [self.usernameLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userAvatarTapped:)]];
         [self addSubview:self.usernameLabel];
         
         self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width - PADDING - TIME_LABEL_WIDTH, self.userAvatar.frame.origin.y, TIME_LABEL_WIDTH, AVATAR_SIZE/2.0)];
@@ -72,6 +72,13 @@ static double TIME_LABEL_WIDTH = 70;
 
 - (void)awakeFromNib {
     // Initialization code
+}
+
+- (void)userAvatarTapped:(id)sender
+{
+    if ([self.delegate respondsToSelector:@selector(showUser:)]) {
+        [self.delegate showUser:self];
+    }
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

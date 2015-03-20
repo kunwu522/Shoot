@@ -40,7 +40,7 @@ static const CGFloat AVATAR_SIZE = 35;
 static const CGFloat IMAGE_TITLE_HEIGHT = 30;
 static const CGFloat COMMENT_BUTTON_HEIGHT = 30;
 static const CGFloat TIME_LABEL_WIDTH = 60;
-static const CGFloat MARKER_SIZE = 60;
+static const CGFloat MARKER_SIZE = 65;
 
 - (void)awakeFromNib {
     // Initialization code
@@ -97,7 +97,7 @@ static const CGFloat MARKER_SIZE = 60;
         [self.imageDisplayView setUserInteractionEnabled:TRUE];
         UILongPressGestureRecognizer *lpgr  = [[UILongPressGestureRecognizer alloc]
            initWithTarget:self action:@selector(handleImageLongPress:)];
-        lpgr.minimumPressDuration = 1;
+//        lpgr.minimumPressDuration = 1;
         lpgr.delegate = self;
         [self.imageDisplayView addGestureRecognizer:lpgr];
         
@@ -136,7 +136,7 @@ static const CGFloat MARKER_SIZE = 60;
         
         self.marker = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, MARKER_SIZE, MARKER_SIZE)];
         self.marker.backgroundColor = [UIColor clearColor];
-        self.marker.layer.borderWidth = 2;
+        self.marker.layer.borderWidth = 3;
         self.marker.layer.borderColor = [ColorDefinition lightRed].CGColor;
         self.marker.layer.cornerRadius = MARKER_SIZE/2.0;
         self.marker.hidden = true;
@@ -221,12 +221,14 @@ static const CGFloat MARKER_SIZE = 60;
 
 - (void)handleImageLongPress:(UILongPressGestureRecognizer *)gestureRecognizer
 {
-    CGPoint touchLocation = [gestureRecognizer locationInView:self.imageDisplayView];
-    CGFloat x = touchLocation.x/self.imageDisplayView.frame.size.width;
-    CGFloat y = touchLocation.y/self.imageDisplayView.frame.size.height;
-    [self markImageAtX:x y:y];
-    if ([self.delegate respondsToSelector:@selector(longPressedOnImageAtX:y:)]) {
-        [self.delegate longPressedOnImageAtX:x y:y];
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        CGPoint touchLocation = [gestureRecognizer locationInView:self.imageDisplayView];
+        CGFloat x = touchLocation.x/self.imageDisplayView.frame.size.width;
+        CGFloat y = touchLocation.y/self.imageDisplayView.frame.size.height;
+        [self markImageAtX:x y:y];
+        if ([self.delegate respondsToSelector:@selector(longPressedOnImageAtX:y:)]) {
+            [self.delegate longPressedOnImageAtX:x y:y];
+        }
     }
 }
 

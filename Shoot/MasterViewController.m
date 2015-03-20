@@ -140,7 +140,6 @@ static CGFloat ADD_BUTTON_PADDING = 20;
         NSArray *userTagShoots = [[[self.fetchedResultsController sections] objectAtIndex:indexPath.section] objects];
         UserTagShoot *userTagShoot = [userTagShoots objectAtIndex:0];
         DetailViewController *controller = (DetailViewController *)[segue destinationViewController];
-//        [controller setDetailItem:@"Some string"];
         controller.shootID = userTagShoot.shootID;
         controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;

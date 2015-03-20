@@ -64,11 +64,22 @@ static const NSString * TAGS_FOR_SHOOT_AND_TYPE_URL = @"shoot/userTagsForShoot/:
     }
 }
 
-- (NSArray *) findUserTagShootsLocallyByuserId:(NSNumber *)userID shootID:(NSNumber *)shootID {
+- (NSArray *) findUserTagShootsLocallyByUserId:(NSNumber *)userID shootID:(NSNumber *)shootID {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"UserTagShoot"];
     NSSortDescriptor *timeSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO];
     fetchRequest.sortDescriptors = @[timeSortDescriptor];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"userID == %@ && shootID == %@", userID, shootID]];
+    fetchRequest.predicate = predicate;
+    NSError *error = nil;
+    NSArray *results = [[RKObjectManager sharedManager].managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+    return results;
+}
+
+- (NSArray *) findUserTagShootsLocallyByUserId:(NSNumber *)userID forType:(NSNumber *)tagType {
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"UserTagShoot"];
+    NSSortDescriptor *timeSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO];
+    fetchRequest.sortDescriptors = @[timeSortDescriptor];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"userID == %@ and type == %@", userID, tagType]];
     fetchRequest.predicate = predicate;
     NSError *error = nil;
     NSArray *results = [[RKObjectManager sharedManager].managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];

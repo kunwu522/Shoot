@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "MapAnnotation.h"
+
+#define USER_TAG_SHOOT_WANT_TYPE 0;
+#define USER_TAG_SHOOT_HAVE_TYPE 1;
 
 @class Tag, Shoot, User;
 
@@ -26,5 +30,7 @@
 @property (nonatomic, retain) Shoot * shoot;
 @property (nonatomic, retain) Tag * tag;
 @property (nonatomic, retain) User * user;
+
+- (MapAnnotation *) getMapAnnotation;
 
 @end

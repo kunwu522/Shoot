@@ -96,7 +96,12 @@ class ShootController extends Controller
 	
 	public function queryShootById($shoot_id) 
 	{
-		return json_encode($this->shoot_dao->find_shoot_by_id($shoot_id));
+		$shoot = $this->shoot_dao->find_shoot_by_id($shoot_id);
+		$currentUser_id = $this->getCurrentUser();
+		$shoot['if_cur_user_want_it'] = $this->shoot_dao->if_user_want_shoot($currentUser_id, $shoot_id);
+		$shoot['if_cur_user_like_it'] = $this->shoot_dao->if_user_like_shoot($currentUser_id, $shoot_id);
+		$shoot['if_cur_user_have_it'] = $this->shoot_dao->if_user_have_shoot($currentUser_id, $shoot_id);
+		return json_encode($shoot);
 	}
 	
 	public function like($shoot_id) 
@@ -104,7 +109,7 @@ class ShootController extends Controller
 		$currentUser_id = $this->getCurrentUser();
 		$currentUsername = $this->getCurrentUsername();
 		$this->shoot_dao->setUserLikeShoot($currentUser_id, $shoot_id);
-		$shoot = $this->shoot_dao->find_shoot_by_id($shoot_id)[0];
+		$shoot = $this->shoot_dao->find_shoot_by_id($shoot_id);
 		if ($shoot['user_id'] != $currentUser_id) {
 			$message = new Message();
 			$message->set_message('@' . $currentUsername . ' liked your post: ' . $shoot['content']);

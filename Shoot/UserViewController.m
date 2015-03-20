@@ -14,16 +14,18 @@
 #import "ImageCollectionViewCell.h"
 #import "ImageDetailedCollectionViewCell.h"
 #import "MNCalendarView.h"
-#import "MapView.h"
-#import "MapAnnotation.h"
 #import "UIViewHelper.h"
 #import "UserDao.h"
 #import "ShootImageView.h"
 #import "AppDelegate.h"
 #import "ShootActionSheet.h"
 #import "UserListView.h"
+#import "ConversationViewController.h"
+#import "UserShootCollectionView.h"
+#import "UserTagShoot.h"
+#import "UserShootMapView.h"
 
-@interface UserViewController () <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, MNCalendarViewDelegate>
+@interface UserViewController () <UITableViewDataSource, UITableViewDelegate, MNCalendarViewDelegate>
 
 @property (nonatomic, retain) UITableView *tableView;
 @property (retain, nonatomic) UIImageView * header;
@@ -42,12 +44,13 @@
 @property (retain, nonatomic) UIButton * locationViewButton;
 @property (retain, nonatomic) UIButton * calendarViewButton;
 @property (retain, nonatomic) UITableViewCell * imagesCell;
-@property (retain, nonatomic) UICollectionView *imageCollectionView;
-@property (retain, nonatomic) MapView *mapView;
+@property (retain, nonatomic) UserShootMapView *mapView;
 @property (retain, nonatomic) MNCalendarView *calendarView;
 @property (retain, nonatomic) UIView * sectionHeaderView;
 @property (nonatomic) NSInteger imageViewStatus;
+@property (retain, nonatomic) NSNumber *selectedTagType;
 @property (retain, nonatomic) UserListView *userListView;
+@property (retain, nonatomic) UserShootCollectionView *userShootCollectionView;
 
 @end
 
@@ -67,7 +70,7 @@ static const NSInteger CALENDAR_VIEW_TAG = 103;
 static CGFloat PADDING = 5;
 static CGFloat AVATAR_SIZE = 85;
 static CGFloat AVATAR_OFFSET = 30;
-static CGFloat HEADER_HEIGHT = 140;
+static CGFloat HEADER_HEIGHT = 150;
 static CGFloat USERNAME_HEIGHT = 30;
 static CGFloat FOLLOWER_LABEL_HEIGHT = 18;
 static CGFloat WANTS_BUTTON_HEIGHT = 30;
@@ -121,21 +124,29 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     
     [self.tableView reloadData];
     
+    [self reloadView];
+    [self refreshView];
+    
+    self.userListView = [[UserListView alloc] initWithFrame:self.view.bounds];
+    [self.view addSubview:self.userListView];
+    self.userListView.hidden = true;
+}
+
+- (void) refreshView
+{
     [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/query/%@", self.userID] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        [self updateUserAvatar];
-        [self updateView];
+        [self reloadView];
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         RKLogError(@"Load failed with error: %@", error);
         UIAlertView *av = [[UIAlertView alloc] initWithTitle:nil message:@"Failed to load user profile. Please try again later." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [av show];
     }];
-    
+}
+
+- (void) reloadView
+{
     [self updateUserAvatar];
     [self updateView];
-    
-    self.userListView = [[UserListView alloc] initWithFrame:self.view.bounds];
-    [self.view addSubview:self.userListView];
-    self.userListView.hidden = true;
 }
 
 - (void)updateUserAvatar
@@ -146,7 +157,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
 
 - (void)updateUserBg
 {
-    [self.header  sd_setImageWithURL:[ImageUtil imageURLOfBg:self.userID] placeholderImage:[UIImage imageNamed:@"image4.jpg"] options:(SDWebImageHandleCookies | SDWebImageRefreshCached)];
+    [self.header sd_setImageWithURL:[ImageUtil imageURLOfBg:self.userID] placeholderImage:[UIImage imageNamed:@"image4.jpg"] options:(SDWebImageHandleCookies | SDWebImageRefreshCached)];
 }
 
 
@@ -155,10 +166,14 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     self.user = [[UserDao sharedManager] findUserByIdLocally:self.userID];
     if (self.user) {
         [self.followersCount setTitle:[NSString stringWithFormat:@"%@", [UIViewHelper getCountString: self.user.follower_count]] forState:UIControlStateNormal];
+        self.followersCount.enabled = ([self.user.follower_count integerValue] > 0);
         [self.followingCount setTitle:[NSString stringWithFormat:@"%@", [UIViewHelper getCountString: self.user.following_count]] forState:UIControlStateNormal];
+        self.followingCount.enabled = ([self.user.following_count integerValue] > 0);
         self.username.text = self.user.username;
         [self.wants setTitle:[NSString stringWithFormat:@" %@ wants", self.user.want_count] forState:UIControlStateNormal];
+        self.wants.enabled = ([self.user.want_count integerValue] > 0);
         [self.haves setTitle:[NSString stringWithFormat:@" %@ haves", self.user.have_count] forState:UIControlStateNormal];
+        self.haves.enabled = ([self.user.have_count integerValue] > 0);
         
         if ([self.user.relationship_with_currentUser intValue] == 0) {
             [self makeEditProfileButton];
@@ -177,6 +192,8 @@ static NSString * TAKE_PHOTO = @"Take Photo";
 {
     [self.message setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"message-filled"] atSize:CGSizeMake(self.username.frame.size.height* 0.7, self.username.frame.size.height * 0.7)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
     [self.message setBackgroundColor:[ColorDefinition greenColor]];
+    [self.message removeTarget:nil action:NULL forControlEvents:UIControlEventAllEvents];
+    [self.message addTarget:self action:@selector(message:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)makeCameraButton
@@ -226,6 +243,13 @@ static NSString * TAKE_PHOTO = @"Take Photo";
 //                                  otherButtonTitles:TAKE_PHOTO, PHOTO_LIBARARY, nil];
 //    }
 //    [as showInView:self.view];
+}
+
+- (void)message:(id)sender
+{
+    ConversationViewController * viewController = [[ConversationViewController alloc] initWithNibName:nil bundle:nil];
+    viewController.participant = self.user;
+    [self presentViewController:viewController animated:YES completion:nil];
 }
 
 - (void)follow:(id)sender
@@ -375,12 +399,17 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [self.wants setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor darkGrayColor]] forState:UIControlStateNormal];
     self.wants.titleLabel.font = [UIFont boldSystemFontOfSize:12];
     [self.wants setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+    [self.wants addTarget:self action:@selector(selectedTagTypeChanged:) forControlEvents:UIControlEventTouchDown];
     [self.sectionHeaderView addSubview:self.wants];
+    
+    int wantTypeTag = USER_TAG_SHOOT_WANT_TYPE;
+    self.selectedTagType = [NSNumber numberWithInt:wantTypeTag];
     
     self.haves = [[UIButton alloc] initWithFrame:CGRectMake(self.wants.frame.size.width + self.wants.frame.origin.x, self.wants.frame.origin.y, (self.sectionHeaderView.frame.size.width - PADDING * 2)/2.0, 30)];
     [self.haves setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"have-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor grayColor]] forState:UIControlStateNormal];
     self.haves.titleLabel.font = [UIFont boldSystemFontOfSize:12];
     [self.haves setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+    [self.haves addTarget:self action:@selector(selectedTagTypeChanged:) forControlEvents:UIControlEventTouchDown];
     [self.sectionHeaderView addSubview:self.haves];
     
     UILabel * topLine = [[UILabel alloc] initWithFrame:CGRectMake(PADDING * 2, self.wants.frame.origin.y, self.sectionHeaderView.frame.size.width - PADDING * 4, 0.3)];
@@ -422,88 +451,84 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [self.sectionHeaderView addSubview:self.calendarViewButton];
 }
 
+- (void) selectedTagTypeChanged:(UIButton *)sender
+{
+    if (sender == self.wants) {
+        int wantTypeTag = USER_TAG_SHOOT_WANT_TYPE;
+        self.selectedTagType = [NSNumber numberWithInt:wantTypeTag];
+        [self.wants setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor darkGrayColor]] forState:UIControlStateNormal];
+        [self.wants setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+        [self.haves setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"have-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor grayColor]] forState:UIControlStateNormal];
+        [self.haves setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+    } else {
+        int haveTypeTag = USER_TAG_SHOOT_HAVE_TYPE;
+        self.selectedTagType = [NSNumber numberWithInt:haveTypeTag];
+        [self.wants setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor grayColor]] forState:UIControlStateNormal];
+        [self.wants setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        [self.haves setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"have-icon"] atSize:CGSizeMake(15, 15)] color:[UIColor darkGrayColor]] forState:UIControlStateNormal];
+        [self.haves setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+    }
+    UIButton *curViewSelection = (UIButton *)[self.sectionHeaderView viewWithTag:self.imageViewStatus];
+    [self viewChanged:curViewSelection];
+}
+
 - (void) viewChanged:(UIButton *)sender
 {
     UIButton *prevSelection = (UIButton *)[self.sectionHeaderView viewWithTag:self.imageViewStatus];
-    [prevSelection setImage:[ImageUtil colorImage:[prevSelection imageForState:UIControlStateNormal] color:[UIColor grayColor]] forState:UIControlStateNormal];
+    if (prevSelection) {
+        [prevSelection setImage:[ImageUtil colorImage:[prevSelection imageForState:UIControlStateNormal] color:[UIColor grayColor]] forState:UIControlStateNormal];
+    }
+    
     UIButton *newSelection = (UIButton *)[self.sectionHeaderView viewWithTag:sender.tag];
     [newSelection setImage:[ImageUtil colorImage:[newSelection imageForState:UIControlStateNormal] color:[ColorDefinition darkRed]] forState:UIControlStateNormal];
     self.imageViewStatus = sender.tag;
     if (sender.tag == CALENDAR_VIEW_TAG) {
         self.calendarView.hidden = false;
-        self.imageCollectionView.hidden = true;
+        self.userShootCollectionView.hidden = true;
         self.mapView.hidden = true;
         [self.calendarView reloadData];
     } else if (sender.tag == LOCATION_VIEW_TAG) {
         self.calendarView.hidden = true;
-        self.imageCollectionView.hidden = true;
+        self.userShootCollectionView.hidden = true;
         self.mapView.hidden = false;
+        [self.mapView reloadForType:self.selectedTagType];
         [UIView animateWithDuration:0.5 animations:^{
             [self.tableView setContentOffset:CGPointMake(self.tableView.contentOffset.x, HEADER_HEIGHT)];
         }];
-       
-        
     } else {
-        self.imageCollectionView.hidden = false;
+        self.userShootCollectionView.hidden = false;
+        [self.userShootCollectionView setCollectionViewStatus:(self.imageViewStatus == GRID_VIEW_TAG)];
         self.calendarView.hidden = true;
         self.mapView.hidden = true;
-        [self updateCollectionView];
+        [self.userShootCollectionView reloadForType:self.selectedTagType];
     }
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
+    [self adjustAvatarSize];
 }
 
 - (void) initImagesCell
 {
-    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
-    layout.minimumLineSpacing = PADDING;
-    layout.minimumInteritemSpacing = PADDING;
-    layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
-    layout.scrollDirection = UICollectionViewScrollDirectionVertical;
-    self.imageCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, self.imagesCell.frame.size.height) collectionViewLayout:layout];
-    [self.imageCollectionView setContentInset:UIEdgeInsetsMake(0.f, 0.f, 0.f, 0.f)];
-    self.imageCollectionView.dataSource = self;
-    self.imageCollectionView.delegate = self;
-    [self.imageCollectionView setBackgroundColor:[UIColor clearColor]];
-    [self.imageCollectionView registerClass:[ImageCollectionViewCell class] forCellWithReuseIdentifier:IMAGE_CELL_REUSE_ID];
-    [self.imageCollectionView registerClass:[ImageDetailedCollectionViewCell class] forCellWithReuseIdentifier:IMAGE_DETAILED_CELL_REUSE_ID];
-    [UIViewHelper applySameSizeConstraintToView:self.imageCollectionView superView:self.imagesCell];
-    [self updateCollectionView];
+    self.userShootCollectionView = [[UserShootCollectionView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, self.imagesCell.frame.size.height) forUser:self.user parentController:self];
+    [self.imagesCell addSubview:self.userShootCollectionView];
+    [UIViewHelper applySameSizeConstraintToView:self.userShootCollectionView superView:self.imagesCell];
     
     self.calendarView = [[MNCalendarView alloc] initWithFrame:self.view.bounds];
     [UIViewHelper applySameSizeConstraintToView:self.calendarView superView:self.imagesCell];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss zzz"];
     [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"]];
-    NSDate *capturedStartDate = [dateFormatter dateFromString: @"2014-09-30 23:59:59 PST"];
-    self.calendarView.fromDate = capturedStartDate;
-    self.calendarView.toDate = [NSDate date];
     self.calendarView.delegate = self;
     self.calendarView.hidden = true;
+    NSDate *highlightedDate1 = [dateFormatter dateFromString: @"2015-02-03 13:59:59 PST"];
+    NSDate *highlightedDate2 = [dateFormatter dateFromString: @"2014-12-03 13:59:59 PST"];
+    [self.calendarView setHighlightedDates:@[highlightedDate1, highlightedDate2]];
     
-    self.mapView = [[MapView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, self.view.frame.size.height - [UserViewController sectionHeaderViewHeight])];
+    self.mapView = [[UserShootMapView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, self.view.frame.size.height - [UserViewController sectionHeaderViewHeight]) forUser:self.user];
     [self.imagesCell addSubview:self.mapView];
     self.mapView.hidden = true;
-    [self.mapView setAnnotations:[self makeAnnotations]];
-}
-
-- (NSArray *) makeAnnotations
-{
-    NSMutableArray *result = [[NSMutableArray alloc] init];
-    for (int i = 0; i < 100; i++) {
-        [result addObject:[[MapAnnotation alloc]initWithCoordinate:CLLocationCoordinate2DMake(34.0500 + rand() % 13, -122.4594 + rand() % 48) count:1]];
-    }
-    return result;
-}
-
-
-
-- (void) updateCollectionView
-{
-    [self.imageCollectionView reloadData];
-    [self.tableView beginUpdates];
-    [self.tableView endUpdates];
-    [self adjustAvatarSize];
+    
+    [self viewChanged:self.gridViewButton];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -523,7 +548,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == IMAGE_CELL_ROW_INDEX) {
-        if (self.imageCollectionView) {
+        if (self.userShootCollectionView) {
             return [self getImageCollectionViewHeight];
         } else {
             return 0;
@@ -537,7 +562,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
 {
     if (scrollView == self.tableView) {
         [self adjustAvatarSize];
-    } else if(scrollView == self.imageCollectionView || scrollView == self.calendarView.collectionView){
+    } else {
         CGFloat yPos = scrollView.contentOffset.y;
         if (yPos > 0 && self.tableView.contentOffset.y < HEADER_HEIGHT + [UserViewController sectionHeaderViewHeight]) {
             [self.tableView setContentOffset:CGPointMake(self.tableView.contentOffset.x, MIN(self.tableView.contentOffset.y + yPos, HEADER_HEIGHT + [UserViewController sectionHeaderViewHeight]))];
@@ -570,64 +595,15 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [l setCornerRadius:self.userAvatar.frame.size.width/2.0];
 }
 
-- (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section {
-    return [self getImagesCount];
-}
-
-- (NSInteger)numberOfSectionsInCollectionView: (UICollectionView *)collectionView {
-    return 1;
-}
-
-- (NSInteger) getImagesCount
-{
-    return 2;
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)cv cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.imageViewStatus == GRID_VIEW_TAG) {
-        ImageCollectionViewCell *cell = (ImageCollectionViewCell *)[cv dequeueReusableCellWithReuseIdentifier:IMAGE_CELL_REUSE_ID forIndexPath:indexPath];
-        cell.imageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"image%ld.jpg", indexPath.row % 5 + 1]];
-        return cell;
-    } else {
-        ImageDetailedCollectionViewCell *cell = (ImageDetailedCollectionViewCell *)[cv dequeueReusableCellWithReuseIdentifier:IMAGE_DETAILED_CELL_REUSE_ID forIndexPath:indexPath];
-        cell.imageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"image%ld.jpg", indexPath.row % 5 + 1]];
-        return cell;
-    }
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.imageViewStatus == GRID_VIEW_TAG) {
-        return CGSizeMake((self.imagesCell.frame.size.width - PADDING * 4)/3.0, [self getCollectionViewCellHeight]);
-    } else {
-        return CGSizeMake((self.imagesCell.frame.size.width - PADDING * 2)/1.0, [self getCollectionViewCellHeight]);
-    }
-}
-
-- (CGFloat) getCollectionViewCellHeight
-{
-    if (self.imageViewStatus == GRID_VIEW_TAG) {
-        return (self.imagesCell.frame.size.width - PADDING * 4)/3.0;
-    } else {
-        return (self.imagesCell.frame.size.width - PADDING * 2) * 3.0 /4.0;
-    }
-}
-
 - (CGFloat) getImageCollectionViewHeight
 {
-    if (self.imageViewStatus == GRID_VIEW_TAG) {
-        int rowCount = ceil([self getImagesCount] / 3.0);
-        return (PADDING + [self getCollectionViewCellHeight]) * rowCount + PADDING;
-    } else if(self.imageViewStatus == CALENDAR_VIEW_TAG) {
+    if(self.imageViewStatus == CALENDAR_VIEW_TAG) {
         return self.view.frame.size.height;
     } else if(self.imageViewStatus == LOCATION_VIEW_TAG) {
         return self.view.frame.size.height - [UserViewController sectionHeaderViewHeight];
     } else {
-        return (PADDING + [self getCollectionViewCellHeight]) * [self getImagesCount] + PADDING;
+        return [self.userShootCollectionView getCollectionViewHeight];
     }
-}
-
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    return UIEdgeInsetsMake(PADDING, PADDING, PADDING, PADDING);
 }
 
 /*

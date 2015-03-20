@@ -315,7 +315,7 @@ class UserDAO extends BaseDAO
 	
 	private function getHaveCount($id) {
 		
-		$query = "SELECT count(DISTINCT(tag_id)) as count FROM user_tag_shoot WHERE deleted = 0 AND type = 0 AND user_id = ". $id;
+		$query = "SELECT count(DISTINCT(tag_id)) as count FROM user_tag_shoot WHERE deleted = 0 AND type = 1 AND user_id = ". $id;
 		$result = $this->db_conn->query($query);
 		if (mysql_num_rows($result)) {
 			$val = mysql_fetch_assoc($result);
@@ -327,7 +327,7 @@ class UserDAO extends BaseDAO
 	
 	private function getWantCount($id) {
 		
-		$query = "SELECT count(DISTINCT(tag_id)) as count FROM user_tag_shoot WHERE deleted = 0 AND type = 1 AND user_id = ". $id;
+		$query = "SELECT count(DISTINCT(tag_id)) as count FROM user_tag_shoot WHERE deleted = 0 AND type = 0 AND user_id = ". $id;
 		$result = $this->db_conn->query($query);
 		if (mysql_num_rows($result)) {
 			$val = mysql_fetch_assoc($result);

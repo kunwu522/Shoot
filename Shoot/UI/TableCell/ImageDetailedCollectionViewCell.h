@@ -7,9 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Shoot.h"
+#import "User.h"
 
 @interface ImageDetailedCollectionViewCell : UICollectionViewCell
 
 @property (retain, nonatomic) UIImageView * imageView;
+
+- (void) decorateWith:(Shoot *)shoot user:(User *)user userTagShoots:(NSArray *)userTagShoots;
 
 @end
