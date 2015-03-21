@@ -86,4 +86,24 @@ static const NSString * TAGS_FOR_SHOOT_AND_TYPE_URL = @"shoot/userTagsForShoot/:
     return results;
 }
 
+- (NSArray *) findUserTagShootDatesLocallyByUserId:(NSNumber *)userID forType:(NSNumber *)tagType {
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"UserTagShoot"];
+    
+    [fetchRequest setResultType:NSDictionaryResultType];
+    [fetchRequest setReturnsDistinctResults:YES];
+    [fetchRequest setPropertiesToFetch:@[@"time"]];
+    
+    NSSortDescriptor *timeSortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:NO];
+    fetchRequest.sortDescriptors = @[timeSortDescriptor];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"userID == %@ and type == %@", userID, tagType]];
+    fetchRequest.predicate = predicate;
+    NSError *error = nil;
+    NSArray *results = [[RKObjectManager sharedManager].managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+    NSMutableArray *dates = [NSMutableArray new];
+    for (NSDictionary *dateAttrMap in results) {
+        [dates addObject:[dateAttrMap objectForKey:@"time"]];
+    }
+    return dates;
+}
+
 @end

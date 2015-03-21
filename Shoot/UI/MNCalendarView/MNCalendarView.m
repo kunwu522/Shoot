@@ -14,7 +14,7 @@
 #import "MNFastDateEnumeration.h"
 #import "NSDate+MNAdditions.h"
 #import "ColorDefinition.h"
-#import "ImageDetailedCollectionViewCell.h"
+#import "UserTagShootCollectionViewCell.h"
 
 @interface MNCalendarView() <UICollectionViewDataSource, UICollectionViewDelegate>
 
@@ -41,8 +41,6 @@
 
 @implementation MNCalendarView
 
-static NSString * ImageDetailedCollectionViewCellIdentifier = @"ImageDetailedCollectionViewCellIdentifier";
-
 - (void)commonInit {
     
     self.highlightedDateSet = [NSMutableSet new];
@@ -55,7 +53,7 @@ static NSString * ImageDetailedCollectionViewCellIdentifier = @"ImageDetailedCol
     self.headerViewClass  = MNCalendarHeaderView.class;
     self.weekdayCellClass = MNCalendarViewWeekdayCell.class;
     self.dayCellClass     = MNCalendarViewDayCell.class;
-    self.imageCellClass = ImageDetailedCollectionViewCell.class;
+    self.imageCellClass = UserTagShootCollectionViewCell.class;
     
     _separatorColor = [UIColor colorWithRed:.85f green:.85f blue:.85f alpha:1.f];
     
@@ -144,6 +142,7 @@ static NSString * ImageDetailedCollectionViewCellIdentifier = @"ImageDetailedCol
 }
 
 - (void)reloadData {
+    self.selectedDate = nil;
     NSMutableArray *monthDates = @[].mutableCopy;
     MNFastDateEnumeration *enumeration =
     [[MNFastDateEnumeration alloc] initWithFromDate:[self.fromDate mn_firstDateOfMonth:self.calendar]
@@ -170,7 +169,7 @@ static NSString * ImageDetailedCollectionViewCellIdentifier = @"ImageDetailedCol
     [_collectionView registerClass:self.dayCellClass
         forCellWithReuseIdentifier:MNCalendarViewDayCellIdentifier];
     
-    [_collectionView registerClass:self.imageCellClass forCellWithReuseIdentifier:ImageDetailedCollectionViewCellIdentifier];
+    [_collectionView registerClass:self.imageCellClass forCellWithReuseIdentifier:UserTagShootCollectionViewCellIdentifier];
     
     [_collectionView registerClass:self.weekdayCellClass
         forCellWithReuseIdentifier:MNCalendarViewWeekdayCellIdentifier];
@@ -236,8 +235,6 @@ static NSString * ImageDetailedCollectionViewCellIdentifier = @"ImageDetailedCol
         }
     }
     
-    BOOL hasContent = [self.highlightedDateSet containsObject:[self getEffectiveDateFromIndexPath:indexPath]];
-    
     MNCalendarViewCell *cell = (MNCalendarViewCell *)[self collectionView:self.collectionView cellForItemAtIndexPath:indexPath];
     
     BOOL enabled = cell.enabled;
@@ -247,7 +244,7 @@ static NSString * ImageDetailedCollectionViewCellIdentifier = @"ImageDetailedCol
         
         enabled = [self dateEnabled:dayCell.date];
     }
-    return enabled && hasContent;
+    return enabled;
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -305,8 +302,15 @@ static NSString * ImageDetailedCollectionViewCellIdentifier = @"ImageDetailedCol
     if (self.selectedDate && [self.calendar component:NSCalendarUnitMonth
                                              fromDate:self.monthDates[indexPath.section]] == [self.calendar component:NSCalendarUnitMonth fromDate:self.selectedDate]) {
         if ([self isImageDisplayCell:indexPath]) {
-            ImageDetailedCollectionViewCell *cell = (ImageDetailedCollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:ImageDetailedCollectionViewCellIdentifier forIndexPath:indexPath];
-            cell.imageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"image%d.jpg", arc4random() % 5 + 1]];
+            UserTagShootCollectionViewCell *cell = (UserTagShootCollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:UserTagShootCollectionViewCellIdentifier forIndexPath:indexPath];
+            if (self.dataSource && [self.dataSource respondsToSelector:@selector(userShootTagsPredicateFrom:to:)]) {
+                NSDateComponents *components =
+                [self.calendar components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear
+                                 fromDate:self.selectedDate];
+                components.day += 1;
+                NSPredicate *predicate = [self.dataSource userShootTagsPredicateFrom:self.selectedDate to:[self.calendar dateFromComponents:components]];
+                [cell decorateWithUserTagShootsPredicate:predicate];
+            }
             return cell;
         }
     }
@@ -364,16 +368,27 @@ static NSString * ImageDetailedCollectionViewCellIdentifier = @"ImageDetailedCol
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    BOOL hasDataSource = self.dataSource && [self.dataSource respondsToSelector:@selector(userShootTagsPredicateFrom:to:)];
+    if (!hasDataSource) {
+        return;
+    }
+    
     MNCalendarViewCell *cell = (MNCalendarViewCell *)[self collectionView:collectionView cellForItemAtIndexPath:indexPath];
     
     if ([cell isKindOfClass:MNCalendarViewDayCell.class] && cell.enabled) {
-        MNCalendarViewDayCell *dayCell = (MNCalendarViewDayCell *)cell;
-        self.selectedDate = dayCell.date;
+        BOOL hasContent = [self.highlightedDateSet containsObject:[self getEffectiveDateFromIndexPath:indexPath]];
         
-        if ([self.delegate respondsToSelector:@selector(calendarView:didSelectDate:)]) {
-            [self.delegate calendarView:self didSelectDate:dayCell.date];
+        if (hasContent) {
+            MNCalendarViewDayCell *dayCell = (MNCalendarViewDayCell *)cell;
+            self.selectedDate = dayCell.date;
+            
+            if ([self.delegate respondsToSelector:@selector(calendarView:didSelectDate:)]) {
+                [self.delegate calendarView:self didSelectDate:dayCell.date];
+            }
+            
+        } else {
+            self.selectedDate = nil;
         }
-        
         [self.collectionView reloadData];
     }
     

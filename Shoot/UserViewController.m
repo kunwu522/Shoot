@@ -13,7 +13,7 @@
 #import "ColorDefinition.h"
 #import "ImageCollectionViewCell.h"
 #import "ImageDetailedCollectionViewCell.h"
-#import "MNCalendarView.h"
+#import "UserShootCalendarView.h"
 #import "UIViewHelper.h"
 #import "UserDao.h"
 #import "ShootImageView.h"
@@ -25,7 +25,7 @@
 #import "UserTagShoot.h"
 #import "UserShootMapView.h"
 
-@interface UserViewController () <UITableViewDataSource, UITableViewDelegate, MNCalendarViewDelegate>
+@interface UserViewController () <UITableViewDataSource, UITableViewDelegate, UserShootCalendarViewDelegate>
 
 @property (nonatomic, retain) UITableView *tableView;
 @property (retain, nonatomic) UIImageView * header;
@@ -45,7 +45,7 @@
 @property (retain, nonatomic) UIButton * calendarViewButton;
 @property (retain, nonatomic) UITableViewCell * imagesCell;
 @property (retain, nonatomic) UserShootMapView *mapView;
-@property (retain, nonatomic) MNCalendarView *calendarView;
+@property (retain, nonatomic) UserShootCalendarView *calendarView;
 @property (retain, nonatomic) UIView * sectionHeaderView;
 @property (nonatomic) NSInteger imageViewStatus;
 @property (retain, nonatomic) NSNumber *selectedTagType;
@@ -486,7 +486,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
         self.calendarView.hidden = false;
         self.userShootCollectionView.hidden = true;
         self.mapView.hidden = true;
-        [self.calendarView reloadData];
+        [self.calendarView reloadForType:self.selectedTagType];
     } else if (sender.tag == LOCATION_VIEW_TAG) {
         self.calendarView.hidden = true;
         self.userShootCollectionView.hidden = true;
@@ -513,16 +513,13 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [self.imagesCell addSubview:self.userShootCollectionView];
     [UIViewHelper applySameSizeConstraintToView:self.userShootCollectionView superView:self.imagesCell];
     
-    self.calendarView = [[MNCalendarView alloc] initWithFrame:self.view.bounds];
+    self.calendarView = [[UserShootCalendarView alloc] initWithFrame:self.view.bounds forUser:self.user parentController:self];
     [UIViewHelper applySameSizeConstraintToView:self.calendarView superView:self.imagesCell];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss zzz"];
     [dateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"]];
     self.calendarView.delegate = self;
     self.calendarView.hidden = true;
-    NSDate *highlightedDate1 = [dateFormatter dateFromString: @"2015-02-03 13:59:59 PST"];
-    NSDate *highlightedDate2 = [dateFormatter dateFromString: @"2014-12-03 13:59:59 PST"];
-    [self.calendarView setHighlightedDates:@[highlightedDate1, highlightedDate2]];
     
     self.mapView = [[UserShootMapView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, self.view.frame.size.height - [UserViewController sectionHeaderViewHeight]) forUser:self.user];
     [self.imagesCell addSubview:self.mapView];

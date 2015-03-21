@@ -15,12 +15,14 @@
 #define MN_YEAR   MN_DAY * 365.f
 
 @protocol MNCalendarViewDelegate;
+@protocol MNCalendarViewDataSource;
 
 @interface MNCalendarView : UIView <UICollectionViewDataSource, UICollectionViewDelegate>
 
 @property(nonatomic,strong,readonly) UICollectionView *collectionView;
 
 @property(nonatomic,assign) id<MNCalendarViewDelegate> delegate;
+@property(nonatomic,assign) id<MNCalendarViewDataSource> dataSource;
 
 @property(nonatomic,strong) NSCalendar *calendar;
 @property(nonatomic,copy)   NSDate     *fromDate;
@@ -43,9 +45,14 @@
 @protocol MNCalendarViewDelegate <NSObject>
 
 @optional
-
 - (BOOL)calendarView:(MNCalendarView *)calendarView shouldSelectDate:(NSDate *)date;
 - (void)calendarView:(MNCalendarView *)calendarView didSelectDate:(NSDate *)date;
 - (void) scrollViewDidScroll:(UIScrollView *)scrollView;
+
+@end
+
+@protocol MNCalendarViewDataSource <NSObject>
+
+- (NSPredicate *)userShootTagsPredicateFrom:(NSDate *)fromDate to:(NSDate *)toDate;
 
 @end

@@ -55,7 +55,7 @@ static const CGFloat OWNER_AVATAR_SIZE = 30;
         self.ownerAvatar.contentMode = UIViewContentModeScaleAspectFill;
         self.ownerAvatar.clipsToBounds = YES;
         self.ownerAvatar.userInteractionEnabled = true;
-        [self.ownerAvatar addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleOwnerAvatarTapped)]];
+//        [self.ownerAvatar addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleOwnerAvatarTapped)]];
         
         self.ownerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, self.ownerAvatar.frame.origin.y, self.ownerAvatar.frame.origin.x - PADDING * 2, self.ownerAvatar.frame.size.height)];
         [self addSubview:self.ownerNameLabel];

@@ -110,6 +110,8 @@
 		0E7CD7141A5721CF00A27A2F /* ImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7111A5721CF00A27A2F /* ImageUtil.m */; };
 		0E7CD7151A5721CF00A27A2F /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7131A5721CF00A27A2F /* UIImage+ImageEffects.m */; };
 		0E8489661AB80576005E456C /* UserShootMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8489651AB80576005E456C /* UserShootMapView.m */; };
+		0E8489701ABBAF37005E456C /* UserTagShootCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E84896F1ABBAF37005E456C /* UserTagShootCollectionViewCell.m */; };
+		0E8489731ABDEBA0005E456C /* UserShootCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8489721ABDEBA0005E456C /* UserShootCalendarView.m */; };
 		0E90D4F21A9B1D7600B6F60C /* ShootActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E90D4F11A9B1D7600B6F60C /* ShootActionSheet.m */; };
 		0E90D4F51A9B245400B6F60C /* CropImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E90D4F41A9B245400B6F60C /* CropImageViewController.m */; };
 		0E90D4F71A9B25C800B6F60C /* camera-filled.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E90D4F61A9B25C800B6F60C /* camera-filled.png */; };
@@ -379,6 +381,10 @@
 		0E7CD7131A5721CF00A27A2F /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		0E8489641AB80576005E456C /* UserShootMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserShootMapView.h; path = UI/UserShootMapView.h; sourceTree = "<group>"; };
 		0E8489651AB80576005E456C /* UserShootMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserShootMapView.m; path = UI/UserShootMapView.m; sourceTree = "<group>"; };
+		0E84896E1ABBAF37005E456C /* UserTagShootCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserTagShootCollectionViewCell.h; sourceTree = "<group>"; };
+		0E84896F1ABBAF37005E456C /* UserTagShootCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTagShootCollectionViewCell.m; sourceTree = "<group>"; };
+		0E8489711ABDEBA0005E456C /* UserShootCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserShootCalendarView.h; path = UI/UserShootCalendarView.h; sourceTree = "<group>"; };
+		0E8489721ABDEBA0005E456C /* UserShootCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserShootCalendarView.m; path = UI/UserShootCalendarView.m; sourceTree = "<group>"; };
 		0E90D4F01A9B1D7600B6F60C /* ShootActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShootActionSheet.h; path = UI/ShootActionSheet.h; sourceTree = "<group>"; };
 		0E90D4F11A9B1D7600B6F60C /* ShootActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShootActionSheet.m; path = UI/ShootActionSheet.m; sourceTree = "<group>"; };
 		0E90D4F31A9B245400B6F60C /* CropImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CropImageViewController.h; sourceTree = "<group>"; };
@@ -517,6 +523,8 @@
 				0E572EBD1A6F70BF00BC040D /* MNFastDateEnumeration.m */,
 				0E572EBE1A6F70BF00BC040D /* NSDate+MNAdditions.h */,
 				0E572EBF1A6F70BF00BC040D /* NSDate+MNAdditions.m */,
+				0E84896E1ABBAF37005E456C /* UserTagShootCollectionViewCell.h */,
+				0E84896F1ABBAF37005E456C /* UserTagShootCollectionViewCell.m */,
 			);
 			name = MNCalendarView;
 			path = UI/MNCalendarView;
@@ -658,6 +666,8 @@
 				0E6B9D3C1AB6AAF1008CF269 /* UserShootCollectionView.m */,
 				0E8489641AB80576005E456C /* UserShootMapView.h */,
 				0E8489651AB80576005E456C /* UserShootMapView.m */,
+				0E8489711ABDEBA0005E456C /* UserShootCalendarView.h */,
+				0E8489721ABDEBA0005E456C /* UserShootCalendarView.m */,
 			);
 			name = UserView;
 			sourceTree = "<group>";
@@ -1119,6 +1129,7 @@
 				0EBE32821AB0CF8C003AD2A3 /* TagTableViewCell.m in Sources */,
 				0E6B9D3D1AB6AAF1008CF269 /* UserShootCollectionView.m in Sources */,
 				0E0F42931AAC33F400AB096B /* GeoDao.m in Sources */,
+				0E8489701ABBAF37005E456C /* UserTagShootCollectionViewCell.m in Sources */,
 				0E5C933B1A64B5F3008AE026 /* JSMessageSoundEffect.m in Sources */,
 				0EB82CDF1A37FD5A00BFBE17 /* ShootTableViewCell.m in Sources */,
 				0E0F429F1AAD5A6F00AB096B /* Shoot.m in Sources */,
@@ -1140,6 +1151,7 @@
 				0E90D4F21A9B1D7600B6F60C /* ShootActionSheet.m in Sources */,
 				0E90D4F51A9B245400B6F60C /* CropImageViewController.m in Sources */,
 				0E16A8031A92A70C0096B41D /* FollowButton.m in Sources */,
+				0E8489731ABDEBA0005E456C /* UserShootCalendarView.m in Sources */,
 				0E572E921A6DAE5E00BC040D /* ImageCollectionViewCell.m in Sources */,
 				0E1422DC1A6067C000783F0F /* UserViewController.m in Sources */,
 				0E5C933C1A64B5F3008AE026 /* JSMessagesViewController.m in Sources */,
