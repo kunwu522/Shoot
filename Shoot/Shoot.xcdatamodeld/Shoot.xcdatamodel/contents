@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6751" systemVersion="14D87h" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6751" systemVersion="14D105g" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Comment" representedClassName="Comment" syncable="YES">
         <attribute name="commentID" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
@@ -22,7 +22,7 @@
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MessageImage" inverseName="message" inverseEntity="MessageImage" syncable="YES"/>
         <relationship name="participant" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="messages" inverseEntity="User" syncable="YES"/>
-        <relationship name="related_shoot" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Shoot" syncable="YES"/>
+        <relationship name="related_shoot" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Shoot" inverseName="messages" inverseEntity="Shoot" syncable="YES"/>
     </entity>
     <entity name="MessageImage" representedClassName="MessageImage" syncable="YES">
         <attribute name="height" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
@@ -45,6 +45,7 @@
         <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="want_count" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <relationship name="comments" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Comment" inverseName="shoot" inverseEntity="Comment" syncable="YES"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Message" inverseName="related_shoot" inverseEntity="Message" syncable="YES"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="shoots" inverseEntity="User" syncable="YES"/>
         <relationship name="user_tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UserTagShoot" inverseName="shoot" inverseEntity="UserTagShoot" syncable="YES"/>
     </entity>
@@ -96,9 +97,9 @@
     </entity>
     <elements>
         <element name="Comment" positionX="-558" positionY="63" width="128" height="195"/>
-        <element name="Message" positionX="-297" positionY="-81" width="128" height="193"/>
+        <element name="Message" positionX="-297" positionY="-81" width="128" height="195"/>
         <element name="MessageImage" positionX="-126" positionY="-85" width="128" height="103"/>
-        <element name="Shoot" positionX="-765" positionY="153" width="128" height="283"/>
+        <element name="Shoot" positionX="-765" positionY="153" width="128" height="300"/>
         <element name="Tag" positionX="-45" positionY="288" width="128" height="148"/>
         <element name="User" positionX="70" positionY="-24" width="128" height="343"/>
         <element name="UserTagShoot" positionX="304" positionY="152" width="128" height="238"/>

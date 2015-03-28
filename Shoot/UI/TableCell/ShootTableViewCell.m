@@ -14,6 +14,7 @@
 #import "UIViewHelper.h"
 #import "Tag.h"
 #import "ShootControl.h"
+#import "TagCollectionView.h"
 
 @interface ShootTableViewCell()
 @property (nonatomic, retain) UIImageView * userAvatar;
@@ -24,7 +25,7 @@
 @property (nonatomic, retain) UIButton * timeLabel;
 @property (nonatomic, retain) UIImageView *image;
 @property (nonatomic, retain) ShootControl * shootControl;
-@property (nonatomic, retain) UIButton * tags;
+@property (nonatomic, retain) TagCollectionView * tags;
 
 @property (nonatomic, weak) User *user;
 @property (nonatomic, weak) User *owner;
@@ -38,7 +39,6 @@ static const CGFloat PADDING = 10;
 static const CGFloat AVATAR_SIZE = 45;
 static const CGFloat OWNER_AVATAR_SIZE = 30;
 static const CGFloat TAG_HEIGHT = 25;
-static const CGFloat BUTTON_ICON_SIZE = 15;
 static const CGFloat TIME_LABEL_WIDTH = 60;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -119,12 +119,7 @@ static const CGFloat TIME_LABEL_WIDTH = 60;
     self.usernameLabel.textColor = [UIColor darkGrayColor];
     [self addSubview:self.usernameLabel];
     
-    self.tags = [[UIButton alloc] initWithFrame:CGRectMake(PADDING, self.image.frame.size.height + self.image.frame.origin.y + 5, self.frame.size.width - PADDING * 2, TAG_HEIGHT)];
-    self.tags.titleLabel.font = [UIFont boldSystemFontOfSize:12];
-    [self.tags setTitleColor:[ColorDefinition darkRed] forState:UIControlStateNormal];
-    [self.tags setTitle:@"" forState:UIControlStateNormal];
-    [self.tags setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[ColorDefinition darkRed]] forState:UIControlStateNormal];
-    self.tags.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    self.tags = [[TagCollectionView alloc] initWithFrame:CGRectMake(PADDING, self.image.frame.size.height + self.image.frame.origin.y + 5, self.frame.size.width - PADDING * 2, TAG_HEIGHT)];
     [self addSubview:self.tags];
     
     self.shootControl = [[ShootControl alloc] initWithFrame:CGRectMake(0, self.tags.frame.origin.y + self.tags.frame.size.height + PADDING, self.frame.size.width, [ShootControl getMinimalHeight]) isSimpleMode:NO];
@@ -135,16 +130,20 @@ static const CGFloat TIME_LABEL_WIDTH = 60;
 
 - (void)handleAvatarTapped
 {
-    UserViewController* viewController = [[UserViewController alloc] initWithNibName:nil bundle:nil];
-    viewController.userID = self.user.userID;
-    [self.parentController presentViewController:viewController animated:YES completion:nil];
+    if (self.parentController) {
+        UserViewController* viewController = [[UserViewController alloc] initWithNibName:nil bundle:nil];
+        viewController.userID = self.user.userID;
+        [self.parentController presentViewController:viewController animated:YES completion:nil];
+    }
 }
 
 - (void)handleOwnerAvatarTapped
 {
-    UserViewController* viewController = [[UserViewController alloc] initWithNibName:nil bundle:nil];
-    viewController.userID = self.owner.userID;
-    [self.parentController presentViewController:viewController animated:YES completion:nil];
+    if (self.parentController) {
+        UserViewController* viewController = [[UserViewController alloc] initWithNibName:nil bundle:nil];
+        viewController.userID = self.owner.userID;
+        [self.parentController presentViewController:viewController animated:YES completion:nil];
+    }
 }
 
 - (void) decorateWith:(Shoot *)shoot user:(User *)user userTagShoots:(NSArray *)userTagShoots parentController:(UIViewController *) parentController
@@ -162,17 +161,7 @@ static const CGFloat TIME_LABEL_WIDTH = 60;
         [tags appendString:@", "];
     }
     [tags deleteCharactersInRange:NSMakeRange(tags.length - 2, 2)];
-    [self.tags setTitle:tags forState:UIControlStateNormal];
-    switch ([((UserTagShoot *)[userTagShoots objectAtIndex:0]).type integerValue]) {
-        case 0:
-            [self.tags setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[ColorDefinition darkRed]] forState:UIControlStateNormal];
-            break;
-        case 1:
-            [self.tags setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"have-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[ColorDefinition darkRed]] forState:UIControlStateNormal];
-            break;
-        default:
-            break;
-    }
+    [self.tags setTags:userTagShoots parentController:parentController];
     
     self.user = user;
     

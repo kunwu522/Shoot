@@ -12,6 +12,6 @@ extern NSString *const UserTagShootCollectionViewCellIdentifier;
 
 @interface UserTagShootCollectionViewCell : UICollectionViewCell
 
-- (void) decorateWithUserTagShootsPredicate:(NSPredicate *)predicate;
+- (void) decorateWithUserTagShootsPredicate:(NSPredicate *)predicate parentController:(UIViewController *)parentController;
 
 @end

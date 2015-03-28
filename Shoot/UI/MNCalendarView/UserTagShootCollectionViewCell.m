@@ -18,6 +18,7 @@ NSString *const UserTagShootCollectionViewCellIdentifier = @"UserTagShootCollect
 
 @property (retain, nonatomic) UICollectionView *imageCollectionView;
 @property (retain, nonatomic) NSFetchedResultsController *fetchedResultsController;
+@property (retain, nonatomic) UIViewController *parentController;
 
 @end
 
@@ -50,8 +51,9 @@ static CGFloat PADDING = 5;
     return self;
 }
 
-- (void) decorateWithUserTagShootsPredicate:(NSPredicate *)predicate
+- (void) decorateWithUserTagShootsPredicate:(NSPredicate *)predicate parentController:(UIViewController *)parentController
 {
+    self.parentController = parentController;
     self.fetchedResultsController.fetchRequest.predicate = predicate;
     NSError *error = nil;
     BOOL fetchSuccessful = [self.fetchedResultsController performFetch:&error];
@@ -91,20 +93,20 @@ static CGFloat PADDING = 5;
     NSArray *userTagShoots = [[[self.fetchedResultsController sections] objectAtIndex:indexPath.row] objects];
     ImageDetailedCollectionViewCell *cell = (ImageDetailedCollectionViewCell *)[cv dequeueReusableCellWithReuseIdentifier:IMAGE_DETAILED_CELL_REUSE_ID forIndexPath:indexPath];
     UserTagShoot *firstUserTagShoot = userTagShoots[0];
-    [cell decorateWith:firstUserTagShoot.shoot user:firstUserTagShoot.user userTagShoots:userTagShoots];
+    [cell decorateWith:firstUserTagShoot.shoot user:firstUserTagShoot.user userTagShoots:userTagShoots parentController:self.parentController];
     return cell;
     
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
 
-    return CGSizeMake((self.frame.size.width - PADDING * 2)/1.0, [self getCollectionViewCellHeight]);
+    return CGSizeMake(self.frame.size.width - PADDING * 2, [self getCollectionViewCellHeight]);
 
 }
 
 - (CGFloat) getCollectionViewCellHeight
 {
-    return (self.frame.size.width - PADDING * 2) * 3.0 /4.0;
+    return (self.frame.size.height - PADDING * 2);
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {

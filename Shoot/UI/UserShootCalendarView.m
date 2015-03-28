@@ -30,7 +30,7 @@
     if (self) {
         self.user = user;
         self.parentController = parentController;
-        self.calendarView = [[MNCalendarView alloc] initWithFrame:frame];
+        self.calendarView = [[MNCalendarView alloc] initWithFrame:frame withParentController:parentController];
         [UIViewHelper applySameSizeConstraintToView:self.calendarView superView:self];
         self.calendarView.dataSource = self;
         self.calendarView.delegate = self;

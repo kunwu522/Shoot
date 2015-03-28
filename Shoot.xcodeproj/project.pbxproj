@@ -112,6 +112,9 @@
 		0E8489661AB80576005E456C /* UserShootMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8489651AB80576005E456C /* UserShootMapView.m */; };
 		0E8489701ABBAF37005E456C /* UserTagShootCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E84896F1ABBAF37005E456C /* UserTagShootCollectionViewCell.m */; };
 		0E8489731ABDEBA0005E456C /* UserShootCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8489721ABDEBA0005E456C /* UserShootCalendarView.m */; };
+		0E8489761ABE6B38005E456C /* TagViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8489751ABE6B38005E456C /* TagViewController.m */; };
+		0E8AC2671AC394F000778A86 /* TagCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8AC2661AC394F000778A86 /* TagCollectionViewCell.m */; };
+		0E8AC26A1AC3951900778A86 /* TagCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8AC2691AC3951900778A86 /* TagCollectionView.m */; };
 		0E90D4F21A9B1D7600B6F60C /* ShootActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E90D4F11A9B1D7600B6F60C /* ShootActionSheet.m */; };
 		0E90D4F51A9B245400B6F60C /* CropImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E90D4F41A9B245400B6F60C /* CropImageViewController.m */; };
 		0E90D4F71A9B25C800B6F60C /* camera-filled.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E90D4F61A9B25C800B6F60C /* camera-filled.png */; };
@@ -385,6 +388,12 @@
 		0E84896F1ABBAF37005E456C /* UserTagShootCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTagShootCollectionViewCell.m; sourceTree = "<group>"; };
 		0E8489711ABDEBA0005E456C /* UserShootCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserShootCalendarView.h; path = UI/UserShootCalendarView.h; sourceTree = "<group>"; };
 		0E8489721ABDEBA0005E456C /* UserShootCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserShootCalendarView.m; path = UI/UserShootCalendarView.m; sourceTree = "<group>"; };
+		0E8489741ABE6B38005E456C /* TagViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagViewController.h; sourceTree = "<group>"; };
+		0E8489751ABE6B38005E456C /* TagViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagViewController.m; sourceTree = "<group>"; };
+		0E8AC2651AC394F000778A86 /* TagCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TagCollectionViewCell.h; path = UI/TagCollectionViewCell.h; sourceTree = "<group>"; };
+		0E8AC2661AC394F000778A86 /* TagCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TagCollectionViewCell.m; path = UI/TagCollectionViewCell.m; sourceTree = "<group>"; };
+		0E8AC2681AC3951900778A86 /* TagCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TagCollectionView.h; path = UI/TagCollectionView.h; sourceTree = "<group>"; };
+		0E8AC2691AC3951900778A86 /* TagCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TagCollectionView.m; path = UI/TagCollectionView.m; sourceTree = "<group>"; };
 		0E90D4F01A9B1D7600B6F60C /* ShootActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShootActionSheet.h; path = UI/ShootActionSheet.h; sourceTree = "<group>"; };
 		0E90D4F11A9B1D7600B6F60C /* ShootActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShootActionSheet.m; path = UI/ShootActionSheet.m; sourceTree = "<group>"; };
 		0E90D4F31A9B245400B6F60C /* CropImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CropImageViewController.h; sourceTree = "<group>"; };
@@ -672,6 +681,17 @@
 			name = UserView;
 			sourceTree = "<group>";
 		};
+		0E8AC25E1AC3941200778A86 /* TagView */ = {
+			isa = PBXGroup;
+			children = (
+				0E8AC2651AC394F000778A86 /* TagCollectionViewCell.h */,
+				0E8AC2661AC394F000778A86 /* TagCollectionViewCell.m */,
+				0E8AC2681AC3951900778A86 /* TagCollectionView.h */,
+				0E8AC2691AC3951900778A86 /* TagCollectionView.m */,
+			);
+			name = TagView;
+			sourceTree = "<group>";
+		};
 		0EA873841A8B4EF1009172F9 /* Daos */ = {
 			isa = PBXGroup;
 			children = (
@@ -762,6 +782,8 @@
 				0E3CCA8E1AA59B9900AF6048 /* SignUpSubViewController.m */,
 				0E3CCA8F1AA59B9900AF6048 /* SignupViewController.h */,
 				0E3CCA901AA59B9900AF6048 /* SignupViewController.m */,
+				0E8489741ABE6B38005E456C /* TagViewController.h */,
+				0E8489751ABE6B38005E456C /* TagViewController.m */,
 			);
 			path = Shoot;
 			sourceTree = "<group>";
@@ -795,6 +817,7 @@
 		0EB82CDB1A37FCB300BFBE17 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				0E8AC25E1AC3941200778A86 /* TagView */,
 				0E84896D1AB810C5005E456C /* UserView */,
 				0E65C24C1A9C1D780083FD73 /* ShootImageMaxDisplayView.h */,
 				0E65C24D1A9C1D780083FD73 /* ShootImageMaxDisplayView.m */,
@@ -1145,6 +1168,7 @@
 				0E5C93371A64B5F3008AE026 /* JSBubbleMessageCell.m in Sources */,
 				0EFD5B2C1A8D9BE400658FC0 /* UserTagShootDao.m in Sources */,
 				0E5C93011A63AF1C008AE026 /* NotificationViewController.m in Sources */,
+				0E8489761ABE6B38005E456C /* TagViewController.m in Sources */,
 				0E5C935F1A64B929008AE026 /* ConversationViewController.m in Sources */,
 				0EA8738D1A8B4F30009172F9 /* UserDao.m in Sources */,
 				0E5C93511A64B5F3008AE026 /* UIImage+JSMessagesView.m in Sources */,
@@ -1174,10 +1198,12 @@
 				0E5C92EE1A621318008AE026 /* SWRevealViewController.m in Sources */,
 				0E5D469C1A7B01C100CEA8D6 /* MapView.m in Sources */,
 				0E5C933A1A64B5F3008AE026 /* JSMessageInputView.m in Sources */,
+				0E8AC2671AC394F000778A86 /* TagCollectionViewCell.m in Sources */,
 				0E5C933D1A64B5F3008AE026 /* NSString+JSMessagesView.m in Sources */,
 				0EA873901A8C8608009172F9 /* MessageDao.m in Sources */,
 				0E5D46931A78CD3800CEA8D6 /* MapAnnotation.m in Sources */,
 				0E0F429C1AAD5A2300AB096B /* Comment.m in Sources */,
+				0E8AC26A1AC3951900778A86 /* TagCollectionView.m in Sources */,
 				0EFD5B351A8DA8E900658FC0 /* MessageImage.m in Sources */,
 				0E5C93501A64B5F3008AE026 /* UIColor+JSMessagesView.m in Sources */,
 				0E572EC01A6F70BF00BC040D /* MNCalendarHeaderView.m in Sources */,

@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class Comment, User, UserTagShoot;
+@class Comment, User, UserTagShoot, Message;
 
 @interface Shoot : NSManagedObject
 
@@ -42,5 +42,10 @@
 - (void)removeCommentsObject:(Comment *)value;
 - (void)addComments:(NSSet *)values;
 - (void)removeComments:(NSSet *)values;
+
+- (void)addMessagesObject:(Message *)value;
+- (void)removeMessagesObject:(Message *)value;
+- (void)addMessages:(NSSet *)values;
+- (void)removeMessages:(NSSet *)values;
 
 @end

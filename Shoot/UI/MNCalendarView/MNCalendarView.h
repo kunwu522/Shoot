@@ -36,6 +36,7 @@
 @property(nonatomic,strong) Class dayCellClass;
 @property(nonatomic,strong) Class imageCellClass;
 
+- (id)initWithFrame:(CGRect)frame withParentController:(UIViewController *)parentController;
 - (void)reloadData;
 - (void)registerUICollectionViewClasses; 
 - (void) setHighlightedDates:(NSArray *)highlightedDates;

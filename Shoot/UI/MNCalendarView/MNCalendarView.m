@@ -29,6 +29,8 @@
 
 @property(nonatomic,strong,readwrite) NSDateFormatter *monthFormatter;
 
+@property (retain, nonatomic) UIViewController *parentController;
+
 - (NSDate *)firstVisibleDateOfMonth:(NSDate *)date;
 - (NSDate *)lastVisibleDateOfMonth:(NSDate *)date;
 
@@ -60,6 +62,14 @@
     [self addSubview:self.collectionView];
     [self applyConstraints];
     [self reloadData];
+}
+
+- (id)initWithFrame:(CGRect)frame withParentController:(UIViewController *)parentController {
+    if (self = [super initWithFrame:frame]) {
+        [self commonInit];
+        self.parentController = parentController;
+    }
+    return self;
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -309,7 +319,7 @@
                                  fromDate:self.selectedDate];
                 components.day += 1;
                 NSPredicate *predicate = [self.dataSource userShootTagsPredicateFrom:self.selectedDate to:[self.calendar dateFromComponents:components]];
-                [cell decorateWithUserTagShootsPredicate:predicate];
+                [cell decorateWithUserTagShootsPredicate:predicate parentController:self.parentController];
             }
             return cell;
         }

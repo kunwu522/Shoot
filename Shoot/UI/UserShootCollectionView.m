@@ -114,7 +114,7 @@ static CGFloat PADDING = 5;
     } else {
         ImageDetailedCollectionViewCell *cell = (ImageDetailedCollectionViewCell *)[cv dequeueReusableCellWithReuseIdentifier:IMAGE_DETAILED_CELL_REUSE_ID forIndexPath:indexPath];
         NSArray *userTagShoots = [[[self.fetchedResultsController sections] objectAtIndex:indexPath.row] objects];
-        [cell decorateWith:userTagShoot.shoot user:self.user userTagShoots:userTagShoots];
+        [cell decorateWith:userTagShoot.shoot user:self.user userTagShoots:userTagShoots parentController:self.parentController];
         return cell;
     }
 }

@@ -8,6 +8,7 @@
 
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "ImageDetailedCollectionViewCell.h"
+#import "UserViewController.h"
 #import "ColorDefinition.h"
 #import "ImageUtil.h"
 #import "UIViewHelper.h"
@@ -23,6 +24,8 @@
 
 @property (nonatomic, weak) User *user;
 @property (nonatomic, weak) User *owner;
+
+@property (nonatomic, weak) UIViewController * parentController;
 
 @end
 
@@ -55,7 +58,7 @@ static const CGFloat OWNER_AVATAR_SIZE = 30;
         self.ownerAvatar.contentMode = UIViewContentModeScaleAspectFill;
         self.ownerAvatar.clipsToBounds = YES;
         self.ownerAvatar.userInteractionEnabled = true;
-//        [self.ownerAvatar addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleOwnerAvatarTapped)]];
+        [self.ownerAvatar addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleOwnerAvatarTapped)]];
         
         self.ownerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING, self.ownerAvatar.frame.origin.y, self.ownerAvatar.frame.origin.x - PADDING * 2, self.ownerAvatar.frame.size.height)];
         [self addSubview:self.ownerNameLabel];
@@ -73,9 +76,8 @@ static const CGFloat OWNER_AVATAR_SIZE = 30;
         [self.timeLabel setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
         self.timeLabel.titleLabel.font = [UIFont boldSystemFontOfSize:9.0];
 
-        UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-        UIVisualEffectView *visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-        visualEffectView.frame = self.timeLabel.frame;
+        UIView *visualEffectView = [[UIView alloc] initWithFrame:self.timeLabel.frame];
+        visualEffectView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.6];
         CALayer * l = [visualEffectView layer];
         [l setMasksToBounds:YES];
         [l setCornerRadius:self.timeLabel.frame.size.height/2.0];
@@ -94,10 +96,11 @@ static const CGFloat OWNER_AVATAR_SIZE = 30;
     return self;
 }
 
-- (void) decorateWith:(Shoot *)shoot user:(User *)user userTagShoots:(NSArray *)userTagShoots
+- (void) decorateWith:(Shoot *)shoot user:(User *)user userTagShoots:(NSArray *)userTagShoots parentController:(UIViewController *)parentController
 {
     self.user = user;
     self.owner = shoot.user;
+    self.parentController = parentController;
     
     [self.timeLabel setTitle:[NSString stringWithFormat:@" %@", [UIViewHelper formatTime:((UserTagShoot *)[userTagShoots objectAtIndex:0]).time]] forState:UIControlStateNormal];
     [self.imageView sd_setImageWithURL:[ImageUtil imageURLOfShoot:shoot] placeholderImage:[UIImage imageNamed:@"Oops"] options:SDWebImageHandleCookies];
@@ -131,6 +134,13 @@ static const CGFloat OWNER_AVATAR_SIZE = 30;
         self.ownerNameLabel.text = [NSString stringWithFormat:@"from @%@", shoot.user.username];
         [self.ownerAvatar sd_setImageWithURL:[ImageUtil imageURLOfAvatar:shoot.user.userID] placeholderImage:[UIImage imageNamed:@"avatar.jpg"] options:SDWebImageHandleCookies];
     }
+}
+
+- (void)handleOwnerAvatarTapped
+{
+    UserViewController* viewController = [[UserViewController alloc] initWithNibName:nil bundle:nil];
+    viewController.userID = self.owner.userID;
+    [self.parentController presentViewController:viewController animated:YES completion:nil];
 }
 
 @end

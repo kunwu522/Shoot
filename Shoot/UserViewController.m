@@ -51,6 +51,7 @@
 @property (retain, nonatomic) NSNumber *selectedTagType;
 @property (retain, nonatomic) UserListView *userListView;
 @property (retain, nonatomic) UserShootCollectionView *userShootCollectionView;
+@property (nonatomic,retain) UIRefreshControl *refreshControl;
 
 @end
 
@@ -114,6 +115,14 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     tableHeaderView.backgroundColor = [UIColor clearColor];
     self.tableView.tableHeaderView = tableHeaderView;
     
+    CGFloat customRefreshControlHeight = 50.0f;
+    CGFloat customRefreshControlWidth = 100.0;
+    CGRect customRefreshControlFrame = CGRectMake(0.0f, -customRefreshControlHeight, customRefreshControlWidth, customRefreshControlHeight);
+    self.refreshControl = [[UIRefreshControl alloc] initWithFrame:customRefreshControlFrame];
+    [self.refreshControl addTarget:self action:@selector(refreshView:) forControlEvents:UIControlEventValueChanged];
+    [self.tableView addSubview:self.refreshControl];
+    [self.tableView sendSubviewToBack:self.refreshControl];
+    
     self.header = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, HEADER_HEIGHT)];
     self.header.contentMode = UIViewContentModeScaleAspectFill;
     self.header.clipsToBounds = YES;
@@ -125,20 +134,35 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [self.tableView reloadData];
     
     [self reloadView];
-    [self refreshView];
+    [self refreshView:self.refreshControl];
     
     self.userListView = [[UserListView alloc] initWithFrame:self.view.bounds];
     [self.view addSubview:self.userListView];
     self.userListView.hidden = true;
+
+}
+
+-(void)refreshView:(UIRefreshControl *)refresh {
+    [self refreshView];
 }
 
 - (void) refreshView
 {
     [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"user/query/%@", self.userID] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         [self reloadView];
+        [self.refreshControl endRefreshing];
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         RKLogError(@"Load failed with error: %@", error);
         UIAlertView *av = [[UIAlertView alloc] initWithTitle:nil message:@"Failed to load user profile. Please try again later." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [av show];
+        [self.refreshControl endRefreshing];
+    }];
+    
+    [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"shoot/query/%@", self.userID] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        [self updateUserCollectionViews];
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        RKLogError(@"Load user_tag_shoot failed with error: %@", error);
+        UIAlertView *av = [[UIAlertView alloc] initWithTitle:nil message:@"Failed to load user shoots. Please try again later." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [av show];
     }];
 }
@@ -147,6 +171,7 @@ static NSString * TAKE_PHOTO = @"Take Photo";
 {
     [self updateUserAvatar];
     [self updateView];
+    [self updateUserCollectionViews];
 }
 
 - (void)updateUserAvatar
@@ -160,6 +185,11 @@ static NSString * TAKE_PHOTO = @"Take Photo";
     [self.header sd_setImageWithURL:[ImageUtil imageURLOfBg:self.userID] placeholderImage:[UIImage imageNamed:@"image4.jpg"] options:(SDWebImageHandleCookies | SDWebImageRefreshCached)];
 }
 
+- (void) updateUserCollectionViews
+{
+    UIButton *curViewSelection = (UIButton *)[self.sectionHeaderView viewWithTag:self.imageViewStatus];
+    [self viewChanged:curViewSelection];
+}
 
 - (void)updateView
 {

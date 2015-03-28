@@ -26,6 +26,18 @@ class ShootDAO extends BaseDAO
 		return $shoots;
 	}
 	
+	public function queryByTag($tag_id) {
+		$query = "SELECT user_tag_shoot.* FROM user_tag_shoot WHERE tag_id = $tag_id";
+		$result = $this->db_conn->query($query);
+		$user_tag_shoots = array();
+		if(mysql_num_rows($result)) {
+			while($user_tag_shoot = mysql_fetch_assoc($result)) {
+				$user_tag_shoots[] = $this->getStructuredUserTagShoot($user_tag_shoot);	
+			}
+		}
+		return $user_tag_shoots;
+	}
+	
 	private function getStructuredUserTagShoot($user_tag_shoot) {
 		
 		$shoot = array('id' => $user_tag_shoot['shoot_id'], 

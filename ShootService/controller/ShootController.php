@@ -23,6 +23,11 @@ class ShootController extends Controller
 		return json_encode(array('user_tag_shoots'=>$shoots));
 	}
 	
+	public function queryByTag($tag) {
+		$user_tag_shoots = $this->shoot_dao->queryByTag($tag);
+		return json_encode(array('user_tag_shoots' => $user_tag_shoots));
+	}
+	
 	public function queryByContent($keyword) {
 		$current_user_id = $this->getCurrentUser();
 		$shoots = $this->shoot_dao->query($current_user_id, null, $keyword);

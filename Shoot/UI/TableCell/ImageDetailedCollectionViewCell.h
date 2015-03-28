@@ -14,6 +14,6 @@
 
 @property (retain, nonatomic) UIImageView * imageView;
 
-- (void) decorateWith:(Shoot *)shoot user:(User *)user userTagShoots:(NSArray *)userTagShoots;
+- (void) decorateWith:(Shoot *)shoot user:(User *)user userTagShoots:(NSArray *)userTagShoots parentController:(UIViewController *)parentController;
 
 @end
