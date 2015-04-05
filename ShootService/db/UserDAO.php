@@ -228,7 +228,7 @@ class UserDAO extends BaseDAO
 	}
 	
 	public function getUsersWantShoot($currentUser_id, $shoot_id) {
-		$query = "SELECT user.id as id, user.username as username, user.user_type as user_type FROM user_tag_shoot LEFT JOIN  user ON user_tag_shoot.user_id = user.id WHERE user_tag_shoot.shoot_id = $shoot_id AND type = 1";
+		$query = "SELECT user.id as id, user.username as username, user.user_type as user_type FROM user_tag_shoot LEFT JOIN  user ON user_tag_shoot.user_id = user.id WHERE user_tag_shoot.shoot_id = $shoot_id AND type = 0";
 		$result = $this->db_conn->query($query);
 		$users = array();
 		if (mysql_num_rows($result)) {

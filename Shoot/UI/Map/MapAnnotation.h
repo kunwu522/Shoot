@@ -13,8 +13,9 @@
 
 @property (nonatomic, assign) CLLocationCoordinate2D coordinate;
 @property NSInteger imageCount;
+@property NSNumber *type;
 
-- (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate count:(NSInteger)count;
+- (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate count:(NSInteger)count type:(NSNumber *)type;
 
 - (MKMapItem*)mapItem;
 

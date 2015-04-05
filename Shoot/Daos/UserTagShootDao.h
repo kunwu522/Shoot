@@ -13,5 +13,6 @@
 - (NSArray *) findUserTagShootsLocallyByUserId:(NSNumber *)userID shootID:(NSNumber *)shootID;
 - (NSArray *) findUserTagShootsLocallyByUserId:(NSNumber *)userID forType:(NSNumber *)tagType;
 - (NSArray *) findUserTagShootDatesLocallyByUserId:(NSNumber *)userID forType:(NSNumber *)tagType;
+- (NSArray *) findUserTagShootsLocallyByTagId:(NSNumber *)tagID;
 
 @end

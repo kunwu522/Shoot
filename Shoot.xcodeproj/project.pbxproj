@@ -109,6 +109,7 @@
 		0E6B9D3D1AB6AAF1008CF269 /* UserShootCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E6B9D3C1AB6AAF1008CF269 /* UserShootCollectionView.m */; };
 		0E7CD7141A5721CF00A27A2F /* ImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7111A5721CF00A27A2F /* ImageUtil.m */; };
 		0E7CD7151A5721CF00A27A2F /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7CD7131A5721CF00A27A2F /* UIImage+ImageEffects.m */; };
+		0E7DF2021ACC88590050AE7F /* TagMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E7DF2011ACC88590050AE7F /* TagMapView.m */; };
 		0E8489661AB80576005E456C /* UserShootMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8489651AB80576005E456C /* UserShootMapView.m */; };
 		0E8489701ABBAF37005E456C /* UserTagShootCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E84896F1ABBAF37005E456C /* UserTagShootCollectionViewCell.m */; };
 		0E8489731ABDEBA0005E456C /* UserShootCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8489721ABDEBA0005E456C /* UserShootCalendarView.m */; };
@@ -143,6 +144,9 @@
 		0EBE32791AAFB32F003AD2A3 /* UICollectionViewLeftAlignedLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBE32781AAFB32F003AD2A3 /* UICollectionViewLeftAlignedLayout.m */; };
 		0EBE32821AB0CF8C003AD2A3 /* TagTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBE32811AB0CF8C003AD2A3 /* TagTableViewCell.m */; };
 		0EBE32841AB144CE003AD2A3 /* tag.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EBE32831AB144CE003AD2A3 /* tag.png */; };
+		0EBFFC821AC9138E0011C190 /* UserTagShootCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBFFC811AC9138E0011C190 /* UserTagShootCollectionView.m */; };
+		0EBFFC851AC918E40011C190 /* TagShootCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBFFC841AC918E40011C190 /* TagShootCollectionView.m */; };
+		0EBFFC891AC9D9250011C190 /* LikeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EBFFC881AC9D9250011C190 /* LikeButton.m */; };
 		0ECE66FD1AA1734800A03641 /* followed.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ECE66FC1AA1734800A03641 /* followed.png */; };
 		0ECE67051AA1735200A03641 /* setting-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ECE67041AA1735200A03641 /* setting-icon.png */; };
 		0ECE67071AA1BDC500A03641 /* message-filled.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ECE67061AA1BDC500A03641 /* message-filled.png */; };
@@ -382,6 +386,8 @@
 		0E7CD7111A5721CF00A27A2F /* ImageUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUtil.m; sourceTree = "<group>"; };
 		0E7CD7121A5721CF00A27A2F /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
 		0E7CD7131A5721CF00A27A2F /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
+		0E7DF2001ACC88590050AE7F /* TagMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TagMapView.h; path = UI/TagMapView.h; sourceTree = "<group>"; };
+		0E7DF2011ACC88590050AE7F /* TagMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TagMapView.m; path = UI/TagMapView.m; sourceTree = "<group>"; };
 		0E8489641AB80576005E456C /* UserShootMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserShootMapView.h; path = UI/UserShootMapView.h; sourceTree = "<group>"; };
 		0E8489651AB80576005E456C /* UserShootMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserShootMapView.m; path = UI/UserShootMapView.m; sourceTree = "<group>"; };
 		0E84896E1ABBAF37005E456C /* UserTagShootCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserTagShootCollectionViewCell.h; sourceTree = "<group>"; };
@@ -442,6 +448,12 @@
 		0EBE32801AB0CF8C003AD2A3 /* TagTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TagTableViewCell.h; path = UI/TableCell/TagTableViewCell.h; sourceTree = "<group>"; };
 		0EBE32811AB0CF8C003AD2A3 /* TagTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TagTableViewCell.m; path = UI/TableCell/TagTableViewCell.m; sourceTree = "<group>"; };
 		0EBE32831AB144CE003AD2A3 /* tag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tag.png; path = Images/tag.png; sourceTree = "<group>"; };
+		0EBFFC801AC9138E0011C190 /* UserTagShootCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserTagShootCollectionView.h; path = UI/UserTagShootCollectionView.h; sourceTree = "<group>"; };
+		0EBFFC811AC9138E0011C190 /* UserTagShootCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserTagShootCollectionView.m; path = UI/UserTagShootCollectionView.m; sourceTree = "<group>"; };
+		0EBFFC831AC918E40011C190 /* TagShootCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TagShootCollectionView.h; path = UI/TagShootCollectionView.h; sourceTree = "<group>"; };
+		0EBFFC841AC918E40011C190 /* TagShootCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TagShootCollectionView.m; path = UI/TagShootCollectionView.m; sourceTree = "<group>"; };
+		0EBFFC871AC9D9250011C190 /* LikeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LikeButton.h; path = UI/LikeButton.h; sourceTree = "<group>"; };
+		0EBFFC881AC9D9250011C190 /* LikeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LikeButton.m; path = UI/LikeButton.m; sourceTree = "<group>"; };
 		0ECE66FC1AA1734800A03641 /* followed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = followed.png; path = Images/followed.png; sourceTree = "<group>"; };
 		0ECE67041AA1735200A03641 /* setting-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "setting-icon.png"; path = "Images/setting-icon.png"; sourceTree = "<group>"; };
 		0ECE67061AA1BDC500A03641 /* message-filled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "message-filled.png"; path = "Images/message-filled.png"; sourceTree = "<group>"; };
@@ -681,7 +693,7 @@
 			name = UserView;
 			sourceTree = "<group>";
 		};
-		0E8AC25E1AC3941200778A86 /* TagView */ = {
+		0E8AC25E1AC3941200778A86 /* UserTagShootView */ = {
 			isa = PBXGroup;
 			children = (
 				0E8AC2651AC394F000778A86 /* TagCollectionViewCell.h */,
@@ -689,7 +701,7 @@
 				0E8AC2681AC3951900778A86 /* TagCollectionView.h */,
 				0E8AC2691AC3951900778A86 /* TagCollectionView.m */,
 			);
-			name = TagView;
+			name = UserTagShootView;
 			sourceTree = "<group>";
 		};
 		0EA873841A8B4EF1009172F9 /* Daos */ = {
@@ -817,7 +829,9 @@
 		0EB82CDB1A37FCB300BFBE17 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				0E8AC25E1AC3941200778A86 /* TagView */,
+				0EBFFC861AC9D9050011C190 /* Components */,
+				0EBFFC7F1AC9128C0011C190 /* TagView */,
+				0E8AC25E1AC3941200778A86 /* UserTagShootView */,
 				0E84896D1AB810C5005E456C /* UserView */,
 				0E65C24C1A9C1D780083FD73 /* ShootImageMaxDisplayView.h */,
 				0E65C24D1A9C1D780083FD73 /* ShootImageMaxDisplayView.m */,
@@ -825,10 +839,6 @@
 				0E65C24F1A9C1D780083FD73 /* ShootImageView.m */,
 				0E90D4F01A9B1D7600B6F60C /* ShootActionSheet.h */,
 				0E90D4F11A9B1D7600B6F60C /* ShootActionSheet.m */,
-				0E16A7FF1A92A70C0096B41D /* FollowButton.h */,
-				0E16A8001A92A70C0096B41D /* FollowButton.m */,
-				0E16A8011A92A70C0096B41D /* UserIcon.h */,
-				0E16A8021A92A70C0096B41D /* UserIcon.m */,
 				0E5D46901A78CC2600CEA8D6 /* Map */,
 				0E572EAE1A6F70BF00BC040D /* MNCalendarView */,
 				0E5C930C1A64B5F3008AE026 /* Message */,
@@ -838,8 +848,8 @@
 				0EB82CDC1A37FCC100BFBE17 /* TableCell */,
 				0ECE67081AA2534100A03641 /* UserListView.h */,
 				0ECE67091AA2534100A03641 /* UserListView.m */,
-				0E6B9D321AB525BF008CF269 /* ShootControl.h */,
-				0E6B9D331AB525BF008CF269 /* ShootControl.m */,
+				0EBFFC801AC9138E0011C190 /* UserTagShootCollectionView.h */,
+				0EBFFC811AC9138E0011C190 /* UserTagShootCollectionView.m */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -916,6 +926,32 @@
 				0E5C930A1A63C951008AE026 /* UIViewHelper.m */,
 			);
 			name = Util;
+			sourceTree = "<group>";
+		};
+		0EBFFC7F1AC9128C0011C190 /* TagView */ = {
+			isa = PBXGroup;
+			children = (
+				0EBFFC831AC918E40011C190 /* TagShootCollectionView.h */,
+				0EBFFC841AC918E40011C190 /* TagShootCollectionView.m */,
+				0E7DF2001ACC88590050AE7F /* TagMapView.h */,
+				0E7DF2011ACC88590050AE7F /* TagMapView.m */,
+			);
+			name = TagView;
+			sourceTree = "<group>";
+		};
+		0EBFFC861AC9D9050011C190 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				0E16A7FF1A92A70C0096B41D /* FollowButton.h */,
+				0E16A8001A92A70C0096B41D /* FollowButton.m */,
+				0EBFFC871AC9D9250011C190 /* LikeButton.h */,
+				0EBFFC881AC9D9250011C190 /* LikeButton.m */,
+				0E6B9D321AB525BF008CF269 /* ShootControl.h */,
+				0E6B9D331AB525BF008CF269 /* ShootControl.m */,
+				0E16A8011A92A70C0096B41D /* UserIcon.h */,
+				0E16A8021A92A70C0096B41D /* UserIcon.m */,
+			);
+			name = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1137,6 +1173,7 @@
 				0E65C2501A9C1D780083FD73 /* ShootImageMaxDisplayView.m in Sources */,
 				0E8489661AB80576005E456C /* UserShootMapView.m in Sources */,
 				0EB82CBB1A37F84D00BFBE17 /* MasterViewController.m in Sources */,
+				0EBFFC891AC9D9250011C190 /* LikeButton.m in Sources */,
 				0EA873931A8C8616009172F9 /* ShootDao.m in Sources */,
 				0E5C93521A64B5F3008AE026 /* UIView+AnimationOptionsForCurve.m in Sources */,
 				0E65C2511A9C1D780083FD73 /* ShootImageView.m in Sources */,
@@ -1157,6 +1194,7 @@
 				0EB82CDF1A37FD5A00BFBE17 /* ShootTableViewCell.m in Sources */,
 				0E0F429F1AAD5A6F00AB096B /* Shoot.m in Sources */,
 				0E5C92F31A621CE2008AE026 /* MenuViewController.m in Sources */,
+				0EBFFC851AC918E40011C190 /* TagShootCollectionView.m in Sources */,
 				0E0F42A21AAD5E5800AB096B /* CommentDao.m in Sources */,
 				0E5C930B1A63C951008AE026 /* UIViewHelper.m in Sources */,
 				0EB2F2CE1A80490100BC02A2 /* ShootDetailedTableViewCell.m in Sources */,
@@ -1165,6 +1203,7 @@
 				0E572EC61A6F70BF00BC040D /* MNFastDateEnumeration.m in Sources */,
 				0EB82CF31A39FD9200BFBE17 /* BlurView.m in Sources */,
 				0E7CD7151A5721CF00A27A2F /* UIImage+ImageEffects.m in Sources */,
+				0E7DF2021ACC88590050AE7F /* TagMapView.m in Sources */,
 				0E5C93371A64B5F3008AE026 /* JSBubbleMessageCell.m in Sources */,
 				0EFD5B2C1A8D9BE400658FC0 /* UserTagShootDao.m in Sources */,
 				0E5C93011A63AF1C008AE026 /* NotificationViewController.m in Sources */,
@@ -1191,6 +1230,7 @@
 				0EB82CB81A37F84D00BFBE17 /* Shoot.xcdatamodeld in Sources */,
 				0E5C92F81A622721008AE026 /* MenuTableViewCell.m in Sources */,
 				0E7CD7141A5721CF00A27A2F /* ImageUtil.m in Sources */,
+				0EBFFC821AC9138E0011C190 /* UserTagShootCollectionView.m in Sources */,
 				0E572EC31A6F70BF00BC040D /* MNCalendarViewDayCell.m in Sources */,
 				0EFD5B261A8D532B00658FC0 /* Tag.m in Sources */,
 				0E3CCA921AA59B9900AF6048 /* SignupViewController.m in Sources */,

@@ -12,6 +12,9 @@
 @implementation ShootDao
 
 static const NSString * QUERY_SHOOT_BY_ID_URL = @"shoot/queryShootById/:id";
+static const NSString * TOP_SHOOT_FOR_TAG_URL = @"shoot/topShootForTag/:tag_id";
+static const NSString * LIKE_SHOOT_URL = @"shoot/like/:id";
+static const NSString * UNLIKE_SHOOT_URL = @"shoot/unlike/:id";
 
 - (RKEntityMapping *) createResponseMapping
 {
@@ -51,7 +54,10 @@ static const NSString * QUERY_SHOOT_BY_ID_URL = @"shoot/queryShootById/:id";
     
     //register url with "users" as GET response key path
     for(NSString *url in @[
-                           QUERY_SHOOT_BY_ID_URL
+                           QUERY_SHOOT_BY_ID_URL,
+                           TOP_SHOOT_FOR_TAG_URL,
+                           LIKE_SHOOT_URL,
+                           UNLIKE_SHOOT_URL
                            ]){
         
         [manager addResponseDescriptor:

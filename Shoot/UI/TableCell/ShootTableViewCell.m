@@ -154,13 +154,7 @@ static const CGFloat TIME_LABEL_WIDTH = 60;
     [self.timeLabel setTitle:[NSString stringWithFormat:@" %@", [UIViewHelper formatTime:((UserTagShoot *)[userTagShoots objectAtIndex:0]).time]] forState:UIControlStateNormal];
     [self.image sd_setImageWithURL:[ImageUtil imageURLOfShoot:shoot] placeholderImage:[UIImage imageNamed:@"Oops"] options:SDWebImageHandleCookies];
     [self.shootControl decorateWith:shoot parentController:parentController];
-    NSMutableString * tags = [[NSMutableString alloc] init];
-    [tags appendString:@" "];
-    for(UserTagShoot *userTagShoot in userTagShoots) {
-        [tags appendString:userTagShoot.tag.tag];
-        [tags appendString:@", "];
-    }
-    [tags deleteCharactersInRange:NSMakeRange(tags.length - 2, 2)];
+
     [self.tags setTags:userTagShoots parentController:parentController];
     
     self.user = user;

@@ -14,16 +14,18 @@
 #import "UIViewHelper.h"
 #import "UserTagShoot.h"
 #import "Tag.h"
+#import "TagCollectionView.h"
+#import "LikeButton.h"
 
 @interface ImageDetailedCollectionViewCell ()
 
-@property (nonatomic, retain) UIButton * tags;
+@property (nonatomic, retain) TagCollectionView * tags;
 @property (nonatomic, retain) UIButton * timeLabel;
 @property (nonatomic, retain) UIImageView * ownerAvatar;
 @property (nonatomic, retain) UILabel * ownerNameLabel;
+@property (nonatomic, retain) LikeButton * likeButton;
 
-@property (nonatomic, weak) User *user;
-@property (nonatomic, weak) User *owner;
+@property (nonatomic, weak) Shoot *shoot;
 
 @property (nonatomic, weak) UIViewController * parentController;
 
@@ -33,7 +35,6 @@
 
 static CGFloat PADDING = 5;
 static const CGFloat TAG_HEIGHT = 25;
-static const CGFloat BUTTON_ICON_SIZE = 15;
 static const CGFloat OWNER_AVATAR_SIZE = 30;
 
 - (id)initWithFrame:(CGRect)frame
@@ -84,62 +85,60 @@ static const CGFloat OWNER_AVATAR_SIZE = 30;
         [self addSubview:visualEffectView];
         [self addSubview:self.timeLabel];
         
-        self.tags = [[UIButton alloc] initWithFrame:CGRectMake(PADDING, self.imageView.frame.size.height + self.imageView.frame.origin.y + 5, self.frame.size.width - PADDING * 2, TAG_HEIGHT)];
-        self.tags.titleLabel.font = [UIFont boldSystemFontOfSize:12];
-        [self.tags setTitleColor:[ColorDefinition darkRed] forState:UIControlStateNormal];
-        [self.tags setTitle:@"" forState:UIControlStateNormal];
-        [self.tags setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[ColorDefinition darkRed]] forState:UIControlStateNormal];
-        self.tags.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        self.tags = [[TagCollectionView alloc] initWithFrame:CGRectMake(PADDING, self.imageView.frame.size.height + self.imageView.frame.origin.y + 5, self.frame.size.width - PADDING * 2, TAG_HEIGHT)];
         [self addSubview:self.tags];
+        
+        CGFloat likeButtonSize = LIKE_BUTTON_HEIGHT;
+        CGFloat likeButtonWidth = LIKE_BUTTON_WIDTH;
+        
+        self.likeButton = [[LikeButton alloc] initWithFrame:CGRectMake(PADDING, self.imageView.frame.size.height + self.imageView.frame.origin.y + 5, likeButtonWidth, likeButtonSize) isSimpleMode:NO];
+        self.likeButton.hidden = true;
+        [self addSubview:self.likeButton];
         
     }
     return self;
 }
 
-- (void) decorateWith:(Shoot *)shoot user:(User *)user userTagShoots:(NSArray *)userTagShoots parentController:(UIViewController *)parentController
+- (void) decorateWith:(Shoot *)shoot user:(User *)user userTagShoots:(NSArray *)userTagShoots parentController:(UIViewController *)parentController showLikeCount:(BOOL)showLikeCount
 {
-    self.user = user;
-    self.owner = shoot.user;
+    self.shoot = shoot;
     self.parentController = parentController;
     
     [self.timeLabel setTitle:[NSString stringWithFormat:@" %@", [UIViewHelper formatTime:((UserTagShoot *)[userTagShoots objectAtIndex:0]).time]] forState:UIControlStateNormal];
     [self.imageView sd_setImageWithURL:[ImageUtil imageURLOfShoot:shoot] placeholderImage:[UIImage imageNamed:@"Oops"] options:SDWebImageHandleCookies];
-    NSMutableString * tags = [[NSMutableString alloc] init];
-    [tags appendString:@" "];
-    for(UserTagShoot *userTagShoot in userTagShoots) {
-        [tags appendString:userTagShoot.tag.tag];
-        [tags appendString:@", "];
-    }
-    [tags deleteCharactersInRange:NSMakeRange(tags.length - 2, 2)];
-    [self.tags setTitle:tags forState:UIControlStateNormal];
-    switch ([((UserTagShoot *)[userTagShoots objectAtIndex:0]).type integerValue]) {
-        case 0:
-            [self.tags setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[ColorDefinition darkRed]] forState:UIControlStateNormal];
-            break;
-        case 1:
-            [self.tags setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"have-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[ColorDefinition darkRed]] forState:UIControlStateNormal];
-            break;
-        default:
-            break;
+    
+    if (showLikeCount) {
+        self.likeButton.hidden = false;
+        self.tags.hidden = true;
+    } else {
+        self.likeButton.hidden = true;
+        self.tags.hidden = false;
     }
     
-    if ([shoot.user.userID isEqualToValue:user.userID]) {
+    [self.likeButton decorateWithShoot:shoot parentController:parentController];
+    [self.tags setTags:userTagShoots parentController:parentController];
+    
+    if (user && [shoot.user.userID isEqualToValue:user.userID]) {
         self.ownerNameLabel.hidden = true;
         self.ownerAvatar.hidden = true;
-        self.owner = nil;
     } else {
-        self.owner = shoot.user;
         self.ownerNameLabel.hidden = false;
         self.ownerAvatar.hidden = false;
         self.ownerNameLabel.text = [NSString stringWithFormat:@"from @%@", shoot.user.username];
         [self.ownerAvatar sd_setImageWithURL:[ImageUtil imageURLOfAvatar:shoot.user.userID] placeholderImage:[UIImage imageNamed:@"avatar.jpg"] options:SDWebImageHandleCookies];
     }
+    
+}
+
+- (void) decorateWith:(Shoot *)shoot user:(User *)user userTagShoots:(NSArray *)userTagShoots parentController:(UIViewController *)parentController
+{
+    [self decorateWith:shoot user:user userTagShoots:userTagShoots parentController:parentController showLikeCount:NO];
 }
 
 - (void)handleOwnerAvatarTapped
 {
     UserViewController* viewController = [[UserViewController alloc] initWithNibName:nil bundle:nil];
-    viewController.userID = self.owner.userID;
+    viewController.userID = self.shoot.user.userID;
     [self.parentController presentViewController:viewController animated:YES completion:nil];
 }
 

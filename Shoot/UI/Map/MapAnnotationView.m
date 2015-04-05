@@ -32,7 +32,6 @@ static const CGFloat SIZE = 25;
         self.label.textColor = [UIColor whiteColor];
         self.label.textAlignment = NSTextAlignmentCenter;
         self.label.font = [UIFont boldSystemFontOfSize:9];
-        self.backgroundColor = [ColorDefinition lightRed];
         [self addSubview:self.label];
     }
     return self;
@@ -42,12 +41,23 @@ static const CGFloat SIZE = 25;
 {
     if ([annotation isKindOfClass:[MapAnnotation class]]) {
         MapAnnotation * mapAnnotation = (MapAnnotation *) annotation;
-        self.label.text = [NSString stringWithFormat:@"%ld", [mapAnnotation imageCount]];
         CALayer * l = [self layer];
         [l setMasksToBounds:YES];
-        [l setBorderColor:[ColorDefinition darkRed].CGColor];
         [l setBorderWidth:2];
         [l setCornerRadius:self.frame.size.width/2.0];
+        self.label.text = [NSString stringWithFormat:@"%ld", [mapAnnotation imageCount]];
+        switch ([mapAnnotation.type integerValue]) {
+            case 0:
+                self.backgroundColor = [ColorDefinition lightRed];
+                [l setBorderColor:[ColorDefinition darkRed].CGColor];
+                break;
+            case 1:
+                self.backgroundColor = [ColorDefinition greenColor];
+                [l setBorderColor:[ColorDefinition darkGreenColor].CGColor];
+            default:
+                break;
+        }
+        
     }
 }
 

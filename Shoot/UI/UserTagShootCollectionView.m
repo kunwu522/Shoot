@@ -1,12 +1,12 @@
 //
-//  UserShootCollectionView.m
+//  UserTagShootCollectionView.m
 //  Shoot
 //
 //  Created by LV on 3/15/15.
 //  Copyright (c) 2015 Shoot. All rights reserved.
 //
 
-#import "UserShootCollectionView.h"
+#import "UserTagShootCollectionView.h"
 #import "ImageCollectionViewCell.h"
 #import "ImageDetailedCollectionViewCell.h"
 #import "UIViewHelper.h"
@@ -15,17 +15,15 @@
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "ImageUtil.h"
 
-@interface UserShootCollectionView () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
+@interface UserTagShootCollectionView () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, NSFetchedResultsControllerDelegate>
 
 @property (retain, nonatomic) UICollectionView *imageCollectionView;
 @property (nonatomic) BOOL isGridView;
-@property (retain, nonatomic) User * user;
-@property (retain, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (retain, nonatomic) UIViewController *parentController;
 
 @end
 
-@implementation UserShootCollectionView
+@implementation UserTagShootCollectionView
 
 static NSString * IMAGE_CELL_REUSE_ID = @"ImageCell";
 
@@ -57,6 +55,8 @@ static CGFloat PADDING = 5;
         [self.imageCollectionView registerClass:[ImageDetailedCollectionViewCell class] forCellWithReuseIdentifier:IMAGE_DETAILED_CELL_REUSE_ID];
         self.isGridView = YES;
         [self addSubview:self.imageCollectionView];
+        
+        self.showLikeButton = false;
     }
     return self;
 }
@@ -75,10 +75,8 @@ static CGFloat PADDING = 5;
     [self.fetchedResultsController setDelegate:self];
 }
 
-- (void) reloadForType:(NSNumber *)tagType
+- (void) reload
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"userID == %@ && type == %@", self.user.userID, tagType]];
-    self.fetchedResultsController.fetchRequest.predicate = predicate;
     NSError *error = nil;
     BOOL fetchSuccessful = [self.fetchedResultsController performFetch:&error];
     if (! fetchSuccessful) {
@@ -114,7 +112,7 @@ static CGFloat PADDING = 5;
     } else {
         ImageDetailedCollectionViewCell *cell = (ImageDetailedCollectionViewCell *)[cv dequeueReusableCellWithReuseIdentifier:IMAGE_DETAILED_CELL_REUSE_ID forIndexPath:indexPath];
         NSArray *userTagShoots = [[[self.fetchedResultsController sections] objectAtIndex:indexPath.row] objects];
-        [cell decorateWith:userTagShoot.shoot user:self.user userTagShoots:userTagShoots parentController:self.parentController];
+        [cell decorateWith:userTagShoot.shoot user:self.user userTagShoots:userTagShoots parentController:self.parentController showLikeCount:self.showLikeButton];
         return cell;
     }
 }

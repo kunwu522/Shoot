@@ -12,8 +12,6 @@
 
 @interface FollowButton : UIView
 
-@property (nonatomic, retain) UIButton *followButton;
-
 - (void) setUser_id:(id)user_id relationshipWithCurrentUser:(NSNumber *) relationshipWithCurrentUser;
 
 @end

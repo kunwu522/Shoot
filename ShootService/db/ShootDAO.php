@@ -26,8 +26,19 @@ class ShootDAO extends BaseDAO
 		return $shoots;
 	}
 	
+	public function getTopShootForTag($tag_id) {
+		$query = "SELECT shoot.*, user.username, user.user_type as user_type FROM user_tag_shoot JOIN shoot ON shoot.id = user_tag_shoot.shoot_id AND shoot.shoot_user_id = user_tag_shoot.user_id AND user_tag_shoot.tag_id = $tag_id JOIN user ON shoot_user_id = user.id ORDER BY like_count DESC LIMIT 1";
+		$result = $this->db_conn->query($query);
+		if(mysql_num_rows($result)) {
+			while($shoot = mysql_fetch_assoc($result)) {
+				return $this->getStructuredShoot($shoot);	
+			}
+		}
+		return null;
+	}
+	
 	public function queryByTag($tag_id) {
-		$query = "SELECT user_tag_shoot.* FROM user_tag_shoot WHERE tag_id = $tag_id";
+		$query = "SELECT shoot.content, shoot.want_count, shoot.like_count, shoot.have_count, shoot.shoot_user_id, shoot.shoot_time, user_tag_shoot.* FROM user_tag_shoot JOIN shoot ON shoot.id = user_tag_shoot.shoot_id WHERE tag_id = $tag_id";
 		$result = $this->db_conn->query($query);
 		$user_tag_shoots = array();
 		if(mysql_num_rows($result)) {
@@ -40,20 +51,33 @@ class ShootDAO extends BaseDAO
 	
 	private function getStructuredUserTagShoot($user_tag_shoot) {
 		
-		$shoot = array('id' => $user_tag_shoot['shoot_id'], 
-					   'content' => $user_tag_shoot['content'],
-				       'want_count' => $user_tag_shoot['want_count'],
-				       'like_count' => $user_tag_shoot['like_count'],
-					   'have_count' => $user_tag_shoot['have_count'],
-				   	   'time' => $user_tag_shoot['shoot_time'],
-				       'user' => array('id' => $user_tag_shoot['shoot_user_id']));
-		$user = array('id' => $user_tag_shoot['user_id'], 
-		              'user_type' => $user_tag_shoot['user_type'],
-				      'username' => $user_tag_shoot['username']);
-		$tag = array('id' => $user_tag_shoot['tag_id'], 
-					 'tag' => $user_tag_shoot['tag'],
-				     'have_count' => $user_tag_shoot['tag_have_count'],
-				     'want_count' => $user_tag_shoot['tag_want_count']);
+		$shoot = array('id' => $user_tag_shoot['shoot_id'],
+					   'user' => array('id' => $user_tag_shoot['shoot_user_id']));
+		if($user_tag_shoot['content']) 
+			$shoot['content'] = $user_tag_shoot['content'];
+		if($user_tag_shoot['want_count']) 
+			$shoot['want_count'] = $user_tag_shoot['want_count'];
+		if($user_tag_shoot['like_count']) 
+			$shoot['like_count'] = $user_tag_shoot['like_count'];
+		if($user_tag_shoot['have_count']) 
+			$shoot['have_count'] = $user_tag_shoot['have_count'];
+		if($user_tag_shoot['shoot_time']) 
+			$shoot['time'] = $user_tag_shoot['shoot_time'];
+				       
+		$user = array('id' => $user_tag_shoot['user_id']);
+		if($user_tag_shoot['user_type']) 
+			$user['user_type'] = $user_tag_shoot['user_type'];
+		if($user_tag_shoot['username'])
+			$user['username'] = $user_tag_shoot['username'];
+					  
+		$tag = array('id' => $user_tag_shoot['tag_id']);
+		if($user_tag_shoot['tag']) 
+			$tag['tag'] = $user_tag_shoot['tag']; 
+		if($user_tag_shoot['tag_have_count']) 
+			$tag['have_count'] = $user_tag_shoot['tag_have_count']; 
+		if($user_tag_shoot['tag_want_count']) 
+			$tag['want_count'] = $user_tag_shoot['tag_want_count']; 
+		
 		return array('shoot' => $shoot, 
 		             'tag' => $tag, 
 					 'user' => $user, 
@@ -63,6 +87,22 @@ class ShootDAO extends BaseDAO
 					 'longitude' => $user_tag_shoot['longitude'],
 					 'deleted' => $user_tag_shoot['deleted']
 				     );
+	}
+	
+	private function getStructuredShoot($shoot) {
+		
+		$user = array('id' => $shoot['shoot_user_id']);
+		if($shoot['user_type']) 
+			$user['user_type'] = $shoot['user_type'];
+		if($shoot['username'])
+			$user['username'] = $shoot['username'];
+		return array('id' => $shoot['id'], 
+			  		  'content' => $shoot['content'],
+		    	      'want_count' => $shoot['want_count'],
+			  		  'like_count' => $shoot['like_count'],
+					  'have_count' => $shoot['have_count'],
+					  'time' => $shoot['shoot_time'],
+					  'user' => $user);
 	}
 	
 	public function query($currentUser_id, $user_id, $keyword) {
@@ -185,7 +225,7 @@ class ShootDAO extends BaseDAO
 		$shoots = array();
 		if(mysql_num_rows($result)) {
 			while($shoot = mysql_fetch_assoc($result)) {
-				$shoots[] = $shoot;
+				$shoots[] = $this->getStructuredShoot($shoot);
 			}
 		}
 		return $shoots;

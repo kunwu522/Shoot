@@ -10,10 +10,11 @@
 
 @implementation MapAnnotation
 
-- (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate count:(NSInteger)count {
+- (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate count:(NSInteger)count type:(NSNumber *)type{
     if ((self = [super init])) {
         self.coordinate = coordinate;
         self.imageCount = count;
+        self.type = type;
     }
     return self;
 }

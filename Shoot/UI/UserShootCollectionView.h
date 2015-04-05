@@ -8,12 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "User.h"
+#import "UserTagShootCollectionView.h"
 
-@interface UserShootCollectionView : UIView
+@interface UserShootCollectionView : UserTagShootCollectionView
 
-- (instancetype)initWithFrame:(CGRect)frame forUser:(User *)user parentController:(UIViewController *)parentController;
-- (void) setCollectionViewStatus:(BOOL)isGridView;
 - (void) reloadForType:(NSNumber *)tagType;
-- (CGFloat) getCollectionViewHeight;
 
 @end

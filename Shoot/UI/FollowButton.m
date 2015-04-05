@@ -13,8 +13,11 @@
 #import "ImageUtil.h"
 
 @interface FollowButton ()
+
+@property (nonatomic, retain) UIButton *followButton;
 @property (nonatomic, retain) id user_id;
 @property (nonatomic, retain) NSNumber * relationshipWithCurrentUser;
+
 @end
 
 

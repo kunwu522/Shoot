@@ -28,6 +28,11 @@ class ShootController extends Controller
 		return json_encode(array('user_tag_shoots' => $user_tag_shoots));
 	}
 	
+	public function topShootForTag($tag_id) {
+		$shoot = $this->shoot_dao->getTopShootForTag($tag_id);
+		return json_encode($shoot);
+	}
+	
 	public function queryByContent($keyword) {
 		$current_user_id = $this->getCurrentUser();
 		$shoots = $this->shoot_dao->query($current_user_id, null, $keyword);
@@ -80,7 +85,7 @@ class ShootController extends Controller
 		$this->shoot_dao->setUserTagsShoot($currentUser_id, $shoot->get_id(), $shoot->get_tags(), ShootDAO::$TYPE_WANT, $shoot->get_latitude(), $shoot->get_longitude());
 		//do not notify the owner of the shoot for now
 		// $shoot = $this->shoot_dao->find_shoot_by_id($shoot_id)[0];
-// 		if ($shoot['user_id'] != $currentUser_id) {
+// 		if ($shoot['user']['id'] != $currentUser_id) {
 // 			$message = new Message();
 // 			$message->set_message('@' . $currentUsername . ' wanted your post: ' . $shoot['content']);
 // 			$message->set_sender_id($currentUser_id);
@@ -115,7 +120,7 @@ class ShootController extends Controller
 		$currentUsername = $this->getCurrentUsername();
 		$this->shoot_dao->setUserLikeShoot($currentUser_id, $shoot_id);
 		$shoot = $this->shoot_dao->find_shoot_by_id($shoot_id);
-		if ($shoot['user_id'] != $currentUser_id) {
+		if ($shoot['user']['id'] != $currentUser_id) {
 			$message = new Message();
 			$message->set_message('@' . $currentUsername . ' liked your post: ' . $shoot['content']);
 			$message->set_sender_id($currentUser_id);
@@ -125,12 +130,14 @@ class ShootController extends Controller
 			$notification_message = $message->get_message();
 			$this->message_dao->create($message, $notification_message);
 		}
+		return $this->queryShootById($shoot_id);
 	}
 	
 	public function unlike($shoot_id) 
 	{		
 		$currentUser_id = $this->getCurrentUser();
 		$this->shoot_dao->setUserUnlikeShoot($currentUser_id, $shoot_id);
+		return $this->queryShootById($shoot_id);
 	}
 	
 	private function parse_request_body($parameters, $check_param) {

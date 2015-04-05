@@ -38,7 +38,7 @@
 
 - (MapAnnotation *) getMapAnnotation
 {
-    return [[MapAnnotation alloc] initWithCoordinate:CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]) count:1];
+    return [[MapAnnotation alloc] initWithCoordinate:CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]) count:1 type:self.type];
 }
 
 @end

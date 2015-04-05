@@ -12,16 +12,16 @@
 #import "UIViewHelper.h"
 #import <RestKit/RestKit.h>
 #import "UserListView.h"
+#import "LikeButton.h"
 
 @interface ShootControl ()
 
 @property (nonatomic, weak) Shoot *shoot;
 @property (nonatomic, weak) UIViewController *parentController;
 
-@property (nonatomic, retain) UIButton * like;
+@property (nonatomic, retain) LikeButton * like;
 @property (nonatomic, retain) UIButton * have;
 @property (nonatomic, retain) UIButton * want;
-@property (nonatomic, retain) UIButton * likeCount;
 @property (nonatomic, retain) UIButton * haveCount;
 @property (nonatomic, retain) UIButton * wantCount;
 
@@ -33,7 +33,6 @@ static CGFloat PADDING = 10;
 static const CGFloat BUTTON_ICON_SIZE = 15;
 static const CGFloat BUTTON_SIZE = 25;
 static const CGFloat BUTTON_FONT_SIZE = 11;
-static const NSInteger USERS_LIKE_SHOOT_LIST_TAG = 198;
 
 - (instancetype)initWithFrame:(CGRect)frame isSimpleMode:(BOOL)isSimpleMode
 {
@@ -42,24 +41,13 @@ static const NSInteger USERS_LIKE_SHOOT_LIST_TAG = 198;
         CGFloat buttonWidth = (self.frame.size.width - PADDING * 2)/3.0;
         CGFloat countLabelWidth = buttonWidth - BUTTON_SIZE - PADDING * 2;
         
-        self.like = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth/2.0 - BUTTON_SIZE/2.0, 0, BUTTON_SIZE, BUTTON_SIZE)];
-        [self.like setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"like-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
-        self.like.backgroundColor = [ColorDefinition grayColor];
-        self.like.layer.cornerRadius = self.like.frame.size.width/2.0;
+        CGFloat likeButtonSize = LIKE_BUTTON_HEIGHT;
+        CGFloat likeButtonWidth = LIKE_BUTTON_WIDTH;
+        
+        self.like = [[LikeButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth/2.0 - likeButtonSize/2.0, 0, likeButtonWidth, likeButtonSize) isSimpleMode:isSimpleMode];
         [self addSubview:self.like];
-        [self.like addTarget:self action:@selector(likeIt:)forControlEvents:UIControlEventTouchDown];
         
-        self.likeCount = [[UIButton alloc] initWithFrame:CGRectMake(self.like.frame.origin.x + self.like.frame.size.width + PADDING, self.like.frame.origin.y, countLabelWidth, BUTTON_SIZE)];
-        [self.likeCount setTitle:@"0" forState:UIControlStateNormal];
-        [self.likeCount setTitleColor:[ColorDefinition grayColor] forState:UIControlStateNormal];
-        self.likeCount.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-        self.likeCount.titleLabel.font = [UIFont boldSystemFontOfSize:BUTTON_FONT_SIZE];
-        [self addSubview:self.likeCount];
-        if (!isSimpleMode) {
-            [self.likeCount addTarget:self action:@selector(showLike:)forControlEvents:UIControlEventTouchDown];
-        }
-        
-        self.want = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth * 1.5 - BUTTON_SIZE/2.0, self.like.frame.origin.y, self.like.frame.size.width, self.like.frame.size.height)];
+        self.want = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth * 1.5 - BUTTON_SIZE/2.0, self.like.frame.origin.y, BUTTON_SIZE, BUTTON_SIZE)];
         [self.want setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"want-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
         [self.want setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         self.want.backgroundColor = [ColorDefinition grayColor];
@@ -78,7 +66,7 @@ static const NSInteger USERS_LIKE_SHOOT_LIST_TAG = 198;
             [self.wantCount addTarget:self action:@selector(showWant:)forControlEvents:UIControlEventTouchDown];
         }
         
-        self.have = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth * 2.5 - BUTTON_SIZE/2.0, self.like.frame.origin.y, self.like.frame.size.width, self.like.frame.size.height)];
+        self.have = [[UIButton alloc] initWithFrame:CGRectMake(PADDING + buttonWidth * 2.5 - BUTTON_SIZE/2.0, self.like.frame.origin.y, BUTTON_SIZE, BUTTON_SIZE)];
         [self.have setImage:[ImageUtil colorImage:[ImageUtil renderImage:[UIImage imageNamed:@"have-icon"] atSize:CGSizeMake(BUTTON_ICON_SIZE, BUTTON_ICON_SIZE)] color:[UIColor whiteColor]] forState:UIControlStateNormal];
         [self.have setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         self.have.backgroundColor = [ColorDefinition grayColor];
@@ -109,20 +97,12 @@ static const NSInteger USERS_LIKE_SHOOT_LIST_TAG = 198;
 
 - (void) updateView
 {
-    [self.likeCount setTitle:[NSString stringWithFormat:@"%@", [UIViewHelper getCountString:self.shoot.like_count]] forState:UIControlStateNormal];
-    self.likeCount.enabled = [self.shoot.like_count integerValue] > 0;
+    [self.like decorateWithShoot:self.shoot parentController:self.parentController];
+
     [self.wantCount setTitle:[NSString stringWithFormat:@"%@", [UIViewHelper getCountString:self.shoot.want_count]] forState:UIControlStateNormal];
     self.wantCount.enabled = [self.shoot.want_count integerValue] > 0;
     [self.haveCount setTitle:[NSString stringWithFormat:@"%@", [UIViewHelper getCountString:self.shoot.have_count]] forState:UIControlStateNormal];
     self.haveCount.enabled = [self.shoot.have_count integerValue] > 0;
-    
-    if ([self.shoot.if_cur_user_like_it integerValue] == 0) {
-        self.like.backgroundColor = [ColorDefinition grayColor];
-        [self.likeCount setTitleColor:[ColorDefinition grayColor] forState:UIControlStateNormal];
-    } else {
-        self.like.backgroundColor = [ColorDefinition blueColor];
-        [self.likeCount setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-    }
     
     if ([self.shoot.if_cur_user_have_it integerValue] == 0) {
         self.have.backgroundColor = [ColorDefinition grayColor];
@@ -139,62 +119,6 @@ static const NSInteger USERS_LIKE_SHOOT_LIST_TAG = 198;
         self.want.backgroundColor = [ColorDefinition lightRed];
         [self.wantCount setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
     }
-}
-
-- (void)likeIt:(id) sender {
-    if ([self.shoot.if_cur_user_like_it intValue] == 1) {
-        self.shoot.like_count = [NSNumber numberWithInt:[self.shoot.like_count intValue] - 1];
-        self.shoot.if_cur_user_like_it = [NSNumber numberWithInt:0];
-        [self updateView];
-        [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"shoot/unlike/%@", self.shoot.shootID] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-            NSError *error = nil;
-            BOOL successful = [self.shoot.managedObjectContext save:&error];
-            if (!successful) {
-                NSLog(@"Save shoot Error: %@", error.localizedDescription);
-            }
-        } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-            RKLogError(@"unlike shoot failed with error: %@", error);
-            self.shoot.like_count = [NSNumber numberWithInt:[self.shoot.like_count intValue] + 1];
-            self.shoot.if_cur_user_like_it = [NSNumber numberWithInt:1];
-            [self updateView];
-            UIAlertView *av = [[UIAlertView alloc] initWithTitle:nil message:@"Failed to unlike shoot. Please try again later." delegate:nil cancelButtonTitle:@"Okay" otherButtonTitles:nil];
-            [av show];
-        }];
-    } else {
-        self.shoot.like_count = [NSNumber numberWithInt:[self.shoot.like_count intValue] + 1];
-        self.shoot.if_cur_user_like_it = [NSNumber numberWithInt:1];
-        [self updateView];
-        [[RKObjectManager sharedManager] getObjectsAtPath:[NSString stringWithFormat:@"shoot/like/%@", self.shoot.shootID] parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult)
-         {
-             NSError *error = nil;
-             BOOL successful = [self.shoot.managedObjectContext save:&error];
-             if (!successful) {
-                 NSLog(@"Save self.shoot Error: %@", error.localizedDescription);
-             }
-         } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-             RKLogError(@"water failed with error: %@", error);
-             self.shoot.like_count = [NSNumber numberWithInt:[self.shoot.like_count intValue] - 1];
-             self.shoot.if_cur_user_like_it = [NSNumber numberWithInt:0];
-             [self updateView];
-             UIAlertView *av = [[UIAlertView alloc] initWithTitle:nil message:@"Failed to like shoot. Please try again later." delegate:nil cancelButtonTitle:@"Okay" otherButtonTitles:nil];
-             [av show];
-         }];
-    }
-}
-
-- (void)showLike:(id) sender {
-    UserListView * usersLikeShootView = (UserListView *)[self.parentController.view viewWithTag:USERS_LIKE_SHOOT_LIST_TAG];
-    if (!usersLikeShootView) {
-        usersLikeShootView = [[UserListView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-        [self.parentController.view addSubview:usersLikeShootView];
-    }
-    usersLikeShootView.urlPathToPullUsers = [NSString stringWithFormat:@"user/getUsersLikeShoot/%@", self.shoot.shootID];
-    [usersLikeShootView reload];
-    usersLikeShootView.alpha = 0.0;
-    usersLikeShootView.hidden = false;
-    [UIView animateWithDuration:0.3 animations:^{
-        usersLikeShootView.alpha = 1.0;
-    }];
 }
 
 - (void)wantIt:(id) sender {

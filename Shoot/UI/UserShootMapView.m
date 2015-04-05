@@ -22,7 +22,6 @@
 @property (retain, nonatomic) NSNumber *tagType;
 @property (retain, nonatomic) UIButton * gridViewButton;
 @property (retain, nonatomic) UIView *visualEffectView;
-@property (nonatomic) BOOL isTheFirstTimeLoading;
 @property (retain, nonatomic) UICollectionView *imageCollectionView;
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
@@ -76,7 +75,6 @@ static NSString * IMAGE_CELL_REUSE_ID = @"ImageCell";
         l.shadowOpacity = 0.8;
         [self addSubview:self.gridViewButton];
         
-        self.isTheFirstTimeLoading = YES;
         [self initFetchController];
     }
     return self;
@@ -160,7 +158,6 @@ static NSString * IMAGE_CELL_REUSE_ID = @"ImageCell";
 
 - (void) reloadForType:(NSNumber *)tagType
 {
-    [self.mapView setAnnotations:nil];
     self.tagType = tagType;
     NSArray *userTagShoots = [[UserTagShootDao sharedManager] findUserTagShootsLocallyByUserId:self.user.userID forType:tagType];
     [self filterUserTagShoots];
@@ -168,40 +165,9 @@ static NSString * IMAGE_CELL_REUSE_ID = @"ImageCell";
         return;
     }
     NSMutableArray *userTagShootsAnnotations = [NSMutableArray new];
-    if (self.isTheFirstTimeLoading) {
-        self.isTheFirstTimeLoading = NO;
-        double minLatitude = 360;
-        double maxLatitude = -360;
-        double minLongitude = 360;
-        double maxLongitude = -360;
-        double totalLatitude = 0;
-        double totalLongitude = 0;
-        for (UserTagShoot *userTagShoot in userTagShoots) {
-            if (minLatitude > [userTagShoot.latitude doubleValue]) {
-                minLatitude = [userTagShoot.latitude doubleValue];
-            }
-            if (maxLatitude < [userTagShoot.latitude doubleValue]) {
-                maxLatitude = [userTagShoot.latitude doubleValue];
-            }
-            if (minLongitude > [userTagShoot.longitude doubleValue]) {
-                minLongitude = [userTagShoot.longitude doubleValue];
-            }
-            if (maxLongitude < [userTagShoot.longitude doubleValue]) {
-                maxLongitude = [userTagShoot.longitude doubleValue];
-            }
-            totalLatitude += [userTagShoot.latitude doubleValue];
-            totalLongitude += [userTagShoot.longitude doubleValue];
-            
-            [userTagShootsAnnotations addObject:[userTagShoot getMapAnnotation]];
-        }
-        MKCoordinateRegion region = MKCoordinateRegionMake(CLLocationCoordinate2DMake(totalLatitude/[userTagShoots count], totalLongitude/[userTagShoots count]), MKCoordinateSpanMake((maxLatitude - minLatitude) * 2.0 + 0.2, (maxLongitude - minLongitude) * 2.0 + 0.2));
-        [self.mapView setRegion:region];
-    } else {
-        for (UserTagShoot *userTagShoot in userTagShoots) {
-            [userTagShootsAnnotations addObject:[userTagShoot getMapAnnotation]];
-        }
+    for (UserTagShoot *userTagShoot in userTagShoots) {
+        [userTagShootsAnnotations addObject:[userTagShoot getMapAnnotation]];
     }
-    
     [self.mapView setAnnotations:userTagShootsAnnotations];
 }
 
