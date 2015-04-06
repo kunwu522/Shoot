@@ -4,8 +4,12 @@
 */
 class CommentDAO extends BaseDAO
 {
-	public function query($currentUser_id, $shoot_id) {
-		$query = "SELECT comment.*, like_comment.user_id as if_cur_user_like_it from comment LEFT JOIN like_comment on comment.id = like_comment.comment_id and like_comment.user_id = $currentUser_id where shoot_id = $shoot_id";
+	public function query($currentUser_id, $shoot_id, $comment_id) {
+		if ($comment_id) {
+			$query = "SELECT comment.*, like_comment.user_id as if_cur_user_like_it from comment LEFT JOIN like_comment on comment.id = like_comment.comment_id and like_comment.user_id = $currentUser_id where comment.id = $comment_id";
+		} else {
+			$query = "SELECT comment.*, like_comment.user_id as if_cur_user_like_it from comment LEFT JOIN like_comment on comment.id = like_comment.comment_id and like_comment.user_id = $currentUser_id where shoot_id = $shoot_id";
+		}
 
 		$result = $this->db_conn->query($query);
 

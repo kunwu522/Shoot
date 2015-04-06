@@ -107,10 +107,10 @@ static const NSInteger USERS_LIKE_SHOOT_LIST_TAG = 198;
              NSError *error = nil;
              BOOL successful = [self.shoot.managedObjectContext save:&error];
              if (!successful) {
-                 NSLog(@"Save self.shoot Error: %@", error.localizedDescription);
+                 NSLog(@"Save shoot Error: %@", error.localizedDescription);
              }
          } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-             RKLogError(@"water failed with error: %@", error);
+             RKLogError(@"like shoot failed with error: %@", error);
              self.shoot.like_count = [NSNumber numberWithInt:[self.shoot.like_count intValue] - 1];
              self.shoot.if_cur_user_like_it = [NSNumber numberWithInt:0];
              [self updateView];

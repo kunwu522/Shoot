@@ -16,6 +16,8 @@
 static NSString * COMMENTS_KEY_PATH_URL = @"comments";
 static NSString * COMMENTS_URL = @"comment/query/:id";
 static NSString * CREATE_URL = @"comment/create";
+static NSString * USER_LIKE_COMMENT_URL = @"comment/like/:id";
+static NSString * USER_UNLIKE_COMMENT_URL = @"comment/unlike/:id";
 
 - (RKEntityMapping *) createResponseMapping
 {
@@ -59,8 +61,15 @@ static NSString * CREATE_URL = @"comment/create";
          [RKResponseDescriptor responseDescriptorWithMapping:commentMapping method:RKRequestMethodGET pathPattern:url keyPath:COMMENTS_KEY_PATH_URL statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
     }
     
-    //post response mapping
-    [manager addResponseDescriptor:[RKResponseDescriptor responseDescriptorWithMapping:commentMapping method:RKRequestMethodAny pathPattern:CREATE_URL keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
+    for(NSString *url in @[
+                           CREATE_URL,
+                           USER_LIKE_COMMENT_URL,
+                           USER_UNLIKE_COMMENT_URL
+                           ]){
+        
+        [manager addResponseDescriptor:
+         [RKResponseDescriptor responseDescriptorWithMapping:commentMapping method:RKRequestMethodGET pathPattern:url keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)]];
+    }
     
     //creation request mapping
     [manager addRequestDescriptor:[RKRequestDescriptor requestDescriptorWithMapping:[self getRequestMapping] objectClass:[Comment class] rootKeyPath:nil method:RKRequestMethodAny]];

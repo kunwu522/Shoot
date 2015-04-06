@@ -17,7 +17,7 @@ class CommentController extends Controller
 	
 	public function query($shoot_id) {
 		$current_user_id = $this->getCurrentUser();
-		$comments = $this->comment_dao->query($current_user_id, $shoot_id);
+		$comments = $this->comment_dao->query($current_user_id, $shoot_id, null);
 		return json_encode(array('comments'=>$comments));
 	}
 
@@ -31,6 +31,18 @@ class CommentController extends Controller
 	public function delete($id) {
 		$current_user_id = $this->getCurrentUser();
 		$this->comment_dao->delete($current_user_id, $id);
+	}
+	
+	public function like($id) {
+		$current_user_id = $this->getCurrentUser();
+		$this->comment_dao->setUserLikeComment($current_user_id, $id);
+		return json_encode($this->comment_dao->query($current_user_id, null, $id)[0]);
+	}
+	
+	public function unlike($id) {
+		$current_user_id = $this->getCurrentUser();
+		$this->comment_dao->setUserUnlikeComment($current_user_id, $id);
+		return json_encode($this->comment_dao->query($current_user_id, null, $id)[0]);
 	}
 	
 	private function parse_create_request_body() {
